@@ -37,8 +37,7 @@ require_once(dirname(__FILE__).'/Maps.php');
 
 // $cfg = EasySCP_Registry::get('Config');
 // $sql = EasySCP_Registry::get('Db');
-$Socket = new SocketHandler();
- 
+
 // Setup
 $options = array(
     'appName' => 'easyscp_daemon',
@@ -58,14 +57,14 @@ System_Daemon::setOptions($options);
 System_Daemon::start();
 
 try {
-	$Socket->Create(AF_INET, SOCK_STREAM, 0);
-	if(!$Socket->Bind($MyAddress, $MyPort)){
+	SocketHandler::Create(AF_INET, SOCK_STREAM, 0);
+	if(!SocketHandler::Bind($MyAddress, $MyPort)){
 		throw new Exception('Could not bind to socket with Port ' . $MyPort . ' listening on Address '.$MyAddress, 42);
 	}
-	if(!$Socket->Listen()){
+	if(!SocketHandler::Listen()){
 		throw new Exception('Could not listen on Port '.$MyPort.' with Address '.$MyAddress);
 	}
-	$Socket->Block(false);
+	SocketHandler::Block(false);
 	$runningOkay = true;
 }
 catch(ErrorException $e){
@@ -86,13 +85,13 @@ while (!System_Daemon::isDying() && $runningOkay) {
 		
 	$runningOkay = true;
 	
-	if ($Client = $Socket->Accept())
+	if ($Client = SocketHandler::Accept())
 	{
 		System_Daemon::info('Client connected on Port '.$MyPort.'.');
-		// $Socket->Write("End with .\n".$StatusMap['100']."\n");
-		$Socket->Write("End with .\n");
+		// SocketHandler::Write("End with .\n".$StatusMap['100']."\n");
+		SocketHandler::Write("End with .\n");
 		
-		while ($Input = $Socket->Read())
+		while ($Input = SocketHandler::Read())
 		{
 			$Input = trim($Input);
 			if ($Input != ''){
@@ -100,6 +99,7 @@ while (!System_Daemon::isDying() && $runningOkay) {
 			
 				switch ($Input) {
 					case 'legacy':
+
 						System_Daemon::info('Running classic Request Manager subprocess.');
 
 						try {
@@ -110,18 +110,19 @@ while (!System_Daemon::isDying() && $runningOkay) {
 						}
 
 						System_Daemon::info('Closing connection.');
-						$Socket->CloseClient(900);
+						SocketHandler::CloseClient(900);
 
 						break;
 					
 					case '.':
 
 						System_Daemon::info('Closing connection.');
-						$Socket->CloseClient(900);
+						SocketHandler::CloseClient(900);
 
 						break;
 					
 					default:
+
 						$Input = explode(" ", $Input, 3);
 
 						if ( $StatusMap[$Input[0]] == $Input[1] && file_exists(dirname(__FILE__). '/' . $ProcedureMap[$Input[0]] . '.php'))
@@ -144,11 +145,10 @@ while (!System_Daemon::isDying() && $runningOkay) {
 						}
 						else {
 							System_Daemon::info('Could not find '.$Input[0].' '.$Input[1].' subprocess. Exiting.');
-							// $Socket->CloseClient(500);
 						}
 
 						System_Daemon::info('Closing connection.');
-						$Socket->CloseClient(900);
+						SocketHandler::CloseClient(900);
 				}
 			}
 		}
@@ -156,7 +156,7 @@ while (!System_Daemon::isDying() && $runningOkay) {
 	
 	System_Daemon::iterate(2);
 }
-$Socket->Close(900);
+SocketHandler::Close(900);
 System_Daemon::info('Shutting down.');
 // Shut down the daemon nicely
 System_Daemon::stop();

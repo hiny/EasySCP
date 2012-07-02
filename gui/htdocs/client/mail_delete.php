@@ -102,15 +102,24 @@ if ($num > 0) {
 	user_goto('mail_accounts.php');
 }
 
-/**
- * @todo useDB prepared statements
- */
-$query = "UPDATE `mail_users` SET `status` = '" . $cfg->ITEM_DELETE_STATUS . "' WHERE `mail_id` = ?";
-exec_query($sql, $query, $delete_id);
+$sql_param = array(
+	':status'	=> $cfg->ITEM_DELETE_STATUS,
+	':mail_id'	=> $delete_id
+);
+$sql_query = "
+	UPDATE
+		`mail_users`
+	SET
+		`status` = :status
+	WHERE
+		`mail_id` = :mail_id
+";
+DB::prepare($sql_query);
+DB::execute($sql_param);
 
 update_reseller_c_props(get_reseller_id($data['domain_id']));
 
-send_request();
+send_request('130 MAIL '.$data['domain_id']);
 $admin_login = decode_idna($_SESSION['user_logged']);
 write_log("$admin_login: deletes mail account: " . $mail_name);
 $_SESSION['maildel'] = 1;

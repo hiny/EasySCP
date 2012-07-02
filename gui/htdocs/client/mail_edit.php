@@ -35,7 +35,22 @@ edit_mail_account($tpl, $sql);
 
 if (update_email_pass($sql) && update_email_forward($tpl, $sql)) {
 	set_page_message(tr("Mail were updated successfully!"), 'success');
-	send_request();
+	$sql_param = array(
+		':mail_id' => $_GET['id']
+	);
+	$sql_query = "
+		SELECT
+			domain_id
+		FROM
+			mail_users
+		WHERE
+			mail_id = :mail_id
+	";
+
+	// Einzelne Schreibweise
+	DB::prepare($sql_query);
+	$row = DB::execute($sql_param, true);
+	send_request('130 MAIL '.$row['domain_id']);
 	user_goto('mail_accounts.php');
 }
 

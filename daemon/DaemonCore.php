@@ -35,6 +35,12 @@ function DaemonCore($Input) {
 			$retVal = checkAllData();
 			System_Daemon::info('Finished checkAllData subprocess.');
 			break;
+		case 'Restart':
+			System_Daemon::info('Running Restart subprocess.');
+			SocketHandler::Close(900);
+			sleep(3);
+			System_Daemon::restart();
+			break;
 		default:
 			System_Daemon::warning("Don't know what to do with " . $Input);
 			$retVal = false;

@@ -43,6 +43,7 @@ install:
 
 	$(CMD_INSTALL) ./DaemonCore.php $(SYSTEM_DAEMON_ROOT)
 	$(CMD_INSTALL) ./DaemonDomain.php $(SYSTEM_DAEMON_ROOT)
+	$(CMD_INSTALL) ./DaemonMail.php $(SYSTEM_DAEMON_ROOT)
 	$(CMD_INSTALL) ./easyscp_daemon $(SYSTEM_DAEMON_ROOT)
 	$(CMD_INSTALL) ./Maps.php $(SYSTEM_DAEMON_ROOT)
 	$(CMD_INSTALL) ./SocketHandler.php $(SYSTEM_DAEMON_ROOT)

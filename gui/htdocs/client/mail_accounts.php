@@ -563,7 +563,6 @@ function gen_page_als_mail_list($tpl, $sql, $dmn_id, $dmn_name) {
 function gen_page_lists($tpl, $sql, $user_id) {
 
 	global $dmn_id;
-	$cfg = EasySCP_Registry::get('Config');
 
 	list($dmn_id,$dmn_name,,,,,,,$dmn_mailacc_limit
 	) = get_domain_default_props($sql, $user_id);
@@ -573,35 +572,27 @@ function gen_page_lists($tpl, $sql, $user_id) {
 	$alssub_mails = gen_page_als_sub_mail_list($tpl, $sql, $dmn_id, $dmn_name);
 	$als_mails = gen_page_als_mail_list($tpl, $sql, $dmn_id, $dmn_name);
 
-	// If 'uaction' is set and own value is != 'hide', the total includes
-	// the number of email by default
-	$counted_mails = $total_mails =
-		$dmn_mails + $sub_mails + $als_mails + $alssub_mails;
+	$total_mails = $dmn_mails + $sub_mails + $als_mails + $alssub_mails;
 
 	if ($total_mails > 0) {
 		$tpl->assign(
 			array(
-				'MAIL_MESSAGE' => '',
-				'DMN_TOTAL' => $dmn_mails,
-				'SUB_TOTAL' => $sub_mails,
-				'ALSSUB_TOTAL' => $sub_mails,
-				'ALS_TOTAL' => $als_mails,
-				'TOTAL_MAIL_ACCOUNTS' => $counted_mails,
-				'ALLOWED_MAIL_ACCOUNTS' => ($dmn_mailacc_limit != 0)
-					? $dmn_mailacc_limit : tr('unlimited')
+				'MAIL_MESSAGE'			=> '',
+				'DMN_TOTAL'				=> $dmn_mails,
+				'SUB_TOTAL'				=> $sub_mails,
+				'ALSSUB_TOTAL'			=> $sub_mails,
+				'ALS_TOTAL'				=> $als_mails,
+				'TOTAL_MAIL_ACCOUNTS'	=> $total_mails,
+				'ALLOWED_MAIL_ACCOUNTS'	=> ($dmn_mailacc_limit != 0) ? $dmn_mailacc_limit : tr('unlimited')
 			)
 		);
 	} else {
-		if (!isset($_POST['uaction']) || $_POST['uaction'] == 'hide') {
-			$tpl->assign(array('TABLE_LIST' => ''));
-		}
-
 		$tpl->assign(
 			array(
 				'MAIL_MSG'		=> tr('Mail account list is empty!'),
 				'MAIL_MSG_TYPE'	=> 'info',
 				'MAIL_ITEM'		=> '',
-				'MAILS_TOTAL' => ''
+				'MAILS_TOTAL'	=> ''
 			)
 		);
 

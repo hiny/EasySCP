@@ -3,6 +3,7 @@ EasySCP 1.2.0 ChangeLog
 
 2012-07-02 Markus Szywon
 	- GUI:
+		* Added: Postfix MySQL Support
 		* Updated: Smarty to version 3.1.11
 
 2012-06-10 Markus Szywon
