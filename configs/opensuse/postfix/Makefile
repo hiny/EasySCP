@@ -34,11 +34,6 @@ install:
 	cp ./master.cf $(SYSTEM_CONF)/postfix/master.cf
 	cp ./smtpd.conf $(SYSTEM_CONF)/postfix/smtpd.conf
 
-	cp -R ./backup $(SYSTEM_CONF)/postfix
-	cp -R ./easyscp $(SYSTEM_CONF)/postfix
-	cp -R ./parts $(SYSTEM_CONF)/postfix
-	cp -R ./working $(SYSTEM_CONF)/postfix
-
 uninstall:
 
 	rm -rf $(SYSTEM_CONF)/postfix

@@ -20,27 +20,25 @@
 # @link 		http://www.easyscp.net
 # @author 		EasySCP Team
 
+ROOT_POSTFIX_CONF=$(ROOT_CONF)/postfix
+
+export
+
 install:
-	cp ./easyscp_config_db.tpl $(SYSTEM_CONF)
-	cp -R ./apache $(SYSTEM_CONF)
-	cp -R ./awstats $(SYSTEM_CONF)
-	cp -R ./database $(SYSTEM_CONF)
-	cp -R ./fcgi $(SYSTEM_CONF)
-	cp -R ./pdns $(SYSTEM_CONF)
-	cp -R ./pma $(SYSTEM_CONF)
-	cp -R ./postfix $(SYSTEM_CONF)
-	cp -R ./roundcube $(SYSTEM_CONF)
+
+	$(SYSTEM_MAKE_DIRS) $(SYSTEM_CONF)/postfix
+	$(SYSTEM_MAKE_DIRS) $(ROOT_POSTFIX_CONF)
+	$(SYSTEM_MAKE_DIRS) $(ROOT_POSTFIX_CONF)/easyscp
+
+	cp ./main.cf $(SYSTEM_CONF)/postfix/main.cf
+	cp ./master.cf $(SYSTEM_CONF)/postfix/master.cf
+
+	cp -R ./backup $(SYSTEM_CONF)/postfix
+	cp -R ./easyscp $(SYSTEM_CONF)/postfix
+	cp -R ./parts $(SYSTEM_CONF)/postfix
+	cp -R ./working $(SYSTEM_CONF)/postfix
 
 uninstall:
-	rm -rf $(SYSTEM_CONF)/easyscp_config_db.php
-	rm -rf $(SYSTEM_CONF)/easyscp_config_db.tpl
-	rm -rf $(SYSTEM_CONF)/apache
-	rm -rf $(SYSTEM_CONF)/awstats
-	rm -rf $(SYSTEM_CONF)/database
-	rm -rf $(SYSTEM_CONF)/fcgi
-	rm -rf $(SYSTEM_CONF)/pdns
-	rm -rf $(SYSTEM_CONF)/pma
-	rm -rf $(SYSTEM_CONF)/postfix
-	rm -rf $(SYSTEM_CONF)/roundcube
 
-.PHONY: install uninstall
+	rm -rf $(SYSTEM_CONF)/postfix
+	rm -rf $(ROOT_POSTFIX_CONF)/easyscp
