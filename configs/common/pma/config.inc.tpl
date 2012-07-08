@@ -60,7 +60,6 @@ $cfg['Servers'][$i]['tracking'] = 'pma_tracking';
 $cfg['Servers'][$i]['designer_coords'] = 'pma_designer_coords';
 $cfg['Servers'][$i]['userconfig'] = 'pma_userconfig';
 $cfg['Servers'][$i]['recent'] = 'pma_recent';
-$cfg['Servers'][$i]['table_uiprefs'] = 'pma_table_uiprefs';
 
 /* Hide some databases from listing */
 $cfg['Servers'][$i]['hide_db'] = '(information_schema|phpmyadmin|mysql)';

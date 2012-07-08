@@ -1,6 +1,10 @@
 EasySCP 1.2.0 ChangeLog
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+2012-07-08 Markus Szywon
+	- TOOLS:
+		* Updated: phpMyAdmin to version 3.5.2
+
 2012-07-02 Markus Szywon
 	- GUI:
 		* Added: Postfix MySQL Support
