@@ -24,7 +24,7 @@
 ini_set('display_errors', '1');
 error_reporting(E_ALL);
 require_once '../../include/easyscp-lib.php';
-require_once '../../include/Net/DNS.php';
+require_once '../../include/Net/DNS2.php';
 
 check_login(__FILE__);
 

@@ -1,6 +1,10 @@
 EasySCP 1.2.0 ChangeLog
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+2012-07-16 Markus Szywon
+	- GUI:
+		* Updated: Net_DNS2 to version 1.2.1
+
 2012-07-08 Markus Szywon
 	- TOOLS:
 		* Updated: phpMyAdmin to version 3.5.2
