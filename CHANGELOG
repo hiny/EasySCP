@@ -1,6 +1,10 @@
 EasySCP 1.2.0 ChangeLog
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+2012-07-25 Markus Szywon
+	- TOOLS:
+		* Updated: jQuery UI to version 1.8.22
+
 2012-07-16 Markus Szywon
 	- GUI:
 		* Updated: Net_DNS2 to version 1.2.1
