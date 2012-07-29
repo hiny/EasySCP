@@ -91,13 +91,31 @@ function tr($msgid, $substitution = false) {
  */
 function getLanguages() {
 	$languages = array(
+		'bg_BG' => 'български език - Bulgarian (Bulgaria)',
 		'ca_ES' => 'Català - Catalan (Spain)',
+		'cs_CZ' => 'Česky - Czech (Czech Republic)',
+		'da_DK' => 'Dansk - Danish (Denmark)',
 		'de_DE' => 'Deutsch - German (Germany)',
+		'el_GR' => 'Νέα Ελληνικά - Greek (Greece)',
 		'en_GB' => 'English - English',
+		'es_CO' => 'Español - Spanish (Colombia)',
+		'es_ES' => 'Español - Spanish (Spain)',
+		'eu_ES' => 'Euskara - Basque (Spain)',
+		'fi_FI' => 'Suomi - Finnish (Finland)',
 		'fr_FR'	=> 'Français - French (France)',
+		'gl_ES' => 'Galego - Galician (Spain)',
+		'hu_HU' => 'Magyar - Hungarian (Hungary)',
+		'ja_JP' => '日本語 - Japanese (Japan)',
+		'nl_NL' => 'Nederlands - Dutch (Netherlands)',
+		'pl_PL' => 'Polski - Polish (Poland)',
+		'pt_BR' => 'Português - Portuguese (Brazil)',
+		'pt_PT' => 'Português - Portuguese (Portugal)',
+		'ro_RO' => 'Română - Romanian (Romania)',
 		'ru_RU'	=> 'Русский язык - Russian (Russia)',
+		'sk_SK' => 'Slovenčina - Slovak (Slovakia)',
 		'sv_SE'	=> 'Svenska - Swedish (Sweden)',
-		'uk_UA'	=> 'Українська - Ukrainian (Ukraine)'
+		'tr_TR' => 'Türkçe - Turkish (Turkey)'
+		// 'uk_UA'	=> 'Українська - Ukrainian (Ukraine)'
 	);
 	return $languages;
 }
