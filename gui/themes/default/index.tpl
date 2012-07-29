@@ -1,15 +1,15 @@
 {include file='header.tpl'}
-<script type="text/javascript">
-{literal}
-	/* <![CDATA[ */
-   function AutoFocus() {
-      document.getElementById('uname').focus();
-   }
-   window.onload = AutoFocus;
-	/* ]]> */
-{/literal}
-</script>
 <body>
+	<script type="text/javascript">
+		{literal}
+		/* <![CDATA[ */
+		function AutoFocus() {
+			document.getElementById('uname').focus();
+		}
+		window.onload = AutoFocus;
+		/* ]]> */
+		{/literal}
+	</script>
 	<div class="main">
 		<div class="mainbox" id="mainbox">
 			<form action="/index.php" method="post">
