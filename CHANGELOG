@@ -1,6 +1,10 @@
 EasySCP 1.2.0 ChangeLog
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+2012-08-04 Markus Szywon
+	- TOOLS:
+		* Updated: phpMyAdmin to version 3.5.2.1
+
 2012-07-29 Markus Szywon
 	- GUI:
 		* Added: New Language Files
