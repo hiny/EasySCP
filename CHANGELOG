@@ -1,6 +1,10 @@
 EasySCP 1.2.0 ChangeLog
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+2012-08-16 Markus Szywon
+	- TOOLS:
+		* Updated: phpMyAdmin to version 3.5.2.2
+
 2012-08-13 Markus Szywon
 	- TOOLS:
 		* Updated: Roundcube to version 0.8.0
