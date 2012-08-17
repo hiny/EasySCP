@@ -3454,9 +3454,6 @@ msgstr ""
 msgid "Welcome {USERNAME} to EasySCP!"
 msgstr ""
 
-msgid "\n\nHello {NAME}!\n\nA new EasySCP account has been created for you.\nYour account information:\n\nUser type: {USERTYPE}\nUser name: {USERNAME}\nPassword: {PASSWORD}\n\nRemember to change your password often and the first time you login.\n\nYou can login right now at {BASE_SERVER_VHOST_PREFIX}{BASE_SERVER_VHOST}\n\nStatistics: {BASE_SERVER_VHOST_PREFIX}{BASE_SERVER_VHOST}/{USERNAME}/stats/\nUser name: {USERNAME}\nPassword: {PASSWORD}\n\nBest wishes with EasySCP!\nThe EasySCP Team.\n\n"
-msgstr ""
-
 msgid "\n\nHello {NAME}!\n\nA new EasySCP account has been created for you.\nYour account information:\n\nUser type: {USERTYPE}\nUser name: {USERNAME}\nPassword: {PASSWORD}\n\nRemember to change your password often and the first time you login.\n\nYou can login right now at {BASE_SERVER_VHOST_PREFIX}{BASE_SERVER_VHOST}\n\nUser name: {USERNAME}\nPassword: {PASSWORD}\n\nBest wishes with EasySCP!\nThe EasySCP Team.\n\n"
 msgstr ""
 
