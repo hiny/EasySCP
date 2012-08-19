@@ -88,8 +88,6 @@ Make sure you are logged in as root.
 
    Install all required packages:
 
-   	!!! Make sure that there is no mta already installed on your system (eq exim4). If so you must remove them first !!!
-
 	# apt-get install $(cat ./docs/Debian/debian-packages-squeeze)
 	or when you running Debian 7.0 (Wheezy)
 	# apt-get install $(cat ./docs/Debian/debian-packages-wheezy)
