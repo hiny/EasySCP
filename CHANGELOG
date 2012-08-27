@@ -1,6 +1,11 @@
 EasySCP 1.2.0 ChangeLog
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+2012-08-27 Markus Szywon
+	- GUI:
+		* Updated: jQuery to version 1.8.0
+		* Updated: jQuery UI to version 1.8.23
+
 2012-08-17 Markus Szywon
 	- GUI:
 		* Some fixes
@@ -27,7 +32,7 @@ EasySCP 1.2.0 ChangeLog
 		* Added: New Language Files
 		
 2012-07-25 Markus Szywon
-	- TOOLS:
+	- GUI:
 		* Updated: jQuery UI to version 1.8.22
 
 2012-07-16 Markus Szywon
@@ -50,7 +55,7 @@ EasySCP 1.2.0 ChangeLog
 2012-06-09 Markus Szywon
 	- Engine:
 		* Some fixes
-	- TOOLS:
+	- GUI:
 		* Updated: jQuery UI to version 1.8.21
 
 2012-05-06 Markus Szywon
@@ -58,11 +63,11 @@ EasySCP 1.2.0 ChangeLog
 		* Some fixes
 	- GUI:
 		* Some fixes
+		* Updated: jQuery UI to version 1.8.20
 	- Setup:
 		* Added: Postfix MySQL Support
 	- TOOLS:
 		* Updated: phpMyAdmin to version 3.5.1
-		* Updated: jQuery UI to version 1.8.20
 
 2012-04-30 Markus Szywon
 	- GUI:
