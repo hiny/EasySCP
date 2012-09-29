@@ -57,14 +57,12 @@ install:
 
 	cd ./configs && $(MAKE) install
 	cd ./daemon && $(MAKE) install
-	cd ./engine && $(MAKE) install
 	cd ./gui && $(MAKE) install
 
 uninstall:
 
 	cd ./configs && $(MAKE) uninstall
 	cd ./daemon && $(MAKE) uninstall
-	cd ./engine && $(MAKE) uninstall
 	cd ./gui && $(MAKE) uninstall
 
 	rm -rf $(SYSTEM_CONF)
