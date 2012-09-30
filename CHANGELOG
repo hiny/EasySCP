@@ -1,7 +1,11 @@
 EasySCP 1.2.0 ChangeLog
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-2012-06-29 Markus Szywon
+2012-09-30 Markus Szywon
+	- GUI:
+		* Updated: jQuery UI to version 1.8.24
+
+2012-09-29 Markus Szywon
 	- Engine:
 		* Removed, because this is no longer used
 
