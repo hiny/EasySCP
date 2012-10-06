@@ -1,6 +1,10 @@
 EasySCP 1.2.0 ChangeLog
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+2012-10-07 Markus Szywon
+	- TOOLS:
+		* Updated: Roundcube to version 0.8.2
+
 2012-09-30 Markus Szywon
 	- GUI:
 		* Updated: jQuery UI to version 1.8.24
