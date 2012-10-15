@@ -25,16 +25,16 @@
 
 class DB_Config {
 	/* Datenbankserver - In der Regel die IP */
-	protected static $DB_HOST		= 'localhost';
+	protected static $DB_HOST		= '{DB_HOST}';
 
 	/* Datenbankname */
-	public static $DB_DATABASE		= 'easyscp';
+	public static $DB_DATABASE		= '{DB_DATABASE}';
 
 	/* Datenbank Port */
 	protected static $DB_PORT		= 3306;
 
 	/* Datenbankuser */
-	protected static $DB_USER		= 'root';
+	protected static $DB_USER		= '{DB_USER}';
 
 	/* Datenbankpasswort */
 	protected static $DB_PASSWORD	= '{DB_PASSWORD}';
