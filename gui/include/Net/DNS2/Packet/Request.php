@@ -43,7 +43,7 @@
  * @author    Mike Pultz <mike@mikepultz.com>
  * @copyright 2010 Mike Pultz <mike@mikepultz.com>
  * @license   http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version   SVN: $Id: Request.php 124 2011-12-02 23:23:15Z mike.pultz $
+ * @version   SVN: $Id: Request.php 155 2012-05-06 23:45:23Z mike.pultz $
  * @link      http://pear.php.net/package/Net_DNS2
  * @since     File available since Release 0.6.0
  *
@@ -171,7 +171,7 @@ class Net_DNS2_Packet_Request extends Net_DNS2_Packet
 
                     throw new Net_DNS2_Exception(
                         'unsupported PTR value: ' . $name,
-                        Net_DNS2_Lookup::E_PACKET_INVALID
+                        Net_DNS2_Lookups::E_PACKET_INVALID
                     );
                 }
 
@@ -185,7 +185,7 @@ class Net_DNS2_Packet_Request extends Net_DNS2_Packet
 
                 throw new Net_DNS2_Exception(
                     'unsupported PTR value: ' . $name,
-                    Net_DNS2_Lookup::E_PACKET_INVALID
+                    Net_DNS2_Lookups::E_PACKET_INVALID
                 );
             }
         }

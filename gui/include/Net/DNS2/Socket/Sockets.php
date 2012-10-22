@@ -43,7 +43,7 @@
  * @author    Mike Pultz <mike@mikepultz.com>
  * @copyright 2010 Mike Pultz <mike@mikepultz.com>
  * @license   http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version   SVN: $Id: Sockets.php 148 2012-02-10 20:18:19Z mike.pultz $
+ * @version   SVN: $Id: Sockets.php 168 2012-09-13 02:01:29Z mike.pultz $
  * @link      http://pear.php.net/package/Net_DNS2
  * @since     File available since Release 0.6.0
  *
@@ -82,14 +82,14 @@ class Net_DNS2_Socket_Sockets extends Net_DNS2_Socket
 
             $this->sock = @socket_create(
                 AF_INET, $this->type, 
-                ($this->type == SOCK_STREAM) ? SOL_TCP : SOL_UDP
+                ($this->type == Net_DNS2_Socket::SOCK_STREAM) ? SOL_TCP : SOL_UDP
             );
 
         } else if (Net_DNS2::isIPv6($this->host) == true) {
         
             $this->sock = @socket_create(
                 AF_INET6, $this->type, 
-                ($this->type == SOCK_STREAM) ? SOL_TCP : SOL_UDP
+                ($this->type == Net_DNS2_Socket::SOCK_STREAM) ? SOL_TCP : SOL_UDP
             );
 
         } else {
@@ -202,7 +202,7 @@ class Net_DNS2_Socket_Sockets extends Net_DNS2_Socket
         // if it's a TCP socket, then we need to packet and send the length of the
         // data as the first 16bit of data.
         //
-        if ($this->type == SOCK_STREAM) {
+        if ($this->type == Net_DNS2_Socket::SOCK_STREAM) {
 
             $s = chr($length >> 8) . chr($length);
 
@@ -242,6 +242,15 @@ class Net_DNS2_Socket_Sockets extends Net_DNS2_Socket
         $except = null;
 
         //
+        // make sure our socket is non-blocking
+        //
+        if (@socket_set_nonblock($this->sock) === false) {
+    
+            $this->last_error = socket_strerror(socket_last_error());
+            return false;
+        }
+
+        //
         // select on read
         //
         switch(@socket_select($read, $write, $except, $this->timeout)) {
@@ -266,7 +275,7 @@ class Net_DNS2_Socket_Sockets extends Net_DNS2_Socket
         // packet- we need to read that off first, then use that value for the 
         // packet read.
         //
-        if ($this->type == SOCK_STREAM) {
+        if ($this->type == Net_DNS2_Socket::SOCK_STREAM) {
 
             if (($size = @socket_recv($this->sock, $data, 2, 0)) === false) {
 
@@ -279,6 +288,19 @@ class Net_DNS2_Socket_Sockets extends Net_DNS2_Socket
 
                 return false;
             }
+        }
+
+        //
+        // at this point, we know that there is data on the socket to be read,
+        // because we've already extracted the length from the first two bytes.
+        //
+        // so the easiest thing to do, is just turn off socket blocking, and
+        // wait for the data.
+        //
+        if (@socket_set_block($this->sock) === false) {
+    
+            $this->last_error = socket_strerror(socket_last_error());
+            return false;
         }
 
         //

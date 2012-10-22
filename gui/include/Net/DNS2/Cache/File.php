@@ -43,7 +43,7 @@
  * @author    Mike Pultz <mike@mikepultz.com>
  * @copyright 2010 Mike Pultz <mike@mikepultz.com>
  * @license   http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version   SVN: $Id: File.php 137 2011-12-05 02:51:34Z mike.pultz $
+ * @version   SVN: $Id: File.php 160 2012-07-18 03:57:32Z mike.pultz $
  * @link      http://pear.php.net/package/Net_DNS2
  * @since     File available since Release 1.1.0
  *
@@ -67,6 +67,7 @@ class Net_DNS2_Cache_File extends Net_DNS2_Cache
      *
      * @param string  $cache_file path to a file to use for cache storage
      * @param integer $size       the size of the shared memory segment to create
+     * @param string  $serializer the name of the cache serialize to use
      *
      * @throws Net_DNS2_Exception
      * @access public
@@ -100,14 +101,24 @@ class Net_DNS2_Cache_File extends Net_DNS2_Cache
                 //
                 // read the file contents
                 //
+                $data = fread($fp, filesize($this->cache_file));
+
+                $decoded = null;
+                    
                 if ($this->cache_serializer == 'json') {
-                    $this->cache_data = json_decode(
-                        fread($fp, filesize($this->cache_file)), true
-                    );
+
+                    $decoded = json_decode($data, true);         
                 } else {
-                    $this->cache_data = unserialize(
-                        fread($fp, filesize($this->cache_file))
-                    );
+
+                    $decoded = unserialize($data);                
+                }
+
+                if (is_array($decoded) == true) {
+
+                    $this->cache_data = $decoded;
+                } else {
+
+                    $this->cache_data = array();
                 }
 
                 //
@@ -137,6 +148,13 @@ class Net_DNS2_Cache_File extends Net_DNS2_Cache
     public function __destruct()
     {
         //
+        // if there's no cache file set, then there's nothing to do
+        //
+        if (strlen($this->cache_file) == 0) {
+            return;
+        }
+
+        //
         // open the file for reading/writing
         //
         $fp = fopen($this->cache_file, 'a+');
@@ -163,10 +181,19 @@ class Net_DNS2_Cache_File extends Net_DNS2_Cache
                 //
                 $c = $this->cache_data;
 
+                $decoded = null;
+
                 if ($this->cache_serializer == 'json') {
-                    $this->cache_data = array_merge($c, json_decode($data, true));
+
+                    $decoded = json_decode($data, true);
                 } else {
-                    $this->cache_data = array_merge($c, unserialize($data));
+
+                    $decoded = unserialize($data);
+                }
+                
+                if (is_array($decoded) == true) {
+
+                    $this->cache_data = array_merge($c, $decoded);
                 }
             }
 

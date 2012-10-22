@@ -43,7 +43,7 @@
  * @author    Mike Pultz <mike@mikepultz.com>
  * @copyright 2010 Mike Pultz <mike@mikepultz.com>
  * @license   http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version   SVN: $Id: RR.php 134 2011-12-04 00:49:18Z mike.pultz $
+ * @version   SVN: $Id: RR.php 154 2012-04-23 16:36:34Z mike.pultz $
  * @link      http://pear.php.net/package/Net_DNS2
  * @since     File available since Release 0.6.0
  *
@@ -246,6 +246,11 @@ abstract class Net_DNS2_RR
         $in = false;
 
         foreach ($chunks as $r) {
+
+            $r = trim($r);
+            if (strlen($r) == 0) {
+                continue;
+            }
 
             if ( ($r[0] == '"')
                 && ($r[strlen($r) - 1] == '"')

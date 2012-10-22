@@ -43,7 +43,7 @@
  * @author    Mike Pultz <mike@mikepultz.com>
  * @copyright 2010 Mike Pultz <mike@mikepultz.com>
  * @license   http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version   SVN: $Id: Cache.php 137 2011-12-05 02:51:34Z mike.pultz $
+ * @version   SVN: $Id: Cache.php 160 2012-07-18 03:57:32Z mike.pultz $
  * @link      http://pear.php.net/package/Net_DNS2
  * @since     File available since Release 1.1.0
  *
@@ -166,9 +166,14 @@ class Net_DNS2_Cache
         $this->cache_data[$key] = array(
 
             'cache_date'    => time(),
-            'ttl'           => $ttl,
-            'object'        => ($this->cache_serializer == 'json') ? json_encode($data) : serialize($data)
+            'ttl'           => $ttl
         );
+
+        if ($this->cache_serializer == 'json') {
+            $this->cache_data[$key]['object'] = json_encode($data);
+        } else {
+            $this->cache_data[$key]['object'] = serialize($data);
+        }
     }
 
     /**

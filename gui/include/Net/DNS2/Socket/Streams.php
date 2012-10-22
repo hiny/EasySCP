@@ -43,7 +43,7 @@
  * @author    Mike Pultz <mike@mikepultz.com>
  * @copyright 2010 Mike Pultz <mike@mikepultz.com>
  * @license   http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version   SVN: $Id: Streams.php 148 2012-02-10 20:18:19Z mike.pultz $
+ * @version   SVN: $Id: Streams.php 168 2012-09-13 02:01:29Z mike.pultz $
  * @link      http://pear.php.net/package/Net_DNS2
  * @since     File available since Release 0.6.0
  *
@@ -106,7 +106,7 @@ class Net_DNS2_Socket_Streams extends Net_DNS2_Socket
         $errstr;
 
         switch($this->type) {
-        case SOCK_STREAM:
+        case Net_DNS2_Socket::SOCK_STREAM:
 
             if (Net_DNS2::isIPv4($this->host) == true) {
 
@@ -130,7 +130,7 @@ class Net_DNS2_Socket_Streams extends Net_DNS2_Socket
 
             break;
         
-        case SOCK_DGRAM:
+        case Net_DNS2_Socket::SOCK_DGRAM:
 
             if (Net_DNS2::isIPv4($this->host) == true) {
 
@@ -233,7 +233,7 @@ class Net_DNS2_Socket_Streams extends Net_DNS2_Socket
         // if it's a TCP socket, then we need to packet and send the length of the
         // data as the first 16bit of data.
         //        
-        if ($this->type == SOCK_STREAM) {
+        if ($this->type == Net_DNS2_Socket::SOCK_STREAM) {
 
             $s = chr($length >> 8) . chr($length);
 
@@ -273,6 +273,11 @@ class Net_DNS2_Socket_Streams extends Net_DNS2_Socket
         $except = null;
 
         //
+        // make sure our socket is non-blocking
+        //
+        @stream_set_blocking($this->sock, 0);
+
+        //
         // select on read
         //
         switch(stream_select($read, $write, $except, $this->timeout)) {
@@ -297,7 +302,7 @@ class Net_DNS2_Socket_Streams extends Net_DNS2_Socket
         // packet- we need to read that off first, then use that value for the    
         // packet read.
         //
-        if ($this->type == SOCK_STREAM) {
+        if ($this->type == Net_DNS2_Socket::SOCK_STREAM) {
     
             if (($data = fread($this->sock, 2)) === false) {
                 
@@ -313,12 +318,63 @@ class Net_DNS2_Socket_Streams extends Net_DNS2_Socket
         }
 
         //
+        // at this point, we know that there is data on the socket to be read,
+        // because we've already extracted the length from the first two bytes.
+        //
+        // so the easiest thing to do, is just turn off socket blocking, and
+        // wait for the data.
+        //
+        @stream_set_blocking($this->sock, 1);
+
+        //
         // read the data from the socket
         //
-        if (($data = fread($this->sock, $length)) === false) {
+        $data = '';
+
+        //
+        // the streams socket is weird for TCP sockets; it doesn't seem to always
+        // return all the data properly; but the looping code I added broke UDP
+        // packets- my fault- 
+        //
+        // the sockets library works much better.
+        //
+        if ($this->type == Net_DNS2_Socket::SOCK_STREAM) {
+
+            $chunk = '';
+            $chunk_size = $length;
+
+            //
+            // loop so we make sure we read all the data
+            //
+            while (1) {
+
+                $chunk = fread($this->sock, $chunk_size);
+                if ($chunk === false) {
             
-            $this->last_error = 'failed on fread() for data';
-            return false;
+                    $this->last_error = 'failed on fread() for data';
+                    return false;
+                }
+
+                $data .= $chunk;
+                $chunk_size -= strlen($chunk);
+
+                if (strlen($data) >= $length) {
+                    break;
+                }
+            }
+
+        //
+        // if it's UDP, ti's a single fixed-size frame, and the streams library
+        // doesn't seem to have a problem reading it.
+        //
+        } else {
+
+            $data = fread($this->sock, $length);
+            if ($length === false) {
+            
+                $this->last_error = 'failed on fread() for data';
+                return false;
+            }
         }
         
         $size = strlen($data);

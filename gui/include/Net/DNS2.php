@@ -43,7 +43,7 @@
  * @author    Mike Pultz <mike@mikepultz.com>
  * @copyright 2010 Mike Pultz <mike@mikepultz.com>
  * @license   http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version   SVN: $Id: DNS2.php 150 2012-03-02 01:17:16Z mike.pultz $
+ * @version   SVN: $Id: DNS2.php 169 2012-09-18 02:48:12Z mike.pultz $
  * @link      http://pear.php.net/package/Net_DNS2
  * @since     File available since Release 0.6.0
  *
@@ -72,7 +72,7 @@ class Net_DNS2
     /*
      * the current version of this library
      */
-    const VERSION = '1.2.1';
+    const VERSION = '1.2.4';
 
     /*
      * the default path to a resolv.conf file
@@ -133,13 +133,36 @@ class Net_DNS2
     /*
      * the method to use for storing cache data; either "serialize" or "json"
      *
-     * json is faster, but can't remember the class names (everything comes back as a
-     * "stdClass Object"; all the data is the same though. serialize is slower, but will
-     * have all the class info.
+     * json is faster, but can't remember the class names (everything comes back 
+     * as a "stdClass Object"; all the data is the same though. serialize is 
+     * slower, but will have all the class info.
      *
      * defaults to 'serialize'
      */
     public $cache_serializer = 'serialize';
+
+    /*
+     * by default, according to RFC 1034
+     *
+     * CNAME RRs cause special action in DNS software.  When a name server
+     * fails to find a desired RR in the resource set associated with the
+     * domain name, it checks to see if the resource set consists of a CNAME
+     * record with a matching class.  If so, the name server includes the CNAME
+     * record in the response and restarts the query at the domain name
+     * specified in the data field of the CNAME record.
+     *
+     * this can cause "unexpected" behavious, since i'm sure *most* people
+     * don't know DNS does this; there may be cases where Net_DNS2 returns a
+     * positive response, even though the hostname the user looked up did not
+     * actually exist.
+     *
+     * strict_query_mode means that if the hostname that was looked up isn't
+     * actually in the answer section of the response, Net_DNS2 will return an 
+     * empty answer section, instead of an answer section that could contain 
+     * CNAME records.
+     *
+     */
+    public $strict_query_mode = false;
 
     /*
      * local sockets
@@ -750,6 +773,7 @@ class Net_DNS2
         //
         $response = null;
         $ns = '';
+        $socket_type = null;
         $tcp_fallback = false;
 
         while (1) {
@@ -781,6 +805,7 @@ class Net_DNS2
                 || ($tcp_fallback == true)
             ) {
                 $tcp_fallback = false;
+                $socket_type = Net_DNS2_Socket::SOCK_STREAM;
 
                 //
                 // create the socket object
@@ -791,12 +816,12 @@ class Net_DNS2
                     if ($this->sockets_enabled === true) {
 
                         $this->sock['tcp'][$ns] = new Net_DNS2_Socket_Sockets(
-                            SOCK_STREAM, $ns, $this->dns_port, $this->timeout
+                            Net_DNS2_Socket::SOCK_STREAM, $ns, $this->dns_port, $this->timeout
                         );
                     } else {
 
                         $this->sock['tcp'][$ns] = new Net_DNS2_Socket_Streams(
-                            SOCK_STREAM, $ns, $this->dns_port, $this->timeout
+                            Net_DNS2_Socket::SOCK_STREAM, $ns, $this->dns_port, $this->timeout
                         );
                     }
                 }
@@ -834,22 +859,125 @@ class Net_DNS2
                 // read the content, using select to wait for a response
                 //
                 $size = 0;
+                $result = null;
 
-                $result = $this->sock['tcp'][$ns]->read($size);
-                if ( ($result === false) 
-                    ||  ($size < Net_DNS2_Lookups::DNS_HEADER_SIZE) 
-                ) {
-                    $this->_last_socket_error = $this->sock['tcp'][$ns]->last_error;
-                    continue;
+                //
+                // handle zone transfer requests differently than other requests.
+                //
+                if ($request->question[0]->qtype == 'AXFR') {
+
+                    $soa_count = 0;
+
+                    while (1) {
+
+                        //
+                        // read the data off the socket
+                        //
+                        $result = $this->sock['tcp'][$ns]->read($size);
+                        if ( ($result === false) 
+                            ||  ($size < Net_DNS2_Lookups::DNS_HEADER_SIZE) 
+                        ) {
+                            $this->_last_socket_error = $this->sock['tcp'][$ns]->last_error;
+                            break;
+                        }
+
+                        //
+                        // parse the first chunk as a packet
+                        //
+                        $chunk = new Net_DNS2_Packet_Response($result, $size);
+
+                        //
+                        // if this is the first packet, then clone it directly, then
+                        // go through it to see if there are two SOA records 
+                        // (indicating that it's the only packet)
+                        //
+                        if (is_null($response) == true) {
+
+                            $response = clone $chunk;
+
+                            //
+                            // look for a failed response; if the zone transfer
+                            // failed, then we don't need to do anything else at this
+                            // point, and we should just break out.
+                            //
+                            if ($response->header->rcode != Net_DNS2_Lookups::RCODE_NOERROR) {
+                                break;
+                            }
+
+                            //
+                            // go through each answer
+                            //
+                            foreach ($response->answer as $index => $rr) {
+
+                                //
+                                // count the SOA records
+                                //
+                                if ($rr->type == 'SOA') {
+                                    $soa_count++;
+                                }
+                            }
+
+                            //
+                            // if we have 2 or more SOA records, then we're done; 
+                            // otherwise continue out so we read the rest of the 
+                            // packets off the socket
+                            //
+                            if ($soa_count >= 2) {
+                                break;
+                            } else {
+                                continue;
+                            }
+
+                        } else {
+
+                            //
+                            // go through all these answers, and look for SOA records
+                            //
+                            foreach ($chunk->answer as $index => $rr) {
+
+                                //
+                                // count the number of SOA records we find
+                                //
+                                if ($rr->type == 'SOA') {
+                                    $soa_count++;
+                                }
+
+                                //
+                                // add the records to a single response object
+                                //
+                                $response->answer[] = $rr;
+                            }
+
+                            //
+                            // if we've found the second SOA record, we're done
+                            //
+                            if ($soa_count >= 2) {
+                                break;
+                            }
+                        }
+                    }
+
+                } else {
+
+                    $result = $this->sock['tcp'][$ns]->read($size);
+                    if ( ($result === false) 
+                        ||  ($size < Net_DNS2_Lookups::DNS_HEADER_SIZE) 
+                    ) {
+                        $this->_last_socket_error = $this->sock['tcp'][$ns]->last_error;
+                        continue;
+                    }
+
+                    //
+                    // create the packet object
+                    //
+                    $response = new Net_DNS2_Packet_Response($result, $size);
                 }
 
-                //
-                // create the packet object
-                //
-                $response = new Net_DNS2_Packet_Response($result, $size);
                 break;
 
             } else {
+
+                $socket_type = Net_DNS2_Socket::SOCK_DGRAM;
 
                 //
                 // create the socket object
@@ -860,12 +988,12 @@ class Net_DNS2
                     if ($this->sockets_enabled === true) {
 
                         $this->sock['udp'][$ns] = new Net_DNS2_Socket_Sockets(
-                            SOCK_DGRAM, $ns, $this->dns_port, $this->timeout
+                            Net_DNS2_Socket::SOCK_DGRAM, $ns, $this->dns_port, $this->timeout
                         );
                     } else {
 
                         $this->sock['udp'][$ns] = new Net_DNS2_Socket_Streams(
-                            SOCK_DGRAM, $ns, $this->dns_port, $this->timeout
+                            Net_DNS2_Socket::SOCK_DGRAM, $ns, $this->dns_port, $this->timeout
                         );
                     }
                 }            
@@ -930,9 +1058,22 @@ class Net_DNS2
             }
         }
 
+        //
+        // add the name server that the response came from to the response object,
+        // and the socket type that was used.
+        //
+        $response->answer_from = $ns;
+        $response->answer_socket_type = $socket_type;
+
+        //
+        // if $response is null, then we didn't even try once; which shouldn't
+        // actually ever happen
+        //
         if (is_null($response)) {
 
-            return false;
+            throw new Net_DNS2_Exception(
+                'empty response object', Net_DNS2_Lookups::E_NS_FAILED
+            );
         }
 
         //
