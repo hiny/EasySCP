@@ -312,9 +312,9 @@ function gen_editdns_page($tpl, $edit_id) {
 			'DNS_SRV_PORT'				=> tohtml(tryPost('dns_srv_port', $srv_port)),
 			'DNS_CNAME'					=> tohtml(tryPost('dns_cname', $cname)),
 			'DNS_PLAIN'					=> tohtml(tryPost('dns_plain_data', $plain)),
-			'DNS_NS_HOSTNAME'					=> tohtml(tryPost('dns_ns', $ns)),
+			'DNS_NS_HOSTNAME'			=> tohtml(tryPost('dns_ns', $ns)),
 			'ID'						=> $edit_id,
-			'ACTION_MODE'			=> ($add_mode) ? 'dns_add.php' : 'dns_edit.php?edit_id='.$edit_id,
+			'ACTION_MODE'				=> ($add_mode) ? 'dns_add.php' : 'dns_edit.php?edit_id='.$edit_id,
 		)
 	);
 }
