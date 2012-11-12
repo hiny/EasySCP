@@ -3,19 +3,8 @@
 # EasySCP a Virtual Hosting Control Panel
 # Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
 #
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# This work is licensed under the Creative Commons Attribution-NoDerivs 3.0 Unported License.
+# To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/3.0/.
 #
 # @link 		http://www.easyscp.net
 # @author 		EasySCP Team
@@ -50,54 +39,64 @@ do
         Auswahl="Ubuntu"
     fi
 
-    case "$Auswahl" in
-	CentOS)
-	    echo "Using CentOS. Please wait."
-	    break
-	    ;;
-	Debian)
-	    echo "Using Debian. Please wait."
-	    make install > /dev/null
-		rm -rf /var/www/ > /dev/null
-	    cp -R /tmp/easyscp/* / > /dev/null
-		echo -n "Debian" > /etc/easyscp/OS
-		chmod 0777 /var/www/setup/theme/templates_c/
-		/etc/init.d/apache2 restart
+	case "$Auswahl" in
+		CentOS)
+			echo "Using CentOS. Please wait."
+			break
+			;;
+		Debian)
+			echo "Using Debian. Please wait."
 
-	    while :
-	    do
-		read -p "Start setup [Y/N]?" Setup
-		case "$Setup" in
-		    [JjYy])
-			#echo "ja"
-			cd /var/www/easyscp/engine/setup
-			perl easyscp-setup
+			echo "Build the Software"
+			make install > /dev/null
+
+			echo "Copy all the directories into your system"
+			rm -rf /var/www/ > /dev/null
+			cp -R /tmp/easyscp/* / > /dev/null
+
+			echo "Secure your mysql installation"
+			mysql_secure_installation
+
+			echo "Clean the temporary folders"
+			rm -fR /tmp/easyscp/
+
+			echo -n "Debian" > /etc/easyscp/OS
+			/etc/init.d/apache2 restart
+
+			while :
+			do
+				read -p "Start setup [Y/N]?" Setup
+				case "$Setup" in
+					[JjYy])
+						#echo "ja"
+						cd /var/www/easyscp/engine/setup
+						perl easyscp-setup
+						break
+						;;
+					[Nn])
+						#echo "nein"
+						break
+						;;
+					*)
+						echo "Wrong selection"
+						;;
+				esac
+			done
 			break
 			;;
-		    [Nn])
-			#echo "nein"
+		OpenSuse)
+			echo "Using OpenSuse. Please wait."
 			break
 			;;
-		    *)
-			echo "Wrong selection"
+		Ubuntu)
+			echo "Using Ubuntu. Please wait."
+			break
 			;;
-		esac
-	    done
-	    break
-	    ;;
-	OpenSuse)
-	    echo "Using OpenSuse. Please wait."
-	    break
-	    ;;
-	Ubuntu)
-	    echo "Using Ubuntu. Please wait."
-	    break
-	    ;;
-	*)
-	    echo "Please type a number or the name of your distribution!"
-	    #Wenn vorher nichts passte
-	    ;;
-    esac
+		*)
+			echo "Please type a number or the name of your distribution!"
+			#Wenn vorher nichts passte
+			;;
+	esac
 done
 
 #exit 0
