@@ -25,7 +25,7 @@
  * Benötigte Klasse für die Konfiguration laden
  *
  */
-require_once('/etc/easyscp/easyscp_config_db.php');
+require_once('/etc/easyscp/EasySCP_Config_DB.php');
 
 
 /**

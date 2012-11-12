@@ -1,5 +1,16 @@
 <?php
 /**
+ * EasySCP a Virtual Hosting Control Panel
+ * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ *
+ * This work is licensed under the Creative Commons Attribution-NoDerivs 3.0 Unported License.
+ * To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/3.0/.
+ *
+ * @link 		http://www.easyscp.net
+ * @author 		EasySCP Team
+ */
+
+/**
  * @param $Input
  * @return bool
  */
@@ -180,6 +191,7 @@ function DaemonMailChange($row) {
 }
 
 function DaemonMailDelete($row) {
+	System_Daemon::info('Starting "DaemonMailDelete" subprocess.');
 	$mail_ok = true;
 	if ( $row['mail_type'] == 'normal_mail'){
 		DaemonMailDelete_normal_mail($row);
@@ -214,6 +226,7 @@ function DaemonMailDelete($row) {
 		DB::prepare($sql_query);
 		DB::execute($sql_param);
 	}
+	System_Daemon::info('Finished "DaemonMailDelete" subprocess.');
 }
 
 function DaemonMailAdd_normal_mail($row) {

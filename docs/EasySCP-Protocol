@@ -18,9 +18,9 @@
 # @link 		http://www.easyscp.net
 # @author 		EasySCP Team
 
-This document will provide the communication protocol definitions for the easySCP daemon.
+This document will provide the communication protocol definitions for the EasySCP daemon.
 
 Basic Communication
 =========================================================================================
 
-To communicate the easySCP-Daemon uses a standard TCP socket on port 
+To communicate the EasySCP-Daemon uses a standard TCP socket on port 
