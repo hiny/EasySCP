@@ -1,6 +1,21 @@
 CHANGELOG Roundcube Webmail
 ===========================
 
+RELEASE 0.8.3
+-------------
+- Fix AREA links handling (#1488792)
+- Fix possible HTTP DoS on error in keep-alive requests (#1488782)
+- Fix compatybility with MDB2 2.5.0b4 (#1488779)
+- Fix a bug where saving a message in INBOX wasn't possible
+- Fix HTML part detection in messages with attachments (#1488769)
+- Fix bug where wrong words were highlighted on spell-before-send check
+- Fix scrolling quirk in email preview frame using Opera 12 (#1488763)
+- Fix displaying of multipart/alternative messages with empty parts (#1488750)
+- Fix Warning: htmlspecialchars(): charset `RCMAIL_CHARSET' not supported warning in Installer (#1488744)
+- Fix threaded list sorting on PHP < 5.2.9 (#1488748)
+
+RELEASE 0.8.2
+-------------
 - Fix XSS vulnerability from HTTP User-Agent header (#1488737)
 - Force fonts in compose fields to be all the same (#1488690)
 - Add full headers view in message preview window (#1488538)

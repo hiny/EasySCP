@@ -75,13 +75,18 @@ function rcmail_encrypt_header($what)
 // get identity record
 function rcmail_get_identity($id)
 {
-  global $RCMAIL, $OUTPUT;
+  global $RCMAIL, $message_charset;
 
   if ($sql_arr = $RCMAIL->user->get_identity($id)) {
     $out = $sql_arr;
+
+    if ($message_charset != RCMAIL_CHARSET) {
+      foreach ($out as $k => $v)
+        $out[$k] = rcube_charset_convert($v, RCMAIL_CHARSET, $message_charset);
+    }
+
     $out['mailto'] = $sql_arr['email'];
-    $out['string'] = format_email_recipient($sql_arr['email'],
-      rcube_charset_convert($sql_arr['name'], RCMAIL_CHARSET, $OUTPUT->get_charset()));
+    $out['string'] = format_email_recipient($sql_arr['email'], $sql_arr['name']);
 
     return $out;
   }
@@ -100,7 +105,7 @@ function rcmail_get_identity($id)
  */
 function rcmail_fix_emoticon_paths(&$mime_message)
 {
-  global $CONFIG;
+  global $RCMAIL;
 
   $body = $mime_message->getHTMLBody();
 
@@ -125,8 +130,9 @@ function rcmail_fix_emoticon_paths(&$mime_message)
 
         if (! in_array($image_name, $included_images)) {
           // add the image to the MIME message
-          if (! $mime_message->addHTMLImage($img_file, 'image/gif', '', true, $image_name))
-            $OUTPUT->show_message("emoticonerror", 'error');
+          if (!$mime_message->addHTMLImage($img_file, 'image/gif', '', true, $image_name)) {
+            $RCMAIL->output->show_message("emoticonerror", 'error');
+          }
           array_push($included_images, $image_name);
         }
 
@@ -428,6 +434,7 @@ if (!$savedraft) {
   if ($CONFIG['spellcheck_before_send'] && $CONFIG['enable_spellcheck']
     && empty($COMPOSE['spell_checked']) && !empty($message_body)
   ) {
+    $message_body = str_replace("\r\n", "\n", $message_body);
     $spellchecker = new rcube_spellchecker(get_input_value('_lang', RCUBE_INPUT_GPC));
     $spell_result = $spellchecker->check($message_body, $isHtml);
 

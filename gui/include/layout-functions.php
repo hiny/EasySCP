@@ -42,7 +42,7 @@ if (isset($_SESSION['user_id'])){
 			$_SESSION['user_theme'] = $cfg->USER_INITIAL_THEME;
 		}
 	} else {
-		if (isset($_SESSION['logged_from_id']) && $_SESSION['logged_from_id'] =! '') {
+		if (isset($_SESSION['logged_from_id']) && $_SESSION['logged_from_id'] != '') {
 			list($user_def_lang, $user_def_layout) = get_user_gui_props($_SESSION['logged_from_id']);
 
 			if ($user_def_lang != '') {
@@ -59,11 +59,11 @@ if (isset($_SESSION['user_id'])){
 				$_SESSION['user_theme'] = $cfg->USER_INITIAL_THEME;
 			}
 		} else {
-			if (isset($_SESSION['user_def_lang']) && $_SESSION['user_def_lang'] =! '') {
+			if (isset($_SESSION['user_def_lang']) && $_SESSION['user_def_lang'] != '') {
 				$cfg->USER_SELECTED_LANG = $_SESSION['user_def_lang'];
 			}
 
-			if (isset($_SESSION['user_theme']) && $_SESSION['user_theme'] =! '') {
+			if (isset($_SESSION['user_theme']) && $_SESSION['user_theme'] != '') {
 				$cfg->USER_INITIAL_THEME = $_SESSION['user_theme'];
 			}
 		}

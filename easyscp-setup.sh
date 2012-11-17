@@ -41,7 +41,7 @@ do
 
 	case "$Auswahl" in
 		CentOS)
-			echo "Using CentOS. Please wait."
+			echo "Easy Setup currently does not support CentOS."
 			break
 			;;
 		Debian)
@@ -50,8 +50,7 @@ do
 			echo "Build the Software"
 			make install > /dev/null
 
-			echo "Copy all the directories into your system"
-			rm -rf /var/www/ > /dev/null
+			echo "Copy required files to your system"
 			cp -R /tmp/easyscp/* / > /dev/null
 
 			echo "Secure your mysql installation"
@@ -85,7 +84,7 @@ do
 			break
 			;;
 		OpenSuse)
-			echo "Using OpenSuse. Please wait."
+			echo "Easy Setup currently does not support OpenSuse."
 			break
 			;;
 		Ubuntu)

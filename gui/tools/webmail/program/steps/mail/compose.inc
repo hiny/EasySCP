@@ -415,11 +415,11 @@ foreach ($parts as $header) {
   else if (in_array($compose_mode, array(RCUBE_COMPOSE_DRAFT, RCUBE_COMPOSE_EDIT))) {
     // get drafted headers
     if ($header=='to' && !empty($MESSAGE->headers->to))
-      $fvalue = $MESSAGE->get_header('to');
+      $fvalue = $MESSAGE->get_header('to', true);
     else if ($header=='cc' && !empty($MESSAGE->headers->cc))
-      $fvalue = $MESSAGE->get_header('cc');
+      $fvalue = $MESSAGE->get_header('cc', true);
     else if ($header=='bcc' && !empty($MESSAGE->headers->bcc))
-      $fvalue = $MESSAGE->get_header('bcc');
+      $fvalue = $MESSAGE->get_header('bcc', true);
     else if ($header=='replyto' && !empty($MESSAGE->headers->others['mail-reply-to']))
       $fvalue = $MESSAGE->get_header('mail-reply-to');
     else if ($header=='replyto' && !empty($MESSAGE->headers->replyto))

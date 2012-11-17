@@ -56,7 +56,7 @@ if(isset($_POST['uaction'])) {
 	} elseif($_POST['uaction'] == 'add_subd') {
 		$dmn_name = check_subdomain_permissions($_SESSION['user_id']);
 		gen_user_add_subdomain_data($tpl, $_SESSION['user_id']);
-		check_subdomain_data($tpl, $err_txt, $_SESSION['user_id'], $dmn_name);
+		check_subdomain_data($err_txt, $_SESSION['user_id'], $dmn_name);
 	} else {
 		throw new EasySCP_Exception(tr("Error: unknown action!" . " " . $_POST['uaction']));
 	}
@@ -160,7 +160,7 @@ function gen_user_add_subdomain_data($tpl, $user_id) {
 	$cfg = EasySCP_Registry::get('Config');
 	$sql = EasySCP_Registry::get('Db');
 
-	$subdomain_name = $subdomain_mnt_pt = $forward_prefix = '';
+	$subdomain_name = $subdomain_mnt_pt = $forward = $forward_prefix = '';
 
 	$query = "
 		SELECT
@@ -188,7 +188,7 @@ function gen_user_add_subdomain_data($tpl, $user_id) {
 			$forward_prefix = clean_input($_POST['forward_prefix']);
 			$check_en = 'checked="checked"';
 			$check_dis = '';
-			$forward = clean_input($_POST['forward']);
+			$forward = strtolower(clean_input($_POST['forward']));
 			$tpl->assign(
 				array(
 					'READONLY_FORWARD' => '',
@@ -268,14 +268,6 @@ function gen_dmn_als_list($tpl, $dmn_id, $post_check) {
 
 	$rs = exec_query($sql, $query, array($dmn_id, $ok_status));
 	if ($rs->recordCount() == 0) {
-		$tpl->assign(
-			array(
-				'ALS_ID' => '0',
-				'ALS_SELECTED' => $cfg->HTML_SELECTED,
-				'ALS_NAME' => tr('Empty list')
-			)
-		);
-		$tpl->assign('TO_ALIAS_DOMAIN', '');
 		$_SESSION['alias_count'] = "no";
 	} else {
 		$first_passed = false;
@@ -381,7 +373,6 @@ function subdmn_exists($user_id, $domain_id, $sub_name) {
 }
 
 /**
- *
  * @param int $user_id
  * @param int $domain_id
  * @param <type> $sub_name
@@ -435,15 +426,13 @@ function subdomain_schedule($user_id, $domain_id, $sub_name, $sub_mnt_pt, $forwa
 }
 
 /**
- *
  * @global <type> $validation_err_msg
- * @param <type> $tpl
- * @param <type> $err_sub
- * @param <type> $user_id
- * @param <type> $dmn_name
- * @return <type>
+ * @param $err_sub
+ * @param int $user_id
+ * @param $dmn_name
+ * @return void <type>
  */
-function check_subdomain_data($tpl, &$err_sub, $user_id, $dmn_name) {
+function check_subdomain_data(&$err_sub, $user_id, $dmn_name) {
 	global $validation_err_msg;
 
 	$sql = EasySCP_Registry::get('Db');
@@ -566,7 +555,7 @@ function check_subdomain_data($tpl, &$err_sub, $user_id, $dmn_name) {
 			return;
 		}
 		subdomain_schedule($user_id, $domain_id, $sub_name, $sub_mnt_pt, $forward);
-		set_page_message(tr('Subdomain scheduled for addition!'), 'info');
+		set_page_message(tr('Subdomain scheduled for addition!'), 'success');
 		user_goto('domains_manage.php');
 	}
 }

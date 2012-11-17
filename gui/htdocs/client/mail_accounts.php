@@ -267,17 +267,6 @@ function gen_page_sub_mail_list($tpl, $sql, $dmn_id, $dmn_name) {
 			t1.`subdomain_id` = t2.`sub_id`
 	";
 
-	if (!isset($_POST['uaction']) || $_POST['uaction'] == 'hide') {
-		$sub_query .= "
-			AND
-				`mail_acc` != 'abuse'
-			AND
-				`mail_acc` != 'postmaster'
-			AND
-				`mail_acc` != 'webmaster'
-		";
-	}
-
 	$sub_query .= "
 		ORDER BY
 			t2.`mail_acc` ASC,
@@ -382,17 +371,6 @@ function gen_page_als_sub_mail_list($tpl, $sql, $dmn_id, $dmn_name) {
 			)
 	";
 
-	if (!isset($_POST['uaction']) || $_POST['uaction'] == 'hide') {
-		$sub_query .= "
-			AND
-				`mail_acc` != 'abuse'
-			AND
-				`mail_acc` != 'postmaster'
-			AND
-				`mail_acc` != 'webmaster'
-		";
-	}
-
 	$sub_query .= "
 		ORDER BY
 			t1.`mail_acc` ASC,
@@ -486,17 +464,6 @@ function gen_page_als_mail_list($tpl, $sql, $dmn_id, $dmn_name) {
 			)
 	";
 
-	if (!isset($_POST['uaction']) || $_POST['uaction'] == 'hide') {
-		$als_query .= "
-			AND
-				`mail_acc` != 'abuse'
-			AND
-				`mail_acc` != 'postmaster'
-			AND
-				`mail_acc` != 'webmaster'
-		";
-	}
-
 	$als_query .= "
 		ORDER BY
 			t2.`mail_acc` ASC,
@@ -569,8 +536,8 @@ function gen_page_lists($tpl, $sql, $user_id) {
 
 	$dmn_mails = gen_page_dmn_mail_list($tpl, $sql, $dmn_id, $dmn_name);
 	$sub_mails = gen_page_sub_mail_list($tpl, $sql, $dmn_id, $dmn_name);
-	$alssub_mails = gen_page_als_sub_mail_list($tpl, $sql, $dmn_id, $dmn_name);
 	$als_mails = gen_page_als_mail_list($tpl, $sql, $dmn_id, $dmn_name);
+	$alssub_mails = gen_page_als_sub_mail_list($tpl, $sql, $dmn_id, $dmn_name);
 
 	$total_mails = $dmn_mails + $sub_mails + $als_mails + $alssub_mails;
 

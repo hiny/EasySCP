@@ -2212,6 +2212,10 @@ class rcube_imap extends rcube_storage
             $folder = $this->folder;
         }
 
+        if (!$this->check_connection()) {
+            return false;
+        }
+
         // make sure folder exists
         if ($this->folder_exists($folder)) {
             if ($is_file) {
@@ -4030,6 +4034,11 @@ class rcube_imap extends rcube_storage
     function delete_mailbox($folder)
     {
         return $this->delete_folder($folder);
+    }
+
+    function clear_mailbox($folder = null)
+    {
+        return $this->clear_folder($folder);
     }
 
     public function mailbox_exists($folder, $subscription=false)
