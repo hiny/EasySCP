@@ -1,6 +1,12 @@
 CHANGELOG Roundcube Webmail
 ===========================
 
+- Fix XSS vulnerability in handling of text/enriched messages (#1488806)
+- Fix handling of 'media' attribute on linked css (#1488789)
+- Fix regression where unintentional page reload was done after request abort (#1488802)
+- Fix excessive LFs at the end of composed message with top_posting=true (#1488797)
+- Fix bug where leading blanks were stripped from quoted lines (#1488795)
+
 RELEASE 0.8.3
 -------------
 - Fix AREA links handling (#1488792)

@@ -53,8 +53,25 @@ do
 			echo "Copy required files to your system"
 			cp -R /tmp/easyscp/* / > /dev/null
 
-			echo "Secure your mysql installation"
-			mysql_secure_installation
+			while :
+			do
+				read -p "Secure your mysql installation [Y/N]?" MySQL
+				case "$MySQL" in
+					[JjYy])
+						#echo "ja"
+						mysql_secure_installation
+						break
+						;;
+					[Nn])
+						#echo "nein"
+						break
+						;;
+					*)
+						echo "Wrong selection"
+
+						;;
+				esac
+			done
 
 			echo "Clean the temporary folders"
 			rm -fR /tmp/easyscp/

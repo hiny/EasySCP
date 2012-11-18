@@ -157,7 +157,7 @@ class EasySCP_TemplateEngine {
 		$this->template_engine->setCompileDir($CompileDir);
 		$this->assign(
 			array(
-				'THEME_CHARSET'		=> tr('encoding'),
+				'THEME_CHARSET'		=> (function_exists('tr')) ? tr('encoding') : 'UTF-8',
 				'THEME_COLOR_PATH'	=> '/' . $THEME_COLOR_PATH,
 				'THEME_SCRIPT_PATH'	=> '/themes/scripts'
 			)

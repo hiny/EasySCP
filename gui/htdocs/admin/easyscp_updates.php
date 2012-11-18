@@ -292,7 +292,6 @@ function backupCurrentDatabase() {
 		RENAME TABLE `easyscp`.`htaccess` TO `easyscp_org`.`htaccess`;
 		RENAME TABLE `easyscp`.`htaccess_groups` TO `easyscp_org`.`htaccess_groups`;
 		RENAME TABLE `easyscp`.`htaccess_users` TO `easyscp_org`.`htaccess_users`;
-		RENAME TABLE `easyscp`.`lang_EnglishBritain` TO `easyscp_org`.`lang_EnglishBritain`;
 		RENAME TABLE `easyscp`.`log` TO `easyscp_org`.`log`;
 		RENAME TABLE `easyscp`.`login` TO `easyscp_org`.`login`;
 		RENAME TABLE `easyscp`.`mail_users` TO `easyscp_org`.`mail_users`;
@@ -340,7 +339,6 @@ function importOldDatabase() {
 		RENAME TABLE `ispcp`.`htaccess` TO `easyscp`.`htaccess`;
 		RENAME TABLE `ispcp`.`htaccess_groups` TO `easyscp`.`htaccess_groups`;
 		RENAME TABLE `ispcp`.`htaccess_users` TO `easyscp`.`htaccess_users`;
-		RENAME TABLE `ispcp`.`lang_EnglishBritain` TO `easyscp`.`lang_EnglishBritain`;
 		RENAME TABLE `ispcp`.`log` TO `easyscp`.`log`;
 		RENAME TABLE `ispcp`.`login` TO `easyscp`.`login`;
 		RENAME TABLE `ispcp`.`mail_users` TO `easyscp`.`mail_users`;

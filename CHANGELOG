@@ -1,6 +1,13 @@
 EasySCP 1.2.0 ChangeLog
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+2012-11-18 Markus Szywon
+	- GUI:
+		* Fixed: EasySCP_Exception_Writer
+		* Fixed: Migration won´t work in some cases
+	- TOOLS:
+		* Updated: Roundcube to version 0.8.4
+
 2012-11-17 Markus Szywon
 	- TOOLS:
 		* Updated: Roundcube to version 0.8.3
@@ -11,7 +18,7 @@ EasySCP 1.2.0 ChangeLog
 		* Fix a security vulnerability
 		* Add: Italian Language (thx to theprincy)
 		* Updated: Danish Language (thx to Ryan Skov)
-		* Updated: Dutch Language (thx to Rob BoevÃ©Ã©)
+		* Updated: Dutch Language (thx to Rob Boevéé)
 
 2012-11-12 Markus Szywon
 	- GUI:

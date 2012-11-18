@@ -740,7 +740,9 @@ function rcmail_print_body($part, $p = array())
   else if ($data['type'] == 'enriched') {
     $part->ctype_secondary = 'html';
     require_once(INSTALL_PATH . 'program/lib/enriched.inc');
-    $body = Q(enriched_to_html($data['body']), 'show');
+    $body = enriched_to_html($data['body']);
+    $body = rcmail_wash_html($body, $data, $part->replaces);
+    $part->ctype_secondary = 'html';
   }
   else {
     // assert plaintext
@@ -789,8 +791,8 @@ function rcmail_plain_body($body, $flowed=false)
 
   // find/mark quoted lines...
   for ($n=0, $cnt=count($body); $n < $cnt; $n++) {
-    if ($body[$n][0] == '>' && preg_match('/^(>+\s*)+/', $body[$n], $regs)) {
-      $q = strlen(preg_replace('/\s/', '', $regs[0]));
+    if ($body[$n][0] == '>' && preg_match('/^(>+ {0,1})+/', $body[$n], $regs)) {
+      $q        = substr_count($regs[0], '>');
       $body[$n] = substr($body[$n], strlen($regs[0]));
 
       if ($q > $quote_level) {
@@ -1499,7 +1501,7 @@ function rcmail_wrap_and_quote($text, $length = 72)
     $out .= $line . "\n";
   }
 
-  return $out;
+  return rtrim($out, "\n");
 }
 
 

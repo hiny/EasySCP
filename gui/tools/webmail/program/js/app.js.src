@@ -3300,6 +3300,10 @@ function rcube_webmail()
             message = message.substring(0, p) + sig + message.substring(p, message.length);
             cursor_pos = p - 1;
           }
+          else if (!message) { // empty message
+            cursor_pos = 0;
+            message = '\n\n' + sig;
+          }
           else if (pos = this.get_caret_pos(input_message.get(0))) { // at cursor position
             message = message.substring(0, pos) + '\n' + sig + '\n\n' + message.substring(pos, message.length);
             cursor_pos = pos;
@@ -6140,11 +6144,6 @@ function rcube_webmail()
       this.display_message(this.get_label('requesttimedout'), 'error');
     else if (request.status == 0 && status != 'abort')
       this.display_message(this.get_label('servererror') + ' (No connection)', 'error');
-
-    // redirect to url specified in location header if not empty
-    var location_url = request.getResponseHeader("Location");
-    if (location_url != '')
-      this.redirect(location_url);
 
     // re-send keep-alive requests after 30 seconds
     if (action == 'keep-alive')
