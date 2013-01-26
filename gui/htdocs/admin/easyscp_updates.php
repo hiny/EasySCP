@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -204,7 +204,7 @@ function get_migration_infos($tpl) {
 		if (!$oldDatabase) {
 			$tpl->assign(
 				array(
-					'MIGRATION_MESSAGE'	=> "Error: Unable to found the ispCP Database!",
+					'MIGRATION_MESSAGE'	=> tr('Error: Unable to found the ispCP Database!'),
 					'MIGRATION_MSG_TYPE'=> 'error'
 				)
 			);
@@ -217,7 +217,7 @@ function get_migration_infos($tpl) {
 		if (!file_exists($oldConfigFile)) {
 			$tpl->assign(
 				array(
-					'MIGRATION_MESSAGE'	=> "Error: Unable to open the configuration file `{$oldConfigFile}`!",
+					'MIGRATION_MESSAGE'	=> tr('Error: Unable to open the configuration file `%1$s`!', $oldConfigFile),
 					'MIGRATION_MSG_TYPE'=> 'error'
 				)
 			);
@@ -257,8 +257,8 @@ function get_migration_infos($tpl) {
 		$tpl->assign(
 			array(
 				'MIGRATION_AVAILABLE'	=> true,
-				'TR_MIGRATION_AVAILABLE'=> 'Available migrations',
-				'TR_EXECUTE_MIGRATION'	=> 'Execute migration',
+				'TR_MIGRATION_AVAILABLE'=> tr('Available migrations'),
+				'TR_EXECUTE_MIGRATION'	=> tr('Execute migration'),
 				'TR_MIGRATION_INFOS'	=> 'Migration from ispCP '.$oldConfig['Version'].' is available',
 				'MIGRATION_VERSION'		=> $oldConfig['Version'],
 				'MIGRATION_INFOS'		=> 'All existing data will be removed!'
@@ -292,7 +292,6 @@ function backupCurrentDatabase() {
 		RENAME TABLE `easyscp`.`htaccess` TO `easyscp_org`.`htaccess`;
 		RENAME TABLE `easyscp`.`htaccess_groups` TO `easyscp_org`.`htaccess_groups`;
 		RENAME TABLE `easyscp`.`htaccess_users` TO `easyscp_org`.`htaccess_users`;
-		RENAME TABLE `easyscp`.`lang_EnglishBritain` TO `easyscp_org`.`lang_EnglishBritain`;
 		RENAME TABLE `easyscp`.`log` TO `easyscp_org`.`log`;
 		RENAME TABLE `easyscp`.`login` TO `easyscp_org`.`login`;
 		RENAME TABLE `easyscp`.`mail_users` TO `easyscp_org`.`mail_users`;
@@ -340,7 +339,6 @@ function importOldDatabase() {
 		RENAME TABLE `ispcp`.`htaccess` TO `easyscp`.`htaccess`;
 		RENAME TABLE `ispcp`.`htaccess_groups` TO `easyscp`.`htaccess_groups`;
 		RENAME TABLE `ispcp`.`htaccess_users` TO `easyscp`.`htaccess_users`;
-		RENAME TABLE `ispcp`.`lang_EnglishBritain` TO `easyscp`.`lang_EnglishBritain`;
 		RENAME TABLE `ispcp`.`log` TO `easyscp`.`log`;
 		RENAME TABLE `ispcp`.`login` TO `easyscp`.`login`;
 		RENAME TABLE `ispcp`.`mail_users` TO `easyscp`.`mail_users`;
@@ -445,20 +443,21 @@ function convertOldData() {
  *
  */
 function finishMigration() {
-	$sql = EasySCP_Registry::get('Db');
+	DB::setDatabase();
 
-	$query = "
-		UPDATE `domain` SET `domain_status` = 'toadd';
-		UPDATE `subdomain` SET `subdomain_status` = 'toadd';
-		UPDATE `domain_aliasses` SET `alias_status` = 'toadd';
-		UPDATE `subdomain_alias` SET `subdomain_alias_status` = 'toadd';
-		UPDATE `mail_users` SET `status` = 'toadd';
-		UPDATE `htaccess_users` SET `status` = 'toadd';
-		UPDATE `htaccess_groups` SET `status` = 'toadd';
-		UPDATE `htaccess` SET `status` = 'toadd';
+	$sql_query = "
+		UPDATE domain SET domain_status = 'toadd';
+		UPDATE domain_aliasses SET alias_status = 'toadd';
+		UPDATE mail_users SET status = 'toadd';
+		UPDATE htaccess SET status = 'toadd';
+		UPDATE htaccess_groups SET status = 'toadd';
+		UPDATE htaccess_users SET status = 'toadd';
+		UPDATE subdomain SET subdomain_status = 'toadd';
+		UPDATE subdomain_alias SET subdomain_alias_status = 'toadd';
+		UPDATE user_gui_props SET lang = '', layout = '';
 	";
 
-	exec_query($sql, $query);
+	DB::query($sql_query)->closeCursor();
 
 	send_request();
 }

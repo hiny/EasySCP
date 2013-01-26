@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,7 +44,6 @@ if (isset($_POST['uaction']) && $_POST['uaction'] == 'apply') {
 	$bruteforce_between_time = clean_input($_POST['bruteforce_between_time']);
 	$bruteforce_max_capcha = clean_input($_POST['bruteforce_max_capcha']);
 	$create_default_emails = $_POST['create_default_email_addresses'];
-	$count_default_emails = $_POST['count_default_email_addresses'];
 	$hard_mail_suspension = $_POST['hard_mail_suspension'];
 	$user_initial_lang = $_POST['def_language'];
 	$user_initial_theme = $_POST['def_theme'];
@@ -97,7 +96,6 @@ if (isset($_POST['uaction']) && $_POST['uaction'] == 'apply') {
 		$db_cfg->BRUTEFORCE_BETWEEN_TIME = $bruteforce_between_time;
 		$db_cfg->BRUTEFORCE_MAX_CAPTCHA = $bruteforce_max_capcha;
 		$db_cfg->CREATE_DEFAULT_EMAIL_ADDRESSES = $create_default_emails;
-		$db_cfg->COUNT_DEFAULT_EMAIL_ADDRESSES = $count_default_emails;
 		$db_cfg->HARD_MAIL_SUSPENSION = $hard_mail_suspension;
 		$db_cfg->USER_INITIAL_LANG = $user_initial_lang;
 		$db_cfg->USER_INITIAL_THEME = $user_initial_theme;
@@ -172,8 +170,8 @@ $tpl->assign(
 	)
 );
 
-gen_def_language($tpl, $sql, $cfg);
-gen_def_theme($tpl, $cfg);
+gen_def_language($cfg->USER_INITIAL_LANG);
+gen_def_theme();
 
 // Grab the value only once to improve performances
 $html_selected = $cfg->HTML_SELECTED;
@@ -240,14 +238,6 @@ if ($cfg->CREATE_DEFAULT_EMAIL_ADDRESSES) {
 } else {
 	$tpl->assign('CREATE_DEFAULT_EMAIL_ADDRESSES_ON', '');
 	$tpl->assign('CREATE_DEFAULT_EMAIL_ADDRESSES_OFF', $html_selected);
-}
-
-if ($cfg->COUNT_DEFAULT_EMAIL_ADDRESSES) {
-	$tpl->assign('COUNT_DEFAULT_EMAIL_ADDRESSES_ON', $html_selected);
-	$tpl->assign('COUNT_DEFAULT_EMAIL_ADDRESSES_OFF', '');
-} else {
-	$tpl->assign('COUNT_DEFAULT_EMAIL_ADDRESSES_ON', '');
-	$tpl->assign('COUNT_DEFAULT_EMAIL_ADDRESSES_OFF', $html_selected);
 }
 
 if ($cfg->HARD_MAIL_SUSPENSION) {
@@ -369,7 +359,6 @@ $tpl->assign(
 		'TR_OTHER_SETTINGS'					=> tr('Other settings'),
 		'TR_MAIL_SETTINGS'					=> tr('E-Mail settings'),
 		'TR_CREATE_DEFAULT_EMAIL_ADDRESSES'	=> tr('Create default E-Mail addresses'),
-		'TR_COUNT_DEFAULT_EMAIL_ADDRESSES'	=> tr('Count default E-Mail addresses'),
 		'TR_HARD_MAIL_SUSPENSION'			=> tr('E-Mail accounts are hard suspended'),
 		'TR_USER_INITIAL_LANG'				=> tr('Panel default language'),
 		'TR_USER_INITIAL_THEME'				=> tr('Panel default theme'),

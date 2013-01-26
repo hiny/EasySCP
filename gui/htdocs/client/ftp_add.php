@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -161,7 +161,7 @@ function gen_dmn_als_list($tpl, $sql, $dmn_id, $post_check) {
 
 			$als_menu_name = decode_idna($rs->fields['alias_name']);
 
-			$tpl->assign(
+			$tpl->append(
 				array(
 					'ALS_ID' => tohtml($rs->fields['alias_name']),
 					'ALS_SELECTED' => $als_selected,

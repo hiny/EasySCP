@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -198,7 +198,8 @@ function edit_mail_account($tpl, $sql) {
 					'ACTION'				=> 'update_pass,update_forward',
 					'FORWARD_MAIL'			=> true,
 					'FORWARD_MAIL_CHECKED'	=> $cfg->HTML_CHECKED,
-					'FORWARD_LIST_DISABLED'	=> 'false'
+					'FORWARD_LIST_DISABLED'	=> 'false',
+					'NORMAL_MAIL'			=> true
 				)
 			);
 		} else if ($mail_forward === '_no_') {

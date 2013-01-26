@@ -12,7 +12,6 @@
 			<h1 class="manage_users">{$TR_MENU_MANAGE_USERS}</h1>
 		</div>
 		<ul class="location-menu">
-			<!-- <li><a class="help" href="#">Help</a></li> -->
 			{if isset($YOU_ARE_LOGGED_AS)}
 			<li><a href="change_user_interface.php?action=go_back" class="backadmin">{$YOU_ARE_LOGGED_AS}</a></li>
 			{/if}

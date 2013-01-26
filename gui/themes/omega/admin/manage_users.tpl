@@ -26,7 +26,6 @@
 			<h1 class="manage_users">{$TR_MENU_MANAGE_USERS}</h1>
 		</div>
 		<ul class="location-menu">
-			
 			<li><a href="../index.php?logout" class="logout">{$TR_MENU_LOGOUT}</a></li>
 		</ul>
 		<ul class="path">
@@ -156,10 +155,12 @@
 					</td>
 				</tr>
 				{if isset($ALIAS_DOMAIN[i])}
+				{section name=alias loop=$ALIAS_DOMAIN[i]}
 				<tr>
 					<td style="width:50px">&nbsp;</td>
-					<td colspan="4"><a href="http://www.{$ALIAS_DOMAIN[i]}/" title="{$ALIAS_DOMAIN[i]}" class="icon i_goto">{$ALIAS_DOMAIN[i]}</a></td>
+					<td colspan="4"><a href="http://www.{$ALIAS_DOMAIN[i][alias]}/" title="{$ALIAS_DOMAIN[i][alias]}" class="icon i_goto">{$ALIAS_DOMAIN[i][alias]}</a></td>
 				</tr>
+				{/section}
 				{/if}
 				{/section}
 			</tbody>

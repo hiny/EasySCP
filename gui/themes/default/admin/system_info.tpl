@@ -9,7 +9,6 @@
 	</div>
 	<div class="location">
 		<ul class="location-menu">
-			
 			<li><a href="../index.php?logout" class="logout">{$TR_MENU_LOGOUT}</a></li>
 		</ul>
 		<ul class="path">
@@ -106,7 +105,7 @@
 					<td>{$MOUNT[i]}</td>
 					<td>{$TYPE[i]}</td>
 					<td>{$PARTITION[i]}</td>
-					<td>{$PERCENT[i]} %</td>
+					<td>{$PERCENT[i]}</td>
 					<td>{$FREE[i]}</td>
 					<td>{$USED[i]}</td>
 					<td>{$SIZE[i]}</td>

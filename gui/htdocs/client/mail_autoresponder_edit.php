@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,7 +28,7 @@ check_login(__FILE__);
 $cfg = EasySCP_Registry::get('Config');
 
 $tpl = EasySCP_TemplateEngine::getInstance();
-$template = 'client/mail_autoresponder_enable.tpl';
+$template = 'client/mail_autoresponder_edit.tpl';
 
 // common page data
 if (isset($_GET['id'])) {
@@ -55,7 +55,7 @@ check_permissions($tpl);
 $tpl->assign(
 	array(
 		'TR_PAGE_TITLE'					=> tr('EasySCP - Client/Enable Mail Auto Responder'),
-		'TR_ENABLE_MAIL_AUTORESPONDER'	=> tr('Edit mail auto responder'),
+		'TR_EDIT_MAIL_AUTORESPONDER'	=> tr('Edit mail auto responder'),
 		'TR_ARSP_MESSAGE'				=> tr('Your message'),
 		'TR_ENABLE'						=> tr('Save'),
 		'TR_CANCEL'						=> tr('Cancel'),

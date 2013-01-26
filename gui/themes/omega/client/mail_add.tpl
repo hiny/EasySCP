@@ -8,7 +8,13 @@
 			// Tooltips - end
 		});
 
-		function changeType() {
+		function changeType(element) {
+			if (element.name == 'mail_type_normal' && element.checked == true) {
+				document.forms[0].elements['mail_type_forward'].checked = false;
+			}
+			if (element.name == 'mail_type_forward' && element.checked == true) {
+				document.forms[0].elements['mail_type_normal'].checked = false;
+			}
 			if (document.forms[0].elements['mail_type_normal'].checked == true) {
 				document.forms[0].pass.disabled = false;
 				document.forms[0].pass_rep.disabled = false;
@@ -48,7 +54,7 @@
 //		document.forms[0].pass.disabled = false;
 //		document.forms[0].pass_rep.disabled = false;
 //		document.forms[0].forward_list.disabled = true;
-		changeType();
+		changeType(this);
 		document.forms[0].username.focus();
 	}
 
@@ -152,7 +158,7 @@
 				</tr>
 				{/if}
 				<tr>
-					<td colspan="2"><input type="checkbox" name="mail_type_normal" value="1" onclick="changeType();" {$NORMAL_MAIL_CHECKED} />&nbsp;{$TR_NORMAL_MAIL}</td>
+					<td colspan="2"><input type="checkbox" name="mail_type_normal" value="1" onclick="changeType(this);" {$NORMAL_MAIL_CHECKED} />&nbsp;{$TR_NORMAL_MAIL}</td>
 				</tr>
 				<tr>
 					<td>{$TR_PASSWORD}</td>
@@ -163,7 +169,7 @@
 					<td><input type="password" name="pass_rep" id="pass_rep" value="" /></td>
 				</tr>
 				<tr>
-					<td colspan="2"><input type="checkbox" name="mail_type_forward" id="mail_type_forward" value="1" onclick="changeType();" {$FORWARD_MAIL_CHECKED} />&nbsp;{$TR_FORWARD_MAIL}</td>
+					<td colspan="2"><input type="checkbox" name="mail_type_forward" id="mail_type_forward" value="1" onclick="changeType(this);" {$FORWARD_MAIL_CHECKED} />&nbsp;{$TR_FORWARD_MAIL}</td>
 				</tr>
 				<tr>
 					<td>{$TR_FORWARD_TO} <span id="fwd_help" class="icon i_help">&nbsp;</span></td>

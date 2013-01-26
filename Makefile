@@ -1,21 +1,10 @@
 #!/usr/bin/make -f
 
 # EasySCP a Virtual Hosting Control Panel
-# Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+# Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
 #
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# This work is licensed under the Creative Commons Attribution-NoDerivs 3.0 Unported License.
+# To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/3.0/.
 #
 # @link 		http://www.easyscp.net
 # @author 		EasySCP Team
@@ -42,13 +31,7 @@ SYSTEM_MAKE_FILE=/bin/touch
 
 export
 
-build:
-
-	cd ./tools && $(MAKE)
-
 install:
-
-	cd ./tools && $(MAKE) install
 
 	$(SYSTEM_MAKE_DIRS) $(SYSTEM_CONF)
 	$(SYSTEM_MAKE_DIRS) $(SYSTEM_ROOT)
@@ -62,16 +45,16 @@ install:
 	$(SYSTEM_MAKE_DIRS) $(SYSTEM_APACHE_BACK_LOG)
 
 	cd ./configs && $(MAKE) install
+	cd ./daemon && $(MAKE) install
 	cd ./engine && $(MAKE) install
 	cd ./gui && $(MAKE) install
 
 uninstall:
 
-	cd ./tools && $(MAKE) uninstall
 	cd ./configs && $(MAKE) uninstall
+	cd ./daemon && $(MAKE) uninstall
 	cd ./engine && $(MAKE) uninstall
 	cd ./gui && $(MAKE) uninstall
-	cd ./keys && $(MAKE) uninstall
 
 	rm -rf $(SYSTEM_CONF)
 	rm -rf $(SYSTEM_ROOT)
@@ -84,7 +67,6 @@ uninstall:
 
 clean:
 
-	cd ./tools/daemon && $(MAKE) clean
 	rm -rf $(INST_PREF)
 
 .PHONY: install uninstall clean

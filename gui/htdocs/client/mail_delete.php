@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -102,11 +102,20 @@ if ($num > 0) {
 	user_goto('mail_accounts.php');
 }
 
-/**
- * @todo useDB prepared statements
- */
-$query = "UPDATE `mail_users` SET `status` = '" . $cfg->ITEM_DELETE_STATUS . "' WHERE `mail_id` = ?";
-exec_query($sql, $query, $delete_id);
+$sql_param = array(
+	':status'	=> $cfg->ITEM_DELETE_STATUS,
+	':mail_id'	=> $delete_id
+);
+$sql_query = "
+	UPDATE
+		`mail_users`
+	SET
+		`status` = :status
+	WHERE
+		`mail_id` = :mail_id
+";
+DB::prepare($sql_query);
+DB::execute($sql_param);
 
 update_reseller_c_props(get_reseller_id($data['domain_id']));
 

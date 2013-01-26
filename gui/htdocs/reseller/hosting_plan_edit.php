@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -50,7 +50,6 @@ if (isset($_POST['uaction']) && ('edit_plan' === $_POST['uaction'])) {
 	}
 
 	gen_load_ehp_page($tpl, $sql, $hpid, $_SESSION['user_id']);
-	$tpl->assign('MESSAGE', "");
 }
 
 // static page messages
@@ -413,7 +412,6 @@ function check_data_iscorrect($tpl) {
 	}
 
 	if (empty($ahp_error)) {
-		$tpl->assign('MESSAGE', '');
 		return true;
 	} else {
 		set_page_message(format_message($ahp_error), 'error');

@@ -146,30 +146,6 @@ function get_welcome_email($admin_id, $admin_type='user') {
 	}
 
 	if (!$data['message']) {
-        if ($admin_type == 'user') {
-            $data['message'] = tr('
-Hello {NAME}!
-
-A new EasySCP account has been created for you.
-Your account information:
-
-User type: {USERTYPE}
-User name: {USERNAME}
-Password: {PASSWORD}
-
-Remember to change your password often and the first time you login.
-
-You can login right now at {BASE_SERVER_VHOST_PREFIX}{BASE_SERVER_VHOST}
-
-Statistics: {BASE_SERVER_VHOST_PREFIX}{USERNAME}/stats/
-User name: {USERNAME}
-Password: {PASSWORD}
-
-Best wishes with EasySCP!
-The EasySCP Team.
-
-', true);
-        } else {
             $data['message'] = tr('
 Hello {NAME}!
 
@@ -191,8 +167,6 @@ Best wishes with EasySCP!
 The EasySCP Team.
 
 ', true);
-        }
-
 	}
 
 	return $data;

@@ -15,7 +15,6 @@ cyrus-sasl-plain
 cyrus-sasl-md5
 cyrus-sasl-ntlm
 expect
-gcc
 gmp
 httpd
 iptables
@@ -31,7 +30,6 @@ mod_auth_mysql
 mysql
 mysql-server
 net-snmp-perl
-patch
 perl-Archive-Tar
 perl-Archive-Zip
 perl-BerkeleyDB

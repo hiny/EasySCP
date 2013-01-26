@@ -12,7 +12,6 @@
 			<h1 class="webtools">{$TR_MENU_SYSTEM_TOOLS}</h1>
 		</div>
 		<ul class="location-menu">
-			
 			<li><a href="../index.php?logout" class="logout">{$TR_MENU_LOGOUT}</a></li>
 		</ul>
 		<ul class="path">
@@ -27,13 +26,17 @@
 		{/if}
 		<h2 class="debugger"><span>{$TR_DEBUGGER_TITLE}</span></h2>
 		<table>
-			<tr>
-				<td><b>{$TR_DOMAIN_ERRORS}</b></td>
-			</tr>
+			<thead>
+				<tr>
+					<th>{$TR_DOMAIN_ERRORS}</th>
+				</tr>
+			</thead>
+			<tbody>
 			{if isset($TR_DOMAIN_MESSAGE)}
-			<tr>
-				<td>{$TR_DOMAIN_MESSAGE}</td>
-			</tr>
+				<tr>
+					<td>{$TR_DOMAIN_MESSAGE}</td>
+				</tr>
+
 			{/if}
 			{if isset($TR_DOMAIN_NAME)}
 				{section name=i loop=$TR_DOMAIN_NAME}
@@ -46,16 +49,20 @@
 				</tr>
 				{/section}
 			{/if}
+			</tbody>
 		</table>
 		<br />
 		<table>
-			<tr>
-				<td><b>{$TR_ALIAS_ERRORS}</b></td>
-			</tr>
+			<thead>
+				<tr>
+					<th>{$TR_ALIAS_ERRORS}</th>
+				</tr>
+			</thead>
+			<tbody>
 			{if isset($TR_ALIAS_MESSAGE)}
-			<tr>
-				<td>{$TR_ALIAS_MESSAGE}</td>
-			</tr>
+				<tr>
+					<td>{$TR_ALIAS_MESSAGE}</td>
+				</tr>
 			{/if}
 			{if isset($TR_ALIAS_NAME)}
 				{section name=i loop=$TR_ALIAS_NAME}
@@ -68,16 +75,20 @@
 				</tr>
 				{/section}
 			{/if}
+			</tbody>
 		</table>
 		<br />
 		<table>
-			<tr>
-				<td><b>{$TR_SUBDOMAIN_ERRORS}</b></td>
-			</tr>
+			<thead>
+				<tr>
+					<th>{$TR_SUBDOMAIN_ERRORS}</th>
+				</tr>
+			</thead>
+			<tbody>
 			{if isset($TR_SUBDOMAIN_MESSAGE)}
-			<tr>
-				<td>{$TR_SUBDOMAIN_MESSAGE}</td>
-			</tr>
+				<tr>
+					<td>{$TR_SUBDOMAIN_MESSAGE}</td>
+				</tr>
 			{/if}
 			{if isset($TR_SUBDOMAIN_NAME)}
 				{section name=i loop=$TR_SUBDOMAIN_NAME}
@@ -90,16 +101,20 @@
 				</tr>
 				{/section}
 			{/if}
+			</tbody>
 		</table>
 		<br />
 		<table>
-			<tr>
-				<td><b>{$TR_SUBDOMAIN_ALIAS_ERRORS}</b></td>
-			</tr>
+			<thead>
+				<tr>
+					<th>{$TR_SUBDOMAIN_ALIAS_ERRORS}</th>
+				</tr>
+			</thead>
+			<tbody>
 			{if isset($TR_SUBDOMAIN_ALIAS_MESSAGE)}
-			<tr>
-				<td>{$TR_SUBDOMAIN_ALIAS_MESSAGE}</td>
-			</tr>
+				<tr>
+					<td>{$TR_SUBDOMAIN_ALIAS_MESSAGE}</td>
+				</tr>
 			{/if}
 			{if isset($TR_SUBDOMAIN_ALIAS_NAME)}
 				{section name=i loop=$TR_SUBDOMAIN_ALIAS_NAME}
@@ -112,16 +127,20 @@
 				</tr>
 				{/section}
 			{/if}
+			</tbody>
 		</table>
 		<br />
 		<table>
-			<tr>
-				<td class="content3"><b>{$TR_MAIL_ERRORS}</b></td>
-			</tr>
+			<thead>
+				<tr>
+					<th>{$TR_MAIL_ERRORS}</th>
+				</tr>
+			</thead>
+			<tbody>
 			{if isset($TR_MAIL_MESSAGE)}
-			<tr>
-				<td>{$TR_MAIL_MESSAGE}</td>
-			</tr>
+				<tr>
+					<td>{$TR_MAIL_MESSAGE}</td>
+				</tr>
 			{/if}
 			{if isset($TR_MAIL_NAME)}
 				{section name=i loop=$TR_MAIL_NAME}
@@ -134,16 +153,20 @@
 				</tr>
 				{/section}
 			{/if}
+			</tbody>
 		</table>
 		<br />
 		<table>
-			<tr>
-				<td class="content3"><b>{$TR_HTACCESS_ERRORS}</b></td>
-			</tr>
+			<thead>
+				<tr>
+					<th>{$TR_HTACCESS_ERRORS}</th>
+				</tr>
+			</thead>
+			<tbody>
 			{if isset($TR_HTACCESS_MESSAGE)}
-			<tr>
-				<td>{$TR_HTACCESS_MESSAGE}</td>
-			</tr>
+				<tr>
+					<td>{$TR_HTACCESS_MESSAGE}</td>
+				</tr>
 			{/if}
 			{if isset($TR_HTACCESS_NAME)}
 				{section name=i loop=$TR_HTACCESS_NAME}
@@ -156,18 +179,23 @@
 				</tr>
 				{/section}
 			{/if}
+			</tbody>
 		</table>
 		<br />
 		<table>
-			<tr>
-				<td><b>{$TR_DAEMON_TOOLS}</b></td>
-			</tr>
-			<tr>
-				<td><a href="easyscp_debugger.php?action=run_engine" class="link">{$EXEC_COUNT} {$TR_EXEC_REQUESTS}</a></td>
-			</tr>
-			<tr>
-				<td>{$TR_ERRORS}</td>
-			</tr>
+			<tbody>
+				<tr>
+					<th>{$TR_DAEMON_TOOLS}</th>
+				</tr>
+			</tbody>
+			<tbody>
+				<tr>
+					<td><a href="easyscp_debugger.php?action=run_engine" class="link">{$EXEC_COUNT} {$TR_EXEC_REQUESTS}</a></td>
+				</tr>
+				<tr>
+					<td>{$TR_ERRORS}</td>
+				</tr>
+			</tbody>
 		</table>
 	</div>
 {include file='admin/footer.tpl'}

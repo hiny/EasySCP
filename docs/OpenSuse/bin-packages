@@ -1,6 +1,5 @@
 amavisd-new
 apache2-worker
-apache2-mod_fastcgi
 apache2-mod_fcgid
 awstats
 bind
@@ -19,7 +18,6 @@ cyrus-sasl
 cyrus-sasl-crammd5
 cyrus-sasl-digestmd5
 cyrus-sasl-plain
-gcc
 gzip
 iptables
 lha
@@ -32,7 +30,6 @@ mysql-community-server
 mysql-community-server-client
 p7zip
 php5
-php5-fastcgi
 php5-ftp
 php5-gd
 php5-mbstring

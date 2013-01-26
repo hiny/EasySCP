@@ -33,7 +33,7 @@
  */
 
 /**
- * @param object $tpl	EasySCP_TemplateEngine instance
+ * @param EasySCP_TemplateEngine $tpl
  * @param string $menu_file
  */
 function gen_admin_mainmenu($tpl, $menu_file) {
@@ -44,52 +44,12 @@ function gen_admin_mainmenu($tpl, $menu_file) {
 	$tpl->assign(
 		array(
 			'TR_MENU_GENERAL_INFORMATION'	=> tr('General information'),
+			'TR_MENU_MANAGE_USERS'			=> tr('Manage users'),
 			'TR_MENU_HOSTING_PLANS'			=> tr('Manage hosting plans'),
 			'TR_MENU_SYSTEM_TOOLS'			=> tr('System tools'),
-			'TR_MENU_MANAGE_USERS'			=> tr('Manage users'),
 			'TR_MENU_STATISTICS'			=> tr('Statistics'),
 			'TR_MENU_SUPPORT_SYSTEM'		=> tr('Support system'),
-			'TR_MENU_SETTINGS'				=> tr('Settings'),
-			'TR_MENU_GENERAL_INFORMATION'	=> tr('General information'),
-			'TR_MENU_HOSTING_PLANS'			=> tr('Manage hosting plans'),
-			'TR_MENU_SYSTEM_TOOLS'			=> tr('System tools'),
-			'TR_MENU_MANAGE_USERS'			=> tr('Manage users'),
-			'TR_MENU_STATISTICS'			=> tr('Statistics'),
-			'TR_MENU_SUPPORT_SYSTEM'		=> tr('Support system'),
-			'TR_MENU_SETTINGS'				=> tr('Settings'),
-			'TR_MENU_CHANGE_PASSWORD'		=> tr('Change password'),
-			'TR_MENU_CHANGE_PERSONAL_DATA'	=> tr('Change personal data'),
-			'TR_MENU_ADD_ADMIN'				=> tr('Add admin'),
-			'TR_MENU_ADD_RESELLER'			=> tr('Add reseller'),
-			'TR_MENU_RESELLER_ASIGNMENT'	=> tr('Reseller assignment'),
-			'TR_MENU_USER_ASIGNMENT'		=> tr('User assignment'),
-			'TR_MENU_EMAIL_SETUP'			=> tr('Email setup'),
-			'TR_MENU_CIRCULAR'				=> tr('Email marketing'),
-			'TR_MENU_ADD_HOSTING'			=> tr('Add hosting plan'),
-			'TR_MENU_RESELLER_STATISTICS'	=> tr('Reseller statistics'),
-			'TR_MENU_SERVER_STATISTICS'		=> tr('Server statistics'),
-			'TR_MENU_ADMIN_LOG'				=> tr('Admin log'),
-			'TR_MENU_MANAGE_IPS'			=> tr('Manage IPs'),
-			'TR_MENU_SYSTEM_INFO'			=> tr('System info'),
-			'TR_MENU_I18N'					=> tr('Internationalisation'),
-			'TR_MENU_LANGUAGE'				=> tr('Language'),
-			'TR_MENU_LOGOUT'				=> tr('Logout'),
-			'TR_MENU_QUESTIONS_AND_COMMENTS'=> tr('Support system'),
-			'TR_MENU_SERVER_TRAFFIC_SETTINGS'=> tr('Server traffic settings'),
-			'TR_MENU_SERVER_STATUS'			=> tr('Server status'),
-			'TR_MENU_EasySCP_UPDATE'		=> tr('EasySCP updates'),
-			'TR_MENU_EasySCP_DEBUGGER'		=> tr('EasySCP debugger'),
-			'TR_CUSTOM_MENUS'				=> tr('Custom menus'),
-			'TR_MENU_OVERVIEW'				=> tr('Overview'),
-			'TR_MENU_MANAGE_SESSIONS'		=> tr('User sessions'),
-			'TR_MENU_LOSTPW_EMAIL'			=> tr('Lostpw email setup'),
-			'TR_MAINTENANCEMODE'			=> tr('Maintenance mode'),
-			'TR_GENERAL_SETTINGS'			=> tr('General settings'),
-			'TR_SERVERPORTS'				=> tr('Server ports'),
-			'TR_OPEN_TICKETS'				=> tr('Open tickets'),
-			'TR_CLOSED_TICKETS'				=> tr('Closed tickets'),
-			'PMA_PATH'						=> $cfg->PMA_PATH,
-			'TR_PHPMYADMIN'					=> tr('phpMyAdmin')
+			'TR_MENU_SETTINGS'				=> tr('Settings')
 		)
 	);
 
@@ -110,13 +70,13 @@ function gen_admin_mainmenu($tpl, $menu_file) {
 		global $i;
 		$i = 100;
 
-		while(!$rs->EOF) {
+		while (!$rs->EOF) {
 			$menu_name = $rs->fields['menu_name'];
 			$menu_link = get_menu_vars($rs->fields['menu_link']);
 			$menu_target = $rs->fields['menu_target'];
 			$menu_icon = $rs->fields['menu_icon'];
 
-			if($menu_target !== '') {
+			if ($menu_target !== '') {
 				$menu_target = 'target="' . tohtml($menu_target) . '"';
 			}
 
@@ -147,7 +107,7 @@ function gen_admin_mainmenu($tpl, $menu_file) {
 }
 
 /**
- * @param object $tpl	EasySCP_TemplateEngine instance
+ * @param EasySCP_TemplateEngine $tpl
  * @param string $menu_file
  */
 function gen_admin_menu($tpl, $menu_file) {
@@ -157,44 +117,44 @@ function gen_admin_menu($tpl, $menu_file) {
 
 	$tpl->assign(
 		array(
-			'TR_MENU_GENERAL_INFORMATION'	=> tr('General information'),
+			'TR_MENU_OVERVIEW'				=> tr('Overview'),
 			'TR_MENU_CHANGE_PASSWORD'		=> tr('Change password'),
 			'TR_MENU_CHANGE_PERSONAL_DATA'	=> tr('Change personal data'),
-			'TR_MENU_MANAGE_USERS'			=> tr('Manage users'),
+			'TR_MENU_LANGUAGE'				=> tr('Language'),
+			'TR_MENU_SERVER_STATUS'			=> tr('Server status'),
+			'TR_MENU_ADMIN_LOG'				=> tr('Admin log'),
+
 			'TR_MENU_ADD_ADMIN'				=> tr('Add admin'),
 			'TR_MENU_ADD_RESELLER'			=> tr('Add reseller'),
 			'TR_MENU_RESELLER_ASIGNMENT'	=> tr('Reseller assignment'),
 			'TR_MENU_USER_ASIGNMENT'		=> tr('User assignment'),
 			'TR_MENU_EMAIL_SETUP'			=> tr('Email setup'),
 			'TR_MENU_CIRCULAR'				=> tr('Email marketing'),
-			'TR_MENU_HOSTING_PLANS'			=> tr('Manage hosting plans'),
+			'TR_MENU_MANAGE_SESSIONS'		=> tr('User sessions'),
+
 			'TR_MENU_ADD_HOSTING'			=> tr('Add hosting plan'),
-			'TR_MENU_ROOTKIT_LOG'			=> tr('Rootkit Log'),
-			'TR_MENU_RESELLER_STATISTICS'	=> tr('Reseller statistics'),
-			'TR_MENU_SERVER_STATISTICS'		=> tr('Server statistics'),
-			'TR_MENU_ADMIN_LOG'				=> tr('Admin log'),
-			'TR_MENU_MANAGE_IPS'			=> tr('Manage IPs'),
-			'TR_MENU_SUPPORT_SYSTEM'		=> tr('Support system'),
-			'TR_MENU_SYSTEM_INFO'			=> tr('System info'),
-			'TR_MENU_I18N'					=> tr('Internationalisation'),
-			'TR_MENU_LANGUAGE'				=> tr('Language'),
-			'TR_MENU_LOGOUT'				=> tr('Logout'),
-			'TR_MENU_QUESTIONS_AND_COMMENTS'=> tr('Support system'),
-			'TR_MENU_STATISTICS'			=> tr('Statistics'),
-			'TR_MENU_SYSTEM_TOOLS'			=> tr('System tools'),
-			'TR_MENU_SERVER_TRAFFIC_SETTINGS'=> tr('Server traffic settings'),
-			'TR_MENU_SERVER_STATUS'			=> tr('Server status'),
+
+			'TR_MAINTENANCEMODE'			=> tr('Maintenance mode'),
+			'TR_MANAGE_SSL'					=> tr('Manage SSL certificate'),
 			'TR_MENU_EasySCP_UPDATE'		=> tr('EasySCP updates'),
 			'TR_MENU_EasySCP_DEBUGGER'		=> tr('EasySCP debugger'),
-			'TR_CUSTOM_MENUS'				=> tr('Custom menus'),
-			'TR_MENU_OVERVIEW'				=> tr('Overview'),
-			'TR_MENU_MANAGE_SESSIONS'		=> tr('User sessions'),
-			'TR_MENU_LOSTPW_EMAIL'			=> tr('Lostpw email setup'),
-			'TR_MAINTENANCEMODE'			=> tr('Maintenance mode'),
-			'TR_MENU_SETTINGS'				=> tr('Settings'),
-			'TR_GENERAL_SETTINGS'			=> tr('General settings'),
-			'TR_SERVERPORTS'				=> tr('Server ports'),
+			'TR_MENU_ROOTKIT_LOG'			=> tr('Rootkit Log'),
+
+			'TR_MENU_RESELLER_STATISTICS'	=> tr('Reseller statistics'),
 			'TR_MENU_IP_USAGE'				=> tr('IP Usage'),
+
+			'TR_OPEN_TICKETS'				=> tr('Open tickets'),
+			'TR_CLOSED_TICKETS'				=> tr('Closed tickets'),
+
+			'TR_GENERAL_SETTINGS'			=> tr('General settings'),
+			'TR_CUSTOM_MENUS'				=> tr('Custom menus'),
+			'TR_MENU_MANAGE_IPS'			=> tr('Manage IPs'),
+			'TR_MENU_SERVER_TRAFFIC_SETTINGS'=> tr('Server traffic settings'),
+
+			'TR_MENU_LOSTPW_EMAIL'			=> tr('Lostpw email setup'),
+			'TR_SERVERPORTS'				=> tr('Server ports'),
+
+			'TR_MENU_LOGOUT'				=> tr('Logout'),
 			'VERSION'						=> $cfg->Version,
 			'BUILDDATE'						=> $cfg->BuildDate,
 			'CODENAME'						=> $cfg->CodeName
@@ -216,9 +176,9 @@ function get_sql_user_count($sql) {
 
 	$query = "
 		SELECT DISTINCT
-			`sqlu_name`
+			sqlu_name
 		FROM
-			`sql_user`
+			sql_user
 		;
 	";
 
@@ -228,8 +188,8 @@ function get_sql_user_count($sql) {
 }
 
 /**
- * @param object $tpl	EasySCP_TemplateEngine instance
- * @param object $sql	EasySCP_Database instance
+ * @param EasySCP_TemplateEngine $tpl
+ * @param EasySCP_Database $sql
  */
 function get_admin_general_info($tpl, $sql) {
 
@@ -255,31 +215,9 @@ function get_admin_general_info($tpl, $sql) {
 		)
 	);
 
-	// If COUNT_DEFAULT_EMAIL_ADDRESSES = false, admin total emails show
-	// [total - default_emails]/[total_emails]
-	$retrieve_total_emails = records_count(
+	$show_total_emails = records_count(
 		'mail_users', 'mail_type NOT RLIKE \'_catchall\'', ''
 	);
-
-	if($cfg->COUNT_DEFAULT_EMAIL_ADDRESSES) {
-		$show_total_emails = $retrieve_total_emails;
-	} else {
-		$retrieve_total_default_emails = records_count(
-			'mail_users', 'mail_acc', 'abuse'
-		);
-
-		$retrieve_total_default_emails += records_count(
-			'mail_users', 'mail_acc', 'webmaster'
-		);
-
-		$retrieve_total_default_emails += records_count(
-			'mail_users', 'mail_acc', 'postmaster'
-		);
-
-		$show_total_emails =
-		($retrieve_total_emails - $retrieve_total_default_emails) . '/' .
-			$retrieve_total_emails;
-	}
 
 	$tpl->assign(
 		array(
@@ -300,8 +238,8 @@ function get_admin_general_info($tpl, $sql) {
 }
 
 /**
- * @param object $tpl	EasySCP_TemplateEngine instance
- * @param object $sql	EasySCP_Database instance
+ * @param EasySCP_TemplateEngine $tpl
+ * @param EasySCP_Database $sql
  * @return void
  */
 function gen_admin_list($tpl, $sql) {
@@ -310,18 +248,18 @@ function gen_admin_list($tpl, $sql) {
 
 	$query = "
 		SELECT
-			t1.`admin_id`,
-			t1.`admin_name`,
-			t1.`domain_created`,
-			IFNULL(t2.`admin_name`, '') AS `created_by`
+			t1.admin_id,
+			t1.admin_name,
+			t1.domain_created,
+			IFNULL(t2.admin_name, '') AS created_by
 		FROM
-			`admin` AS `t1`
+			admin AS t1
 		LEFT JOIN
-			`admin` AS `t2` ON `t1`.`created_by` = t2.`admin_id`
+			admin AS t2 ON t1.created_by = t2.admin_id
 		WHERE
-			`t1`.`admin_type` = 'admin'
+			t1.admin_type = 'admin'
 		ORDER BY
-			`t1`.`admin_name`
+			t1.admin_name
 		ASC
 		;
 	";
@@ -388,8 +326,8 @@ function gen_admin_list($tpl, $sql) {
 }
 
 /**
- * @param object $tpl	EasySCP_TemplateEngine instance
- * @param object $sql	EasySCP_Database instance
+ * @param EasySCP_TemplateEngine $tpl
+ * @param EasySCP_Database $sql
  */
 function gen_reseller_list($tpl, $sql) {
 
@@ -425,8 +363,7 @@ function gen_reseller_list($tpl, $sql) {
 			array(
 				'TR_RSL_USERNAME' => tr('Username'),
 				'TR_RSL_CREATED_BY' => tr('Created by'),
-				'TR_RSL_OPTIONS' => tr('Options'),
-				'GO_TO_USER_INTERFACE' => tr('Switch')
+				'TR_RSL_OPTIONS' => tr('Options')
 			)
 		);
 
@@ -471,8 +408,8 @@ function gen_reseller_list($tpl, $sql) {
 }
 
 /**
- * @param object $tpl	EasySCP_TemplateEngine instance
- * @param object $sql	EasySCP_Database instance
+ * @param EasySCP_TemplateEngine $tpl
+ * @param EasySCP_Database $sql
  */
 function gen_user_list($tpl, $sql) {
 
@@ -569,12 +506,6 @@ function gen_user_list($tpl, $sql) {
 			);
 		}
 
-		$tpl->assign(
-			array(
-				'TR_MESSAGE_CHANGE_STATUS'	=> '',
-				'TR_MESSAGE_DELETE'			=> ''
-			)
-		);
 	} else {
 		$prev_si = $start_index - $rows_per_page;
 
@@ -610,12 +541,7 @@ function gen_user_list($tpl, $sql) {
 				'TR_USER_STATUS' => tr('Status'),
 				'TR_DETAILS' => tr('Details'),
 				'TR_EDIT_DOMAIN' => tr('Edit domain'),
-				'TR_EDIT_USR' => tr('Edit user'),
-				'GO_TO_USER_INTERFACE' => tr('Switch'),
-				'TR_MESSAGE_CHANGE_STATUS' =>
-						tr('Are you sure you want to change the status of domain account?', true),
-				'TR_MESSAGE_DELETE' =>
-						tr('Are you sure you want to delete %s?', true, '%s')
+				'TR_EDIT_USR' => tr('Edit user')
 			)
 		);
 
@@ -725,8 +651,8 @@ function gen_user_list($tpl, $sql) {
 }
 
 /**
- * @param object $tpl	EasySCP_TemplateEngine instance
- * @param object $sql	EasySCP_Database instance
+ * @param EasySCP_TemplateEngine $tpl
+ * @param EasySCP_Database $sql
  */
 function get_admin_manage_users($tpl, $sql) {
 
@@ -742,7 +668,8 @@ function get_admin_manage_users($tpl, $sql) {
 			'TR_MESSAGE_DELETE'	=> tr('Are you sure you want to delete %s?', true, '%s'),
 			'TR_EDIT'			=> tr('Edit'),
 			'TR_DELETE'			=> tr('Delete'),
-			'TR_CHANGE_USER_INTERFACE' => tr('Switch to user interface')
+			'TR_CHANGE_USER_INTERFACE' => tr('Switch to user interface'),
+			'TR_MESSAGE_CHANGE_STATUS' => tr('Are you sure you want to change the status of domain account?', true)
 		)
 	);
 
@@ -987,29 +914,11 @@ function generate_user_props($user_id) {
 	$als_current = records_count('domain_aliasses', 'domain_id', $user_id);
 	$als_max = $rs->fields['domain_alias_limit'];
 
-	// This works with the admin option(Count default E-Mail addresses) is
-	// working - TheCry
-	if($cfg->COUNT_DEFAULT_EMAIL_ADDRESSES) {
-		$mail_current = records_count(
-			'mail_users',
-			"mail_type NOT RLIKE '_catchall' AND domain_id",
-			$user_id
-		);
-	} else {
-		$where = "
-				`mail_acc` != 'abuse'
-			AND
-				`mail_acc` != 'postmaster'
-			AND
-				`mail_acc` != 'webmaster'
-			AND
-				`mail_type` NOT RLIKE '_catchall'
-			AND
-				`domain_id`
-		";
-
-		$mail_current = records_count('mail_users', $where, $user_id);
-	}
+	$mail_current = records_count(
+		'mail_users',
+		"mail_type NOT RLIKE '_catchall' AND domain_id",
+		$user_id
+	);
 
 	$mail_max = $rs->fields['domain_mailacc_limit'];
 
@@ -1327,7 +1236,7 @@ function sub_records_rlike_count($field, $table, $where, $value, $subfield,
 }
 
 /**
- * @param object $tpl	EasySCP_TemplateEngine instance
+ * @param EasySCP_TemplateEngine $tpl
  * @param int $user_month
  * @param int $user_year
  */
@@ -1397,8 +1306,8 @@ function calc_bar_value($value, $value_max, $bar_width) {
 	if($value_max == 0) {
 		return 0;
 	} else {
-		$ret_value = ($value * $bar_width) / $value_max;
-		return ($ret_value > $bar_width) ? $bar_width : round($ret_value, 3);
+		$ret_value = ($value * 100) / $value_max;
+		return ($ret_value > 100) ? $bar_width : round($ret_value, 3);
 	}
 }
 
@@ -1600,7 +1509,7 @@ function update_reseller_props($reseller_id, $props) {
 }
 
 /**
- * @param object $tpl	EasySCP_TemplateEngine instance
+ * @param EasySCP_TemplateEngine $tpl
  */
 function gen_logged_from($tpl) {
 
@@ -1885,7 +1794,7 @@ function gen_admin_domain_query(&$search_query, &$count_query, $start_index,
 }
 
 /**
- * @param object $tpl	EasySCP_TemplateEngine instance
+ * @param EasySCP_TemplateEngine $tpl
  * @param string $search_for
  * @param string $search_common
  * @param string $search_status

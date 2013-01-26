@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -137,7 +137,7 @@ function change_sql_user_pass($sql, $db_user_id, $db_user_name) {
 
 	$user_pass = $_POST['pass'];
 
-	// update user pass in the ispcp sql_user table;
+	// update user pass in the EasySCP sql_user table;
 	$query = "
 		UPDATE
 			`sql_user`

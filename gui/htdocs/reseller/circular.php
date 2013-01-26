@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -204,7 +204,7 @@ function send_circular_email($to, $from, $subject, $message) {
 
 	$headers = "MIME-Version: 1.0\nContent-Type: text/plain; charset=utf-8\nContent-Transfer-Encoding: 8bit\n";
 	$headers .= "From: " . $from . "\n";
-	$headers .= "X-Mailer: ispCP marketing mailer";
+	$headers .= "X-Mailer: EasySCP marketing mailer";
 
 	mail($to, $subject, $message, $headers);
 }

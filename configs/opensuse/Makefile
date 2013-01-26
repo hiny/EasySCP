@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
 # EasySCP a Virtual Hosting Control Panel
-# Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+# Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,14 +24,12 @@ export
 
 install:
 	if test $(HOST_OS) = opensuse ; then \
-		cp ./easyscp.conf $(SYSTEM_CONF) ; \
+		cp ./easyscp.conf.tpl $(SYSTEM_CONF) ; \
 		cd ./amavisd && $(MAKE) install ; cd .. ; \
 		cd ./apache && $(MAKE) install ; cd .. ; \
-		cd ./awstats && $(MAKE) install ; cd .. ; \
 		cd ./bind && $(MAKE) install ; cd .. ; \
 		cd ./courier && $(MAKE) install ; cd .. ; \
 		cd ./cron.d && $(MAKE) install ; cd .. ; \
-		cd ./fcgi && $(MAKE) install ; cd .. ; \
 		cd ./init.d && $(MAKE) install ; cd .. ; \
 		cd ./logrotate && $(MAKE) install ; cd .. ; \
 		cd ./postfix && $(MAKE) install ; cd .. ; \
@@ -41,13 +39,12 @@ install:
 uninstall:
 	if test $(HOST_OS) = opensuse ; then \
 		rm -rf $(SYSTEM_CONF)/easyscp.conf ;  \
+		rm -rf $(SYSTEM_CONF)/easyscp.conf.tpl ;  \
 		cd ./amavisd && $(MAKE) uninstall ; cd.. ; \
 		cd ./apache && $(MAKE) uninstall ; cd .. ; \
-		cd ./awstats && $(MAKE) uninstall ; cd .. ; \
 		cd ./bind && $(MAKE) uninstall ; cd .. ; \
 		cd ./courier && $(MAKE) uninstall ; cd .. ; \
 		cd ./cron.d && $(MAKE) uninstall ; cd .. ; \
-		cd ./fcgi && $(MAKE) uninstall ; cd .. ; \
 		cd ./init.d && $(MAKE) uninstall ; cd .. ; \
 		cd ./logrotate && $(MAKE) uninstall ; cd .. ; \
 		cd ./postfix && $(MAKE) uninstall ; cd .. ; \

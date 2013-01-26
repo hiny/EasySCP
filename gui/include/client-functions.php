@@ -173,18 +173,6 @@ function get_domain_running_mail_acc_cnt($sql, $domain_id) {
 			`domain_id` = ?
 	";
 
-	if ($cfg->COUNT_DEFAULT_EMAIL_ADDRESSES == 0) {
-		$query .= "
-			AND
-				`mail_acc` != 'abuse'
-			AND
-				`mail_acc` != 'postmaster'
-			AND
-				`mail_acc` != 'webmaster'
-			;
-		";
-	}
-
 	$rs = exec_query($sql, $query, array('normal_', 'normal_catchall', $domain_id));
 	$dmn_mail_acc = $rs->fields['cnt'];
 
@@ -427,37 +415,13 @@ function gen_client_mainmenu($tpl, $menu_file) {
 	$tpl->assign(
 		array(
 			'TR_MENU_GENERAL_INFORMATION'	=> tr('General information'),
-			'TR_MENU_CHANGE_PASSWORD'		=> tr('Change password'),
-			'TR_MENU_CHANGE_PERSONAL_DATA'	=> tr('Change personal data'),
 			'TR_MENU_MANAGE_DOMAINS'		=> tr('Manage domains'),
-			'TR_MENU_ADD_SUBDOMAIN'			=> tr('Add subdomain'),
-			'TR_MENU_MANAGE_USERS'			=> tr('Email and FTP accounts'),
-			'TR_MENU_ADD_MAIL_USER'			=> tr('Add mail user'),
-			'TR_MENU_ADD_FTP_USER'			=> tr('Add FTP user'),
-			'TR_MENU_MANAGE_SQL'			=> tr('Manage SQL'),
-			'TR_MENU_ERROR_PAGES'			=> tr('Error pages'),
-			'TR_MENU_ADD_SQL_DATABASE'		=> tr('Add SQL database'),
-			'TR_MENU_DOMAIN_STATISTICS'		=> tr('Domain statistics'),
-			'TR_MENU_DAILY_BACKUP'			=> tr('Daily backup'),
-			'TR_MENU_QUESTIONS_AND_COMMENTS'=> tr('Support system'),
-			'TR_MENU_NEW_TICKET'			=> tr('New ticket'),
-			'TR_MENU_LOGOUT'				=> tr('Logout'),
-			'TR_PHPMYADMIN'					=> tr('phpMyAdmin'),
-			'TR_WEBMAIL'					=> tr('Webmail'),
-			'TR_FILEMANAGER'				=> tr('Filemanager'),
-			'TR_MENU_WEBTOOLS'				=> tr('Webtools'),
-			'TR_HTACCESS'					=> tr('Protected areas'),
-			'TR_AWSTATS'					=> tr('Web statistics'),
-			'TR_HTACCESS_USER'				=> tr('Group/User management'),
-			'TR_MENU_OVERVIEW'				=> tr('Overview'),
 			'TR_MENU_EMAIL_ACCOUNTS'		=> tr('Email Accounts'),
 			'TR_MENU_FTP_ACCOUNTS'			=> tr('FTP Accounts'),
-			'TR_MENU_LANGUAGE'				=> tr('Language'),
-			'TR_MENU_CATCH_ALL_MAIL'		=> tr('Catch all'),
-			'TR_MENU_ADD_ALIAS'				=> tr('Add alias'),
-			'TR_MENU_UPDATE_HP'				=> tr('Update Hosting Package'),
-			'TR_MENU_ADD_DNS'				=> tr("Add DNS zone's record"),
-			'TR_MENU_SSL_MANAGE'			=> tr('Manage SSL certificate')
+			'TR_MENU_MANAGE_SQL'			=> tr('Manage SQL'),
+			'TR_MENU_WEBTOOLS'				=> tr('Webtools'),
+			'TR_MENU_DOMAIN_STATISTICS'		=> tr('Domain statistics'),
+			'TR_MENU_QUESTIONS_AND_COMMENTS'=> tr('Support system')
 		)
 	);
 
@@ -484,7 +448,7 @@ function gen_client_mainmenu($tpl, $menu_file) {
 			$menu_name = $rs->fields['menu_name'];
 			$menu_link = get_menu_vars($rs->fields['menu_link']);
 			$menu_target = $rs->fields['menu_target'];
-			$menu_link = str_replace('{easyscp_uname}', $_SESSION['user_logged'], $menu_link);
+			$menu_icon = $rs->fields['menu_icon'];
 
 			if ($menu_target !== '') {
 				$menu_target = 'target="' . tohtml($menu_target) . '"';
@@ -492,10 +456,11 @@ function gen_client_mainmenu($tpl, $menu_file) {
 
 			$tpl->append(
 				array(
-					'BUTTON_LINK' => tohtml($menu_link),
-					'BUTTON_NAME' => tohtml($menu_name),
+					'BUTTON_LINK'	=> tohtml($menu_link),
+					'BUTTON_NAME'	=> tohtml($menu_name),
 					'BUTTON_TARGET' => $menu_target,
-					'BUTTON_ID' => $i,
+					'BUTTON_ICON'	=> $menu_icon,
+					'BUTTON_ID'		=> $i
 				)
 			);
 
@@ -564,41 +529,41 @@ function gen_client_menu($tpl, $menu_file) {
 
 	$tpl->assign(
 		array(
-			'TR_MENU_GENERAL_INFORMATION'	=> tr('General information'),
+			'TR_MENU_OVERVIEW'				=> tr('Overview'),
 			'TR_MENU_CHANGE_PASSWORD'		=> tr('Change password'),
 			'TR_MENU_CHANGE_PERSONAL_DATA'	=> tr('Change personal data'),
-			'TR_MENU_MANAGE_DOMAINS'		=> tr('Manage domains'),
+			'TR_MENU_LANGUAGE'				=> tr('Language'),
+			'TR_MENU_UPDATE_HP'				=> tr('Update Hosting Package'),
+
 			'TR_MENU_ADD_SUBDOMAIN'			=> tr('Add subdomain'),
-			'TR_MENU_MANAGE_USERS'			=> tr('Email and FTP accounts'),
+			'TR_MENU_ADD_ALIAS'				=> tr('Add alias'),
+			'TR_MENU_MANAGE_DNS'			=> tr('Manage DNS'),
+			'TR_MENU_MANAGE_SSL'			=> tr('Manage SSL certificate'),
+			'TR_MENU_PHP_EDITOR'			=> tr('PHP editor'),
+
 			'TR_MENU_ADD_MAIL_USER'			=> tr('Add mail user'),
+			'TR_MENU_CATCH_ALL_MAIL'		=> tr('Catch all'),
+			'WEBMAIL_PATH'					=> $cfg->WEBMAIL_PATH,
+			'TR_WEBMAIL'					=> tr('Webmail'),
+
 			'TR_MENU_ADD_FTP_USER'			=> tr('Add FTP user'),
-			'TR_MENU_MANAGE_SQL'			=> tr('Manage SQL'),
-			'TR_MENU_ERROR_PAGES'			=> tr('Error pages'),
+			'FILEMANAGER_PATH'				=> $cfg->FILEMANAGER_PATH,
+			'TR_FILEMANAGER'				=> tr('Filemanager'),
+
 			'TR_MENU_ADD_SQL_DATABASE'		=> tr('Add SQL database'),
-			'TR_MENU_DOMAIN_STATISTICS'		=> tr('Domain statistics'),
+			'PMA_PATH'						=> $cfg->PMA_PATH,
+			'TR_PHPMYADMIN'					=> tr('phpMyAdmin'),
+
+			'TR_HTACCESS'					=> tr('Protected areas'),
+			'TR_HTACCESS_USER'				=> tr('Group/User management'),
+			'TR_MENU_ERROR_PAGES'			=> tr('Error pages'),
 			'TR_MENU_DAILY_BACKUP'			=> tr('Daily backup'),
-			'TR_MENU_QUESTIONS_AND_COMMENTS'=> tr('Support system'),
+
 			'TR_OPEN_TICKETS'				=> tr('Open tickets'),
 			'TR_CLOSED_TICKETS'				=> tr('Closed tickets'),
 			'TR_MENU_NEW_TICKET'			=> tr('New ticket'),
+
 			'TR_MENU_LOGOUT'				=> tr('Logout'),
-			'TR_PHPMYADMIN'					=> tr('phpMyAdmin'),
-			'TR_WEBMAIL'					=> tr('Webmail'),
-			'TR_FILEMANAGER'				=> tr('Filemanager'),
-			'TR_MENU_WEBTOOLS'				=> tr('Webtools'),
-			'TR_HTACCESS'					=> tr('Protected areas'),
-			'TR_AWSTATS'					=> tr('Web statistics'),
-			'TR_HTACCESS_USER'				=> tr('Group/User management'),
-			'TR_MENU_OVERVIEW'				=> tr('Overview'),
-			'TR_MENU_EMAIL_ACCOUNTS'		=> tr('Email Accounts'),
-			'TR_MENU_FTP_ACCOUNTS'			=> tr('FTP Accounts'),
-			'TR_MENU_LANGUAGE'				=> tr('Language'),
-			'TR_MENU_CATCH_ALL_MAIL'		=> tr('Catch all'),
-			'TR_MENU_ADD_ALIAS'				=> tr('Add alias'),
-			'TR_MENU_UPDATE_HP'				=> tr('Update Hosting Package'),
-			'WEBMAIL_PATH'					=> $cfg->WEBMAIL_PATH,
-			'PMA_PATH'						=> $cfg->PMA_PATH,
-			'FILEMANAGER_PATH'				=> $cfg->FILEMANAGER_PATH,
 			'VERSION'						=> $cfg->Version,
 			'BUILDDATE'						=> $cfg->BuildDate,
 			'CODENAME'						=> $cfg->CodeName

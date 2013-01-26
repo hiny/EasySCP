@@ -48,7 +48,7 @@ define('MT_ALIAS_CATCHALL', 'alias_catchall');
 define('MT_ALSSUB_CATCHALL', 'alssub_catchall');
 
 /**
- * @param object $tpl	EasySCP_TemplateEngine instance
+ * @param EasySCP_TemplateEngine $tpl
  * @param string $menu_file
  */
 function gen_reseller_mainmenu($tpl, $menu_file) {
@@ -59,31 +59,11 @@ function gen_reseller_mainmenu($tpl, $menu_file) {
 	$tpl->assign(
 		array(
 			'TR_MENU_GENERAL_INFORMATION'	=> tr('General information'),
-			'TR_MENU_CHANGE_PASSWORD'		=> tr('Change password'),
-			'TR_MENU_CHANGE_PERSONAL_DATA'	=> tr('Change personal data'),
-			'TR_MENU_HOSTING_PLANS'			=> tr('Manage hosting plans'),
-			'TR_MENU_ADD_HOSTING'			=> tr('Add hosting plan'),
 			'TR_MENU_MANAGE_USERS'			=> tr('Manage users'),
-			'TR_MENU_ADD_USER'				=> tr('Add user'),
-			'TR_MENU_E_MAIL_SETUP'			=> tr('Email setup'),
-			'TR_MENU_CIRCULAR'				=> tr('Email marketing'),
-			'TR_MENU_MANAGE_DOMAINS'		=> tr('Manage domains'),
-			'TR_MENU_DOMAIN_ALIAS'			=> tr('Domain alias'),
-			'TR_MENU_SUBDOMAINS'			=> tr('Subdomains'),
-			'TR_MENU_DOMAIN_STATISTICS'		=> tr('Domain statistics'),
-			'TR_MENU_SUPPORT_SYSTEM'		=> tr('Support system'),
-			'TR_OPEN_TICKETS'				=> tr('Open tickets'),
-			'TR_CLOSED_TICKETS'				=> tr('Closed tickets'),
-			'TR_MENU_NEW_TICKET'			=> tr('New ticket'),
-			'TR_MENU_LOGOUT'				=> tr('Logout'),
-			'TR_MENU_OVERVIEW'				=> tr('Overview'),
-			'TR_MENU_LANGUAGE'				=> tr('Language'),
+			'TR_MENU_HOSTING_PLANS'			=> tr('Manage hosting plans'),
 			'TR_MENU_ORDERS'				=> tr('Manage Orders'),
-			'TR_MENU_ORDER_SETTINGS'		=> tr('Order settings'),
-			'TR_MENU_ORDER_EMAIL'			=> tr('Order email setup'),
-			'TR_MENU_LOSTPW_EMAIL'			=> tr('Lostpw email setup'),
-			'PMA_PATH'						=> $cfg->PMA_PATH,
-			'TR_PHPMYADMIN'					=> tr('PhpMyAdmin')
+			'TR_MENU_DOMAIN_STATISTICS'		=> tr('Domain statistics'),
+			'TR_MENU_SUPPORT_SYSTEM'		=> tr('Support system')
 		)
 	);
 
@@ -108,17 +88,19 @@ function gen_reseller_mainmenu($tpl, $menu_file) {
 			$menu_name = $rs->fields['menu_name'];
 			$menu_link = get_menu_vars($rs->fields['menu_link']);
 			$menu_target = $rs->fields['menu_target'];
+			$menu_icon = $rs->fields['menu_icon'];
 
-			if ($menu_target !== "") {
+			if ($menu_target !== '') {
 				$menu_target = 'target="' . tohtml($menu_target) . '"';
 			}
 
-			$tpl->assign(
+			$tpl->append(
 				array(
-					'BUTTON_LINK' => tohtml($menu_link),
-					'BUTTON_NAME' => tohtml($menu_name),
-					'BUTTON_TARGET' => $menu_target,
-					'BUTTON_ID' => $i,
+					'BUTTON_LINK'	=> tohtml($menu_link),
+					'BUTTON_NAME'	=> tohtml($menu_name),
+					'BUTTON_TARGET'	=> $menu_target,
+					'BUTTON_ICON'	=> $menu_icon,
+					'BUTTON_ID'		=> $i
 				)
 			);
 
@@ -150,7 +132,7 @@ function gen_reseller_mainmenu($tpl, $menu_file) {
 
 /**
  * Function to generate the menu data for reseller
- * @param object $tpl	EasySCP_TemplateEngine instance
+ * @param EasySCP_TemplateEngine $tpl
  * @param string $menu_file
  */
 function gen_reseller_menu($tpl, $menu_file) {
@@ -160,78 +142,35 @@ function gen_reseller_menu($tpl, $menu_file) {
 
 	$tpl->assign(
 		array(
-			'TR_MENU_GENERAL_INFORMATION'	=> tr('General information'),
+			'TR_MENU_OVERVIEW'				=> tr('Overview'),
 			'TR_MENU_CHANGE_PASSWORD'		=> tr('Change password'),
 			'TR_MENU_CHANGE_PERSONAL_DATA'	=> tr('Change personal data'),
-			'TR_MENU_HOSTING_PLANS'			=> tr('Manage hosting plans'),
-			'TR_MENU_ADD_HOSTING'			=> tr('Add hosting plan'),
-			'TR_MENU_MANAGE_USERS'			=> tr('Manage users'),
+			'TR_MENU_LANGUAGE'				=> tr('Language'),
+
 			'TR_MENU_ADD_USER'				=> tr('Add user'),
-			'TR_MENU_E_MAIL_SETUP'			=> tr('Email setup'),
-			'TR_MENU_CIRCULAR'				=> tr('Email marketing'),
-			'TR_MENU_MANAGE_DOMAINS'		=> tr('Manage domains'),
 			'TR_MENU_DOMAIN_ALIAS'			=> tr('Domain alias'),
-			'TR_MENU_SUBDOMAINS'			=> tr('Subdomains'),
-			'TR_MENU_DOMAIN_STATISTICS'		=> tr('Domain statistics'),
-			'TR_MENU_SUPPORT_SYSTEM'		=> tr('Support system'),
+			'TR_MENU_E_MAIL_SETUP'			=> tr('Email setup'),
+			'TR_MENU_LOSTPW_EMAIL'			=> tr('Lostpw email setup'),
+			'TR_MENU_CIRCULAR'				=> tr('Email marketing'),
+
+			'TR_MENU_ADD_HOSTING'			=> tr('Add hosting plan'),
+
+			'TR_MENU_ORDER_SETTINGS'		=> tr('Order settings'),
+			'TR_MENU_ORDER_EMAIL'			=> tr('Order email setup'),
+
+			'TR_MENU_IP_USAGE'				=> tr('IP Usage'),
+
 			'TR_OPEN_TICKETS'				=> tr('Open tickets'),
 			'TR_CLOSED_TICKETS'				=> tr('Closed tickets'),
 			'TR_MENU_NEW_TICKET'			=> tr('New ticket'),
+
 			'TR_MENU_LOGOUT'				=> tr('Logout'),
-			'TR_MENU_OVERVIEW'				=> tr('Overview'),
-			'TR_MENU_LANGUAGE'				=> tr('Language'),
-			//'ALIAS_MENU' => (!check_reseller_permissions($_SESSION['user_id'], 'alias'))
-			//	? '' : $tpl->parse('ALIAS_MENU', '.alias_menu'),
-			'TR_MENU_ORDERS'				=> tr('Manage Orders'),
-			'TR_MENU_ORDER_SETTINGS'		=> tr('Order settings'),
-			'TR_MENU_ORDER_EMAIL'			=> tr('Order email setup'),
-			'TR_MENU_LOSTPW_EMAIL'			=> tr('Lostpw email setup'),
-			'TR_MENU_IP_USAGE'				=> tr('IP Usage'),
 			'VERSION'						=> $cfg->Version,
 			'BUILDDATE'						=> $cfg->BuildDate,
 			'CODENAME'						=> $cfg->CodeName
 		)
 	);
 
-	$query = "
-		SELECT
-			*
-		FROM
-			`custom_menus`
-		WHERE
-			`menu_level` = 'reseller'
-		OR
-			`menu_level` = 'all'
-	";
-
-	$rs = exec_query($sql, $query);
-	if ($rs->recordCount() != 0) {
-		$tpl->assign('CUSTOM_BUTTONS', true);
-		global $i;
-		$i = 100;
-
-		while (!$rs->EOF) {
-			$menu_name = $rs->fields['menu_name'];
-			$menu_link = get_menu_vars($rs->fields['menu_link']);
-			$menu_target = $rs->fields['menu_target'];
-
-			if ($menu_target !== "") {
-				$menu_target = 'target="' . tohtml($menu_target) . '"';
-			}
-
-			$tpl->assign(
-				array(
-					'BUTTON_LINK' => tohtml($menu_link),
-					'BUTTON_NAME' => tohtml($menu_name),
-					'BUTTON_TARGET' => $menu_target,
-					'BUTTON_ID' => $i,
-				)
-			);
-
-			$rs->moveNext();
-			$i++;
-		} // end while
-	}
 	$query = "
 	SELECT
 		`support_system`
@@ -575,17 +514,8 @@ function get_user_props($user_id) {
 	$als_current = records_count('domain_aliasses', 'domain_id', $user_id);
 	$als_max = $data['domain_alias_limit'];
 
-	if ($cfg->COUNT_DEFAULT_EMAIL_ADDRESSES) {
-		// Catch all is not a mailbox and haven't to be count
-		$mail_current = records_count('mail_users', 'mail_type NOT RLIKE \'_catchall\' AND domain_id', $user_id);
-	} else {
-		$where = "`mail_acc` != 'abuse'
-		AND `mail_acc` != 'postmaster'
-		AND `mail_acc` != 'webmaster'
-		AND `mail_type` NOT RLIKE '_catchall'
-		AND `domain_id`";
-		$mail_current = records_count('mail_users', $where, $user_id);
-	}
+	$mail_current = records_count('mail_users', 'mail_type NOT RLIKE \'_catchall\' AND domain_id', $user_id);
+
 	$mail_max = $data['domain_mailacc_limit'];
 
 	$ftp_current = sub_records_rlike_count('domain_name', 'domain', 'domain_id', $user_id,
@@ -626,7 +556,7 @@ function get_user_props($user_id) {
 
 /**
  * Generate IP list
- * @param object $tpl	EasySCP_TemplateEngine instance
+ * @param EasySCP_TemplateEngine $tpl
  * @param int $reseller_id
  */
 function generate_ip_list($tpl, &$reseller_id) {
@@ -731,9 +661,6 @@ function check_ruser_data($tpl, $noPass) {
 
 	if (isset($_POST['userstreet2']))
 		$street_two = $_POST['userstreet2'];
-
-	if (isset($_POST['useremail']))
-		$mail = $_POST['useremail'];
 
 	if (isset($_POST['userphone']))
 		$phone = $_POST['userphone'];
@@ -1059,7 +986,7 @@ function gen_manage_domain_query(&$search_query, &$count_query,
 }
 
 /**
- * @param object $tpl	EasySCP_TemplateEngine instance
+ * @param EasySCP_TemplateEngine $tpl
  * @param string $search_for
  * @param string $search_common
  * @param string $search_status
@@ -1196,84 +1123,8 @@ function gen_manage_domain_search_options($tpl, $search_for, $search_common,
 }
 
 /**
- * @todo implement use of more secure dynamic table in SQL query
- * @param object $tpl	EasySCP_TemplateEngine instance
- * @param object $sql	EasySCP_Database instance
- * @param object $cfg	EasySCP_Registry instance
- * @param string $userdef_language
- */
-function gen_def_language($tpl, $sql, $cfg) {
-
-	$languages = array();
-	$user_def_language = $cfg['USER_INITIAL_LANG'];
-	$htmlSelected = $cfg->HTML_SELECTED;
-	$query = "SHOW TABLES LIKE 'lang_%'";
-
-	$stmt = exec_query($sql, $query);
-
-	$stmt->setFetchStyle(PDO::FETCH_NUM);
-
-	while (!$stmt->EOF) {
-		$lang_table = $stmt->fields[0];
-
-		$query = "
-			SELECT
-				`msgstr`
-			FROM
-				`$lang_table`
-			WHERE
-				`msgid` = 'easyscp_language'
-			;
-		";
-
-		$stmt2 = exec_query($sql, $query);
-
-		$query = "
-			SELECT
-				`msgstr`
-			FROM
-				`$lang_table`
-			WHERE
-				`msgid` = 'easyscp_languageSetlocaleValue'
-			;
-		";
-
-		$stmt3 = exec_query($sql, $query);
-
-		if ($stmt2->recordCount() == 0 || $stmt3->recordCount() == 0) {
-			$language_name = tr('Unknown');
-		} else {
-			$tr_langcode = tr($stmt3->fields['msgstr']);
-
-			if ($stmt3->fields['msgstr'] == $tr_langcode) { // no translation found
-				$language_name = $stmt2->fields['msgstr'];
-			} else { // found translation
-				$language_name = $tr_langcode;
-			}
-		}
-
-		$selected = ($lang_table === $user_def_language) ? $htmlSelected : '';
-
-		array_push($languages, array($lang_table, $selected, $language_name));
-
-		$stmt->moveNext();
-	}
-
-	asort($languages[0], SORT_STRING);
-	foreach ($languages as $lang) {
-		$tpl->append(
-			array(
-				'LANG_VALUE' => $lang[0],
-				'LANG_SELECTED' => $lang[1],
-				'LANG_NAME' => tohtml($lang[2])
-			)
-		);
-	}
-}
-
-/**
- * @param object $tpl	EasySCP_TemplateEngine instance
- * @param object $sql	EasySCP_Database instance
+ * @param EasySCP_TemplateEngine $tpl
+ * @param EasySCP_Database $sql
  * @param int $domain_id
  */
 function gen_domain_details($tpl, $sql, $domain_id) {
@@ -1309,15 +1160,18 @@ function gen_domain_details($tpl, $sql, $domain_id) {
 		";
 		$alias_rs = exec_query($sql, $alias_query, $domain_id);
 
+		$aliases = array();
 		if ($alias_rs->recordCount() != 0) {
 			while (!$alias_rs->EOF) {
 				$alias_name = $alias_rs->fields['alias_name'];
 
-				$tpl->append('ALIAS_DOMAIN', tohtml(decode_idna($alias_name)));
+				$aliases[] = tohtml(decode_idna($alias_name));
+
 
 				$alias_rs->moveNext();
 			}
 		}
+		$tpl->append('ALIAS_DOMAIN', $aliases);
 	} else {
 		$tpl->assign(
 			array(
@@ -1830,30 +1684,28 @@ function recalc_reseller_c_props($reseller_id) {
  * @return void
  */
 function update_reseller_c_props($reseller_id) {
-	global $sql;
+	$sql_param = recalc_reseller_c_props($reseller_id);
+	$sql_param[] = $reseller_id;
 
-	$query = "
+	$sql_query = "
 		UPDATE
-			`reseller_props`
+			reseller_props
 		SET
-			`current_dmn_cnt` = ?,
-			`current_sub_cnt` = ?,
-			`current_als_cnt` = ?,
-			`current_mail_cnt` = ?,
-			`current_ftp_cnt` = ?,
-			`current_sql_db_cnt` = ?,
-			`current_sql_user_cnt` = ?,
-			`current_disk_amnt` = ?,
-			`current_traff_amnt` = ?
+			current_dmn_cnt = ?,
+			current_sub_cnt = ?,
+			current_als_cnt = ?,
+			current_mail_cnt = ?,
+			current_ftp_cnt = ?,
+			current_sql_db_cnt = ?,
+			current_sql_user_cnt = ?,
+			current_disk_amnt = ?,
+			current_traff_amnt = ?
 		WHERE
-			`reseller_id` = ?;
+			reseller_id = ?;
 	";
 
-
-	$props = recalc_reseller_c_props($reseller_id);
-	$props[] = $reseller_id;
-
-	exec_query($sql, $query, $props);
+	DB::prepare($sql_query);
+	DB::execute($sql_param)->closeCursor();
 }
 
 /**

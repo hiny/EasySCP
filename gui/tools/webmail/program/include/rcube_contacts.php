@@ -5,8 +5,11 @@
  | program/include/rcube_contacts.php                                    |
  |                                                                       |
  | This file is part of the Roundcube Webmail client                     |
- | Copyright (C) 2006-2011, The Roundcube Dev Team                       |
- | Licensed under the GNU GPL                                            |
+ | Copyright (C) 2006-2012, The Roundcube Dev Team                       |
+ |                                                                       |
+ | Licensed under the GNU General Public License version 3 or            |
+ | any later version with exceptions for skins & plugins.                |
+ | See the README file for a full license statement.                     |
  |                                                                       |
  | PURPOSE:                                                              |
  |   Interface to the local address book database                        |
@@ -15,7 +18,7 @@
  | Author: Thomas Bruederli <roundcube@gmail.com>                        |
  +-----------------------------------------------------------------------+
 
- $Id: rcube_contacts.php 5415 2011-11-11 15:04:45Z alec $
+ $Id$
 
 */
 
@@ -31,6 +34,7 @@ class rcube_contacts extends rcube_addressbook
     protected $db_name = 'contacts';
     protected $db_groups = 'contactgroups';
     protected $db_groupmembers = 'contactgroupmembers';
+    protected $vcard_fieldmap = array();
 
     /**
      * Store database connection.
@@ -61,6 +65,8 @@ class rcube_contacts extends rcube_addressbook
       'jobtitle', 'organization', 'department', 'assistant', 'manager',
       'gender', 'maidenname', 'spouse', 'email', 'phone', 'address',
       'birthday', 'anniversary', 'website', 'im', 'notes', 'photo');
+
+    const SEPARATOR = ',';
 
 
     /**
@@ -211,6 +217,16 @@ class rcube_contacts extends rcube_addressbook
             $join = " LEFT JOIN ".get_table_name($this->db_groupmembers)." AS m".
                 " ON (m.contact_id = c.".$this->primary_key.")";
 
+        $order_col = (in_array($this->sort_col, $this->table_cols) ? $this->sort_col : 'name');
+        $order_cols = array('c.'.$order_col);
+        if ($order_col == 'firstname')
+            $order_cols[] = 'c.surname';
+        else if ($order_col == 'surname')
+            $order_cols[] = 'c.firstname';
+        if ($order_col != 'name')
+            $order_cols[] = 'c.name';
+        $order_cols[] = 'c.email';
+
         $sql_result = $this->db->limitquery(
             "SELECT * FROM ".get_table_name($this->db_name)." AS c" .
             $join .
@@ -218,7 +234,8 @@ class rcube_contacts extends rcube_addressbook
                 " AND c.user_id=?" .
                 ($this->group_id ? " AND m.contactgroup_id=?" : "").
                 ($this->filter ? " AND (".$this->filter.")" : "") .
-            " ORDER BY ". $this->db->concat('c.name', 'c.email'),
+            " ORDER BY ". $this->db->concat($order_cols) .
+            " " . $this->sort_order,
             $start_row,
             $length,
             $this->user_id,
@@ -232,14 +249,9 @@ class rcube_contacts extends rcube_addressbook
 
             if ($read_vcard)
                 $sql_arr = $this->convert_db_data($sql_arr);
-            else
-                $sql_arr['email'] = preg_split('/,\s*/', $sql_arr['email']);
-
-            // make sure we have a name to display
-            if (empty($sql_arr['name'])) {
-                if (empty($sql_arr['email']))
-                  $sql_arr['email'] = $this->get_col_values('email', $sql_arr, true);
-                $sql_arr['name'] = $sql_arr['email'][0];
+            else {
+                $sql_arr['email'] = explode(self::SEPARATOR, $sql_arr['email']);
+                $sql_arr['email'] = array_map('trim', $sql_arr['email']);
             }
 
             $this->result->add($sql_arr);
@@ -287,11 +299,13 @@ class rcube_contacts extends rcube_addressbook
 
         $where = $and_where = array();
         $mode = intval($mode);
+        $WS = ' ';
+        $AS = self::SEPARATOR;
 
         foreach ($fields as $idx => $col) {
             // direct ID search
             if ($col == 'ID' || $col == $this->primary_key) {
-                $ids     = !is_array($value) ? explode(',', $value) : $value;
+                $ids     = !is_array($value) ? explode(self::SEPARATOR, $value) : $value;
                 $ids     = $this->db->array2list($ids, 'integer');
                 $where[] = 'c.' . $this->primary_key.' IN ('.$ids.')';
                 continue;
@@ -299,19 +313,19 @@ class rcube_contacts extends rcube_addressbook
             // fulltext search in all fields
             else if ($col == '*') {
                 $words = array();
-                foreach (explode(" ", self::normalize_string($value)) as $word) {
+                foreach (explode($WS, self::normalize_string($value)) as $word) {
                     switch ($mode) {
                     case 1: // strict
-                        $words[] = '(' . $this->db->ilike('words', $word.' %')
-                            . ' OR ' . $this->db->ilike('words', '% '.$word.' %')
-                            . ' OR ' . $this->db->ilike('words', '% '.$word) . ')';
+                        $words[] = '(' . $this->db->ilike('words', $word . '%')
+                            . ' OR ' . $this->db->ilike('words', '%' . $WS . $word . $WS . '%')
+                            . ' OR ' . $this->db->ilike('words', '%' . $WS . $word) . ')';
                         break;
                     case 2: // prefix
-                        $words[] = '(' . $this->db->ilike('words', $word.'%')
-                            . ' OR ' . $this->db->ilike('words', '% '.$word.'%') . ')';
+                        $words[] = '(' . $this->db->ilike('words', $word . '%')
+                            . ' OR ' . $this->db->ilike('words', '%' . $WS . $word . '%') . ')';
                         break;
                     default: // partial
-                        $words[] = $this->db->ilike('words', '%'.$word.'%');
+                        $words[] = $this->db->ilike('words', '%' . $word . '%');
                     }
                 }
                 $where[] = '(' . join(' AND ', $words) . ')';
@@ -322,13 +336,17 @@ class rcube_contacts extends rcube_addressbook
                 if (in_array($col, $this->table_cols)) {
                     switch ($mode) {
                     case 1: // strict
-                        $where[] = $this->db->quoteIdentifier($col).' = '.$this->db->quote($val);
+                        $where[] = '(' . $this->db->quoteIdentifier($col) . ' = ' . $this->db->quote($val)
+                            . ' OR ' . $this->db->ilike($col, $val . $AS . '%')
+                            . ' OR ' . $this->db->ilike($col, '%' . $AS . $val . $AS . '%')
+                            . ' OR ' . $this->db->ilike($col, '%' . $AS . $val) . ')';
                         break;
                     case 2: // prefix
-                        $where[] = $this->db->ilike($col, $val.'%');
+                        $where[] = '(' . $this->db->ilike($col, $val . '%')
+                            . ' OR ' . $this->db->ilike($col, $AS . $val . '%') . ')';
                         break;
                     default: // partial
-                        $where[] = $this->db->ilike($col, '%'.$val.'%');
+                        $where[] = $this->db->ilike($col, '%' . $val . '%');
                     }
                 }
                 // vCard field
@@ -337,16 +355,16 @@ class rcube_contacts extends rcube_addressbook
                         foreach (explode(" ", self::normalize_string($val)) as $word) {
                             switch ($mode) {
                             case 1: // strict
-                                $words[] = '(' . $this->db->ilike('words', $word.' %')
-                                    . ' OR ' . $this->db->ilike('words', '% '.$word.' %')
-                                    . ' OR ' . $this->db->ilike('words', '% '.$word) . ')';
+                                $words[] = '(' . $this->db->ilike('words', $word . $WS . '%')
+                                    . ' OR ' . $this->db->ilike('words', '%' . $AS . $word . $WS .'%')
+                                    . ' OR ' . $this->db->ilike('words', '%' . $AS . $word) . ')';
                                 break;
                             case 2: // prefix
-                                $words[] = '(' . $this->db->ilike('words', $word.'%')
-                                    . ' OR ' . $this->db->ilike('words', ' '.$word.'%') . ')';
+                                $words[] = '(' . $this->db->ilike('words', $word . '%')
+                                    . ' OR ' . $this->db->ilike('words', $AS . $word . '%') . ')';
                                 break;
                             default: // partial
-                                $words[] = $this->db->ilike('words', '%'.$word.'%');
+                                $words[] = $this->db->ilike('words', '%' . $word . '%');
                             }
                         }
                         $where[] = '(' . join(' AND ', $words) . ')';
@@ -682,12 +700,13 @@ class rcube_contacts extends rcube_addressbook
 
         if ($sql_arr['vcard']) {
             unset($sql_arr['email']);
-            $vcard = new rcube_vcard($sql_arr['vcard']);
+            $vcard = new rcube_vcard($sql_arr['vcard'], RCMAIL_CHARSET, false, $this->vcard_fieldmap);
             $record += $vcard->get_assoc() + $sql_arr;
         }
         else {
             $record += $sql_arr;
-            $record['email'] = preg_split('/,\s*/', $record['email']);
+            $record['email'] = explode(self::SEPARATOR, $record['email']);
+            $record['email'] = array_map('trim', $record['email']);
         }
 
         return $record;
@@ -700,7 +719,7 @@ class rcube_contacts extends rcube_addressbook
         $words = '';
 
         // copy values into vcard object
-        $vcard = new rcube_vcard($record['vcard'] ? $record['vcard'] : $save_data['vcard']);
+        $vcard = new rcube_vcard($record['vcard'] ? $record['vcard'] : $save_data['vcard'], RCMAIL_CHARSET, false, $this->vcard_fieldmap);
         $vcard->reset();
         foreach ($save_data as $key => $values) {
             list($field, $section) = explode(':', $key);
@@ -720,12 +739,16 @@ class rcube_contacts extends rcube_addressbook
             $key = $col;
             if (!isset($save_data[$key]))
                 $key .= ':home';
-            if (isset($save_data[$key]))
-                $out[$col] = is_array($save_data[$key]) ? join(',', $save_data[$key]) : $save_data[$key];
+            if (isset($save_data[$key])) {
+                if (is_array($save_data[$key]))
+                    $out[$col] = join(self::SEPARATOR, $save_data[$key]);
+                else
+                    $out[$col] = $save_data[$key];
+            }
         }
 
         // save all e-mails in database column
-        $out['email'] = join(", ", $vcard->email);
+        $out['email'] = join(self::SEPARATOR, $vcard->email);
 
         // join words for fulltext search
         $out['words'] = join(" ", array_unique(explode(" ", $words)));
@@ -743,7 +766,7 @@ class rcube_contacts extends rcube_addressbook
     function delete($ids, $force=true)
     {
         if (!is_array($ids))
-            $ids = explode(',', $ids);
+            $ids = explode(self::SEPARATOR, $ids);
 
         $ids = $this->db->array2list($ids, 'integer');
 
@@ -770,7 +793,7 @@ class rcube_contacts extends rcube_addressbook
     function undelete($ids)
     {
         if (!is_array($ids))
-            $ids = explode(',', $ids);
+            $ids = explode(self::SEPARATOR, $ids);
 
         $ids = $this->db->array2list($ids, 'integer');
 
@@ -860,7 +883,7 @@ class rcube_contacts extends rcube_addressbook
      * @param string New name to set for this group
      * @return boolean New name on success, false if no data was changed
      */
-    function rename_group($gid, $newname)
+    function rename_group($gid, $newname, &$new_gid)
     {
         // make sure we have a unique name
         $name = $this->unique_groupname($newname);
@@ -887,7 +910,7 @@ class rcube_contacts extends rcube_addressbook
     function add_to_group($group_id, $ids)
     {
         if (!is_array($ids))
-            $ids = explode(',', $ids);
+            $ids = explode(self::SEPARATOR, $ids);
 
         $added = 0;
         $exists = array();
@@ -914,7 +937,9 @@ class rcube_contacts extends rcube_addressbook
                 $contact_id
             );
 
-            if (!$this->db->db_error)
+            if ($this->db->db_error)
+                $this->set_error(self::ERROR_SAVING, $this->db->db_error_msg);
+            else
                 $added++;
         }
 
@@ -932,7 +957,7 @@ class rcube_contacts extends rcube_addressbook
     function remove_from_group($group_id, $ids)
     {
         if (!is_array($ids))
-            $ids = explode(',', $ids);
+            $ids = explode(self::SEPARATOR, $ids);
 
         $ids = $this->db->array2list($ids, 'integer');
 

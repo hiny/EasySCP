@@ -1,6 +1,6 @@
 ﻿/**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,15 +20,10 @@
  * @author 		EasySCP Team
  */
 
+@import url('easyscp.reset.css');
 @import url('easyscp.messages.css');
 
 @CHARSET "UTF-8";
-
-* {
-	font-family: Arial, sans-serif;
-	margin: 0;
-	padding: 0;
-}
 
 a img {
 	border: none;
@@ -36,8 +31,8 @@ a img {
 
 body {
 	background: url(../images/background/left_bg.jpg) repeat-y top left;
+	font-family: Arial, sans-serif;
 	font-size: 0.9em;
-	min-height: 100%;
 	min-width: 850px;
 }
 
@@ -219,10 +214,25 @@ table .icon {
 	text-align : center;
 }
 
+/***********************************************************************************
+ * Form elements
+ ***********************************************************************************/
+
 form table tbody td input[type="text"],
 form table tbody td input[type="password"],
 form table tbody td textarea{
 	min-width : 200px;
+ }
+
+form table tbody td input[type="text"],
+form table tbody td input[type="password"],
+form table tbody td select,
+form table tbody td textarea {
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	padding: 2px;
 }
 
 /***********************************************************************************
@@ -469,7 +479,6 @@ form table tbody td textarea{
  ***********************************************************************************/
 
 /* Main menu icons */
-.main_menu .custom_link { background-image: url(../images/menu/custom_link.png); }
 .main_menu .database { background-image: url(../images/menu/database.png); }
 .main_menu .domains { background-image: url(../images/menu/domains.png); }
 .main_menu .email { background-image: url(../images/menu/email.png); }
@@ -482,7 +491,6 @@ form table tbody td textarea{
 .main_menu .statistics { background-image: url(../images/menu/statistics.png); }
 .main_menu .support { background-image: url(../images/menu/support.png); }
 .main_menu .webtools { background-image: url(../images/menu/webtools.png); }
-.main_menu .custom_link:hover { background-image: url(../images/menu/custom_link_a.png); }
 .main_menu .database:hover { background-image: url(../images/menu/database_a.png); }
 .main_menu .domains:hover { background-image: url(../images/menu/domains_a.png); }
 .main_menu .email:hover { background-image: url(../images/menu/email_a.png); }
@@ -497,7 +505,6 @@ form table tbody td textarea{
 .main_menu .webtools:hover { background-image: url(../images/menu/webtools_a.png); }
 
 /* Left menu heading icons */
-.location .custom_link { background-image: url(../images/menu/custom_link.png); }
 .location .database { background-image: url(../images/menu/database.png); }
 .location .domains { background-image: url(../images/menu/domains.png); }
 .location .email { background-image: url(../images/menu/email.png); }
@@ -534,6 +541,7 @@ form table tbody td textarea{
 .main .purchasing { background-image: url(../images/content/table_icon_purchasing.png); }
 .main .serverstatus { background-image: url(../images/content/table_icon_serverstatus.png); }
 .main .settings { background-image: url(../images/content/table_icon_settings.png); }
+.main .ssl { background-image: url(../images/content/table_icon_ssl.png); }
 .main .sql { background-image: url(../images/content/table_icon_sql.png); }
 .main .stats { background-image: url(../images/content/table_icon_stats.png); }
 .main .support { background-image: url(../images/content/table_icon_support.png); }

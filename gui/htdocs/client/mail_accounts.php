@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,25 +36,6 @@ if (isset($_SESSION['email_support']) && $_SESSION['email_support'] == 'no') {
 }
 
 gen_page_lists($tpl, $sql, $_SESSION['user_id']);
-
-// Displays the "show/hide" button for default emails
-// only if default mail address exists
-if (count_default_mails($sql, $dmn_id) > 0) {
-
-	$tpl->assign(
-		array(
-			'TR_DEFAULT_EMAILS_BUTTON' =>
-			(!isset($_POST['uaction']) || $_POST['uaction'] != 'show') ?
-				tr('Show default E-Mail addresses') :
-				tr('Hide default E-Mail Addresses'),
-
-			'VL_DEFAULT_EMAILS_BUTTON' =>
-			(isset($_POST['uaction']) && $_POST['uaction'] == 'show') ?
-				'hide' :'show'
-		)
-	);
-
-}
 
 // static page messages.
 gen_logged_from($tpl);
@@ -189,17 +170,6 @@ function gen_page_dmn_mail_list($tpl, $sql, $dmn_id, $dmn_name) {
 				`mail_type` LIKE '%".MT_NORMAL_FORWARD."%'
 			) ";
 
-	if (!isset($_POST['uaction']) || $_POST['uaction'] == 'hide') {
-		$dmn_query .= "
-			AND
-				`mail_acc` != 'abuse'
-			AND
-				`mail_acc` != 'postmaster'
-			AND
-				`mail_acc` != 'webmaster'
-		";
-	}
-
 	$dmn_query .= "
 		ORDER BY
 			`mail_acc` ASC,
@@ -296,17 +266,6 @@ function gen_page_sub_mail_list($tpl, $sql, $dmn_id, $dmn_name) {
 		AND
 			t1.`subdomain_id` = t2.`sub_id`
 	";
-
-	if (!isset($_POST['uaction']) || $_POST['uaction'] == 'hide') {
-		$sub_query .= "
-			AND
-				`mail_acc` != 'abuse'
-			AND
-				`mail_acc` != 'postmaster'
-			AND
-				`mail_acc` != 'webmaster'
-		";
-	}
 
 	$sub_query .= "
 		ORDER BY
@@ -412,17 +371,6 @@ function gen_page_als_sub_mail_list($tpl, $sql, $dmn_id, $dmn_name) {
 			)
 	";
 
-	if (!isset($_POST['uaction']) || $_POST['uaction'] == 'hide') {
-		$sub_query .= "
-			AND
-				`mail_acc` != 'abuse'
-			AND
-				`mail_acc` != 'postmaster'
-			AND
-				`mail_acc` != 'webmaster'
-		";
-	}
-
 	$sub_query .= "
 		ORDER BY
 			t1.`mail_acc` ASC,
@@ -516,17 +464,6 @@ function gen_page_als_mail_list($tpl, $sql, $dmn_id, $dmn_name) {
 			)
 	";
 
-	if (!isset($_POST['uaction']) || $_POST['uaction'] == 'hide') {
-		$als_query .= "
-			AND
-				`mail_acc` != 'abuse'
-			AND
-				`mail_acc` != 'postmaster'
-			AND
-				`mail_acc` != 'webmaster'
-		";
-	}
-
 	$als_query .= "
 		ORDER BY
 			t2.`mail_acc` ASC,
@@ -593,108 +530,40 @@ function gen_page_als_mail_list($tpl, $sql, $dmn_id, $dmn_name) {
 function gen_page_lists($tpl, $sql, $user_id) {
 
 	global $dmn_id;
-	$cfg = EasySCP_Registry::get('Config');
 
 	list($dmn_id,$dmn_name,,,,,,,$dmn_mailacc_limit
 	) = get_domain_default_props($sql, $user_id);
 
 	$dmn_mails = gen_page_dmn_mail_list($tpl, $sql, $dmn_id, $dmn_name);
 	$sub_mails = gen_page_sub_mail_list($tpl, $sql, $dmn_id, $dmn_name);
-	$alssub_mails = gen_page_als_sub_mail_list($tpl, $sql, $dmn_id, $dmn_name);
 	$als_mails = gen_page_als_mail_list($tpl, $sql, $dmn_id, $dmn_name);
+	$alssub_mails = gen_page_als_sub_mail_list($tpl, $sql, $dmn_id, $dmn_name);
 
-	// If 'uaction' is set and own value is != 'hide', the total includes
-	// the number of email by default
-	$counted_mails = $total_mails =
-		$dmn_mails + $sub_mails + $als_mails + $alssub_mails;
-
-	$default_mails = count_default_mails($sql, $dmn_id);
-
-	if ($cfg->COUNT_DEFAULT_EMAIL_ADDRESSES == 0) {
-		if (isset($_POST['uaction']) && $_POST['uaction'] == 'show') {
-			$counted_mails -= $default_mails;
-		}
-	} else {
-		if (!isset($_POST['uaction']) || $_POST['uaction'] == 'hide') {
-			$counted_mails += $default_mails;
-		}
-	}
+	$total_mails = $dmn_mails + $sub_mails + $als_mails + $alssub_mails;
 
 	if ($total_mails > 0) {
 		$tpl->assign(
 			array(
-				'MAIL_MESSAGE' => '',
-				'DMN_TOTAL' => $dmn_mails,
-				'SUB_TOTAL' => $sub_mails,
-				'ALSSUB_TOTAL' => $sub_mails,
-				'ALS_TOTAL' => $als_mails,
-				'TOTAL_MAIL_ACCOUNTS' => $counted_mails,
-				'ALLOWED_MAIL_ACCOUNTS' => ($dmn_mailacc_limit != 0)
-					? $dmn_mailacc_limit : tr('unlimited')
+				'MAIL_MESSAGE'			=> '',
+				'DMN_TOTAL'				=> $dmn_mails,
+				'SUB_TOTAL'				=> $sub_mails,
+				'ALSSUB_TOTAL'			=> $sub_mails,
+				'ALS_TOTAL'				=> $als_mails,
+				'TOTAL_MAIL_ACCOUNTS'	=> $total_mails,
+				'ALLOWED_MAIL_ACCOUNTS'	=> ($dmn_mailacc_limit != 0) ? $dmn_mailacc_limit : tr('unlimited')
 			)
 		);
 	} else {
-		if (!isset($_POST['uaction']) || $_POST['uaction'] == 'hide') {
-			$tpl->assign(array('TABLE_LIST' => ''));
-		}
-
 		$tpl->assign(
 			array(
 				'MAIL_MSG'		=> tr('Mail account list is empty!'),
 				'MAIL_MSG_TYPE'	=> 'info',
 				'MAIL_ITEM'		=> '',
-				'MAILS_TOTAL' => ''
+				'MAILS_TOTAL'	=> ''
 			)
 		);
 
 	}
 
 } // end gen_page_lists()
-
-/**
- * Count the number of email addresses created by default
- *
- * Return the number of default mail adresses according
- * the state of 'uaction''. If no 'uaction' is set or if the
- * 'uaction' is set to 'hide', 0 will be returned.
- *
- * Note: 'uaction' = user action -> ($_POST['uaction'])
- *
- * For performances reasons, the query is performed only once
- * and the result is cached.
- *
- * @author Laurent declercq <laurent.declercq@ispcp.net>
- * @since r2513
- * @param EasySCP_Database $sql reference to the Database instance
- * @param int Domain name id
- * @return int Number of default mails adresses
- */
-function count_default_mails($sql, $dmn_id) {
-
-	static $count_default_mails;
-
-	if (!is_int($count_default_mails)) {
-
-		$query = "
-			SELECT COUNT(`mail_id`) AS cnt
-			FROM
-				`mail_users`
-			WHERE
-				`domain_id` = ?
-			AND
-				(
-				 	`mail_acc` = 'abuse'
-				OR
-					`mail_acc` = 'postmaster'
-				OR
-					`mail_acc` = 'webmaster'
-				)
-		";
-
-		$rs = exec_query($sql, $query, $dmn_id);
-		$count_default_mails = (int) $rs->fields['cnt'];
-	}
-
-	return $count_default_mails;
-}
 ?>

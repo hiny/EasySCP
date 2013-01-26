@@ -2,7 +2,7 @@
 
 # EasySCP a Virtual Hosting Control Panel
 # Copyright (C) 2006-2010 by isp Control Panel - http://ispcp.net
-# Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+# Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
 #
 # The contents of this file are subject to the Mozilla Public License
 # Version 1.1 (the "License"); you may not use this file except in
@@ -79,7 +79,7 @@ removeOldFiles() {
 
 # Remove older files from hosted domain's temporary folders
 for wdir in ${APACHE_WWW_DIR}*; do
-	removeOldFiles "${wdir}/phptmp" "${PHP_STARTER_DIR}${wdir#$APACHE_WWW_DIR}"
+	removeOldFiles "${wdir}/phptmp" "${PHP_STARTER_DIR}/${wdir#$APACHE_WWW_DIR}"
 done
 
 # And finally remove older files from panel's temporary folder

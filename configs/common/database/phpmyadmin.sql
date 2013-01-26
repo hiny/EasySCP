@@ -1,20 +1,9 @@
 --
 -- EasySCP a Virtual Hosting Control Panel
--- Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+-- Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
 --
--- This program is free software; you can redistribute it and/or
--- modify it under the terms of the GNU General Public License
--- as published by the Free Software Foundation; either version 2
--- of the License, or (at your option) any later version.
---
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
---
--- You should have received a copy of the GNU General Public License
--- along with this program; if not, write to the Free Software
--- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-- This work is licensed under the Creative Commons Attribution-NoDerivs 3.0 Unported License.
+-- To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/3.0/.
 --
 -- @link 		http://www.easyscp.net
 -- @author 		EasySCP Team
@@ -26,7 +15,6 @@
 CREATE DATABASE IF NOT EXISTS `phpmyadmin`
   DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 USE phpmyadmin;
-
 -- --------------------------------------------------------
 
 -- 
@@ -46,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `pma_bookmark` (
   `id` int(11) NOT NULL auto_increment,
   `dbase` varchar(255) NOT NULL default '',
   `user` varchar(255) NOT NULL default '',
-  `label` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL default '',
+  `label` varchar(255) COLLATE utf8_general_ci NOT NULL default '',
   `query` text NOT NULL,
   PRIMARY KEY  (`id`)
 )
@@ -64,8 +52,8 @@ CREATE TABLE IF NOT EXISTS `pma_column_info` (
   `db_name` varchar(64) NOT NULL default '',
   `table_name` varchar(64) NOT NULL default '',
   `column_name` varchar(64) NOT NULL default '',
-  `comment` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL default '',
-  `mimetype` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL default '',
+  `comment` varchar(255) COLLATE utf8_general_ci NOT NULL default '',
+  `mimetype` varchar(255) COLLATE utf8_general_ci NOT NULL default '',
   `transformation` varchar(255) NOT NULL default '',
   `transformation_options` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`),
@@ -102,11 +90,42 @@ CREATE TABLE IF NOT EXISTS `pma_history` (
 CREATE TABLE IF NOT EXISTS `pma_pdf_pages` (
   `db_name` varchar(64) NOT NULL default '',
   `page_nr` int(10) unsigned NOT NULL auto_increment,
-  `page_descr` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL default '',
+  `page_descr` varchar(50) COLLATE utf8_general_ci NOT NULL default '',
   PRIMARY KEY  (`page_nr`),
   KEY `db_name` (`db_name`)
 )
   ENGINE=MyISAM COMMENT='PDF relation pages for phpMyAdmin'
+  DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pma_recent`
+--
+
+CREATE TABLE IF NOT EXISTS `pma_recent` (
+  `username` varchar(64) NOT NULL,
+  `tables` text NOT NULL,
+  PRIMARY KEY (`username`)
+)
+  ENGINE=MyISAM COMMENT='Recently accessed tables'
+  DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pma_table_uiprefs`
+--
+
+CREATE TABLE IF NOT EXISTS `pma_table_uiprefs` (
+  `username` varchar(64) NOT NULL,
+  `db_name` varchar(64) NOT NULL,
+  `table_name` varchar(64) NOT NULL,
+  `prefs` text NOT NULL,
+  `last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`username`,`db_name`,`table_name`)
+)
+  ENGINE=MyISAM COMMENT='Tables'' UI preferences'
   DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 -- --------------------------------------------------------
@@ -185,18 +204,20 @@ CREATE TABLE IF NOT EXISTS `pma_designer_coords` (
 -- 
 
 CREATE TABLE IF NOT EXISTS `pma_tracking` (
-  `db_name` varchar(64) collate utf8_bin NOT NULL,
-  `table_name` varchar(64) collate utf8_bin NOT NULL,
+  `db_name` varchar(64) NOT NULL,
+  `table_name` varchar(64) NOT NULL,
   `version` int(10) unsigned NOT NULL,
   `date_created` datetime NOT NULL,
   `date_updated` datetime NOT NULL,
-  `schema_snapshot` text collate utf8_bin NOT NULL,
-  `schema_sql` text collate utf8_bin,
-  `data_sql` longtext collate utf8_bin,
-  `tracking` set('UPDATE','REPLACE','INSERT','DELETE','TRUNCATE','CREATE DATABASE','ALTER DATABASE','DROP DATABASE','CREATE TABLE','ALTER TABLE','RENAME TABLE','DROP TABLE','CREATE INDEX','DROP INDEX','CREATE VIEW','ALTER VIEW','DROP VIEW') collate utf8_bin default NULL,
+  `schema_snapshot` text NOT NULL,
+  `schema_sql` text,
+  `data_sql` longtext,
+  `tracking` set('UPDATE','REPLACE','INSERT','DELETE','TRUNCATE','CREATE DATABASE','ALTER DATABASE','DROP DATABASE','CREATE TABLE','ALTER TABLE','RENAME TABLE','DROP TABLE','CREATE INDEX','DROP INDEX','CREATE VIEW','ALTER VIEW','DROP VIEW') default NULL,
   `tracking_active` int(1) unsigned NOT NULL default '1',
   PRIMARY KEY  (`db_name`,`table_name`,`version`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT;
+)
+  ENGINE=MyISAM ROW_FORMAT=COMPACT COMMENT='Database changes tracking for phpMyAdmin'
+  DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 -- --------------------------------------------------------
 

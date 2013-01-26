@@ -1,25 +1,27 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * This work is licensed under the Creative Commons Attribution-NoDerivs 3.0 Unported License.
+ * To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/3.0/.
  *
  * @link 		http://www.easyscp.net
  * @author 		EasySCP Team
  */
+
+/**
+ * Configure base settings for translations
+ */
+
+$cfg = EasySCP_Registry::get('Config');
+
+// Specify location of translation tables
+bindtextdomain("EasySCP", $cfg->GUI_ROOT_DIR."/locale");
+bind_textdomain_codeset("EasySCP", 'UTF-8');
+
+// Choose domain
+textdomain("EasySCP");
 
 /**
  * false: don't set (not even auto),
@@ -28,103 +30,20 @@
  */
 
 /**
- * Set and return the current language
- *
- * @param string|null $newlang New language to be used or NULL to use existing
- * @param boolean $force If TRUE, $newlang will be forced
- * @return string Current language
- */
-function curlang($newlang = null, $force = false) {
-
-	$cfg = EasySCP_Registry::get('Config');
-	static $language = null;
-
-	// We store old value so if $language is changed old value is returned
-	$_language = $language;
-
-	// Forcibly set $language to $newlang (use with CARE!)
-	if ($force) {
-		$language = $newlang;
-		return $_language;
-	}
-
-	if (is_null($language) || (!is_null($newlang) && $newlang !== false)) {
-
-		if ($newlang === true || ((is_null($newlang) || $newlang === false) &&
-			is_null($language))) {
-
-			$newlang = (isset($_SESSION['user_def_lang']))
-				? $_SESSION['user_def_lang'] : $cfg->USER_INITIAL_LANG;
-		}
-
-		if ($newlang !== false) {
-			$language = $newlang;
-		}
-	}
-
-	return (!is_null($_language)) ? $_language : $language;
-}
-
-/**
  * Translates a given string into the selected language, if exists
  *
  * @param string $msgid string to translate
  * @param mixed $substitution Prevent the returned string from being replaced with html entities
- * @return Translated or original string
+ * @return string Translated or original string
  */
 function tr($msgid, $substitution = false) {
 
-	static $cache = array();
-	static $stmt = null;
-
-	// Detect whether $substitution is really $substitution or just a value to
-	// be replaced in $msgstr
-	if (!is_bool($substitution)) {
-		$substitution = false;
-	}
-
-	$lang = curlang();
-
 	$encoding = 'UTF-8';
 
-	if (isset($cache[$lang][$msgid])) {
-		$msgstr = $cache[$lang][$msgid];
-	} else {
-
-		$msgstr = $msgid;
-
-		if (!$substitution) {
-			// $substitution is true in this call because we need it that way
-			// and to prevent an infinite loop
-			$encoding = tr('encoding', true);
-		}
-
-		// Prepare the query only once to improve performances
-		if(is_null($stmt)) {
-			$query = "
-				SELECT
-					`msgstr`
-				FROM
-					`$lang`
-				WHERE
-					`msgid` = :msgid
-				;
-			";
-
-			$stmt = EasySCP_Registry::get('Pdo')->prepare($query);
-		}
-
-		// Execute the query
-		$stmt->execute(array(':msgid' => $msgid ));
-
-		$rs = $stmt->fetch(PDO::FETCH_ASSOC);
-
-		if($rs)
-			$msgstr = $rs['msgstr'];
-	}
+	$msgstr = gettext($msgid);
 
 	if ($msgid == 'encoding' && $msgstr == 'encoding') {
-		$msgstr = $encoding;
+		$msgstr = 'UTF-8';
 	}
 
 	// Detect comments and strip them if $msgid == $msgstr
@@ -134,8 +53,6 @@ function tr($msgid, $substitution = false) {
 		unset($l[0]);
 		$msgstr = implode("\n", $l);
 	}
-
-	$cache[$lang][$msgid] = $msgstr;
 
 	// Replace values
 	if (func_num_args() > 1) {
@@ -154,6 +71,66 @@ function tr($msgid, $substitution = false) {
 	}
 
 	return $msgstr;
+}
+
+/**
+ * Gets the available languages in the system
+ *
+ * @return Array of available languages
+ */
+function getLanguages() {
+	$languages = array(
+		'bg_BG' => 'български език - Bulgarian (Bulgaria)',
+		'ca_ES' => 'Català - Catalan (Spain)',
+		'cs_CZ' => 'Česky - Czech (Czech Republic)',
+		'da_DK' => 'Dansk - Danish (Denmark)',
+		'de_DE' => 'Deutsch - German (Germany)',
+		'el_GR' => 'Νέα Ελληνικά - Greek (Greece)',
+		'en_GB' => 'English - English',
+		'es_CO' => 'Español - Spanish (Colombia)',
+		'es_ES' => 'Español - Spanish (Spain)',
+		'eu_ES' => 'Euskara - Basque (Spain)',
+		'fi_FI' => 'Suomi - Finnish (Finland)',
+		'fr_FR'	=> 'Français - French (France)',
+		'gl_ES' => 'Galego - Galician (Spain)',
+		'hu_HU' => 'Magyar - Hungarian (Hungary)',
+		'it_IT' => 'Italiano - Italian (Italy)',
+		'ja_JP' => '日本語 - Japanese (Japan)',
+		'nl_NL' => 'Nederlands - Dutch (Netherlands)',
+		'pl_PL' => 'Polski - Polish (Poland)',
+		'pt_BR' => 'Português - Portuguese (Brazil)',
+		'pt_PT' => 'Português - Portuguese (Portugal)',
+		'ro_RO' => 'Română - Romanian (Romania)',
+		'ru_RU'	=> 'Русский язык - Russian (Russia)',
+		'sk_SK' => 'Slovenčina - Slovak (Slovakia)',
+		'sv_SE'	=> 'Svenska - Swedish (Sweden)',
+		'tr_TR' => 'Türkçe - Turkish (Turkey)'
+		// 'uk_UA'	=> 'Українська - Ukrainian (Ukraine)'
+	);
+	return $languages;
+}
+
+/**
+ * Creates a list of all current installed languages
+ *
+ * @param string $lang_selected Defines the selected language
+ */
+function gen_def_language($lang_selected) {
+
+	$cfg = EasySCP_Registry::get('Config');
+	$tpl = EasySCP_TemplateEngine::getInstance();
+
+	$languages = getLanguages();
+
+	foreach ($languages as $lang => $language_name) {
+		$tpl->append(
+			array(
+				'LANG_VALUE'	=> $lang,
+				'LANG_SELECTED'	=> ($lang === $lang_selected) ? $cfg->HTML_SELECTED : '',
+				'LANG_NAME'		=> tohtml($language_name)
+			)
+		);
+	}
 }
 
 /**
@@ -194,5 +171,36 @@ function replace_html($string) {
 	$string = preg_replace($pattern, $replacement, $string);
 
 	return $string;
+}
+
+/**
+ * Update the Users languages
+ */
+function update_user_language(){
+
+	$cfg = EasySCP_Registry::get('Config');
+
+	$user_lang = clean_input($_POST['def_language']);
+
+	$sql_param = array(
+		':lang'		=> $user_lang,
+		':user_id'	=> $_SESSION['user_id']
+	);
+
+	$sql_query = "
+		UPDATE
+			user_gui_props
+		SET
+			lang = :lang
+		WHERE
+			user_id = :user_id
+	;";
+
+	DB::prepare($sql_query);
+	DB::execute($sql_param);
+
+	unset($_SESSION['user_def_lang']);
+	$_SESSION['user_def_lang'] = $user_lang;
+	$cfg->USER_SELECTED_LANG = $user_lang;
 }
 ?>

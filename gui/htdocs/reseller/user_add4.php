@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,7 +44,7 @@ if (!is_xhr()) {
 			'TR_DOMAIN_ACCOUNT'			=> tr('User account'),
 			'TR_MOUNT_POINT'			=> tr('Directory mount point'),
 			'TR_DOMAIN_IP'				=> tr('Domain IP'),
-			'TR_DMN_HELP'				=> tr("You do not need 'www.' ispCP will add it on its own."),
+			'TR_DMN_HELP'				=> tr("You do not need 'www.' EasySCP will add it on its own."),
 			'TR_FORWARD'				=> tr('Forward to URL'),
 			'TR_ADD'					=> tr('Add alias'),
 			'TR_DOMAIN_ALIAS'			=> tr('Domain alias'),

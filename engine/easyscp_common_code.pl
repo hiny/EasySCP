@@ -3,7 +3,7 @@
 # EasySCP a Virtual Hosting Control Panel
 # Copyright (C) 2001-2006 by moleSoftware GmbH - http://www.molesoftware.com
 # Copyright (C) 2006-2010 by isp Control Panel - http://ispcp.net
-# Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+# Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
 #
 # The contents of this file are subject to the Mozilla Public License
 # Version 1.1 (the "License"); you may not use this file except in
@@ -127,13 +127,42 @@ if ($main::db_pass_key eq '{KEY}' || $main::db_pass_iv eq '{IV}') {
 	 "http://www.easyscp,net\n";
 
 	map {s/'/\\'/g, chop}
-		my $db_pass_key = generateRandomChars(32, ''),
-		my $db_pass_iv = generateRandomChars(8, '');
+		#my $db_pass_key = generateRandomChars(32, ''),
+		my $db_pass_key = generateRandomPass(32),
+		#my $db_pass_iv = generateRandomChars(8, '');
+		my $db_pass_iv = generateRandomPass(8);
 
 	$main::db_pass_key = $db_pass_key;
 	$main::db_pass_iv = $db_pass_iv;
 
 	$rs = write_easyscp_key_cfg();
+
+	## Building the old database keys file
+	my $cfgFile;
+
+	# Getting the template file for old database keys
+	($rs, $cfgFile) = get_file("$main::cfg{'ROOT_DIR'}/engine/easyscp-load-db-keys.pl");
+	return $rs if($rs != 0);
+
+	($rs, $cfgFile) = prep_tpl(
+		{
+			'{KEY}'		=> $main::db_pass_key,
+			'{IV}'		=> $main::db_pass_iv
+		},
+		$cfgFile
+	);
+	return $rs if($rs != 0);
+
+	# Storing the file in the config directory
+	$rs = store_file(
+		"$main::cfg{'ROOT_DIR'}/engine/easyscp-load-db-keys.pl", $cfgFile, "$main::cfg{'ROOT_USER'}",
+		"$main::cfg{'ROOT_GROUP'}", 0700
+	);
+	$rs = store_file(
+		"$main::cfg{'ROOT_DIR'}/engine/messenger/easyscp-load-db-keys.pl", $cfgFile, "$main::cfg{'MTA_MAILBOX_UID_NAME'}",
+		"$main::cfg{'MTA_MAILBOX_GID_NAME'}", 0700
+	);
+	return $rs if($rs != 0);
 
 	die('FATAL: Error during database keys generation!') if ($rs != 0);
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,50 +25,31 @@ require '../../include/easyscp-lib.php';
 
 check_login(__FILE__);
 
+if (isset($_POST['uaction']) && $_POST['uaction'] === 'save_lang') {
+	update_user_language();
+}
+
 $cfg = EasySCP_Registry::get('Config');
 
 $tpl = EasySCP_TemplateEngine::getInstance();
 $template = 'admin/language.tpl';
 
-// page actions.
 if (isset($_POST['uaction']) && $_POST['uaction'] === 'save_lang') {
-
-	$user_id = $_SESSION['user_id'];
-	$user_lang = $_POST['def_language'];
-
-	$query = "
-		UPDATE
-			`user_gui_props`
-		SET
-			`lang` = ?
-		WHERE
-			`user_id` = ?
-	;";
-
-	exec_query($sql, $query, array($user_lang, $user_id));
-
-	unset($_SESSION['user_def_lang']);
-	$_SESSION['user_def_lang'] = $user_lang;
-	set_page_message(tr('User language updated successfully!'), 'success');
+	set_page_message(
+		tr('User language updated successfully!'),
+		'success'
+	);
 }
 
-if (!isset($_SESSION['logged_from']) && !isset($_SESSION['logged_from_id'])) {
-	list($user_def_lang, $user_def_layout) = get_user_gui_props($sql, $_SESSION['user_id']);
-} else {
-	$user_def_layout = $_SESSION['user_theme'];
-	$user_def_lang = $_SESSION['user_def_lang'];
-}
-
-gen_def_language($tpl, $sql, $cfg);
-
+gen_def_language($cfg->USER_SELECTED_LANG);
 
 // static page messages.
 $tpl->assign(
 	array(
-		'TR_PAGE_TITLE' => tr('EasySCP - Admin/Change Language'),
-		'TR_LANGUAGE' => tr('Language'),
-		'TR_CHOOSE_DEFAULT_LANGUAGE' => tr('Choose your default language'),
-		'TR_SAVE' => tr('Save'),
+		'TR_PAGE_TITLE'				=> tr('EasySCP - Admin/Change Language'),
+		'TR_LANGUAGE'				=> tr('Language'),
+		'TR_CHOOSE_DEFAULT_LANGUAGE'=> tr('Choose your default language'),
+		'TR_SAVE'					=> tr('Save')
 	)
 );
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -127,6 +127,19 @@ class EasySCP_TemplateEngine {
 	 */
 	private function set_globals() {
 		$cfg = EasySCP_Registry::get('Config');
+
+		// get current Language
+		if (isset($cfg->USER_SELECTED_LANG) && $cfg->USER_SELECTED_LANG != ''){
+			$setLocale = $cfg->USER_SELECTED_LANG . '.UTF8';
+		} elseif (isset($cfg->USER_INITIAL_LANG) && $cfg->USER_INITIAL_LANG != ''){
+			$setLocale = $cfg->USER_INITIAL_LANG . '.UTF8';
+		} else {
+			$setLocale = 'en_GB.UTF8';
+		}
+
+		// Set language for translation
+		setlocale(LC_MESSAGES, $setLocale);
+
 		$gui_root = $cfg->GUI_ROOT_DIR.'/';
 		if (isset($_SESSION['user_id']) && $_SESSION['user_id'] != ''){
 			$TemplateDir = $gui_root . 'themes/' . $cfg->USER_INITIAL_THEME;
@@ -144,7 +157,7 @@ class EasySCP_TemplateEngine {
 		$this->template_engine->setCompileDir($CompileDir);
 		$this->assign(
 			array(
-				'THEME_CHARSET'		=> tr('encoding'),
+				'THEME_CHARSET'		=> (function_exists('tr')) ? tr('encoding') : 'UTF-8',
 				'THEME_COLOR_PATH'	=> '/' . $THEME_COLOR_PATH,
 				'THEME_SCRIPT_PATH'	=> '/themes/scripts'
 			)

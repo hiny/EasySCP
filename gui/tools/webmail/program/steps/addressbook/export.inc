@@ -7,7 +7,10 @@
  | This file is part of the Roundcube Webmail client                     |
  | Copyright (C) 2008-2011, The Roundcube Dev Team                       |
  | Copyright (C) 2011, Kolab Systems AG                                  |
- | Licensed under the GNU GPL                                            |
+ |                                                                       |
+ | Licensed under the GNU General Public License version 3 or            |
+ | any later version with exceptions for skins & plugins.                |
+ | See the README file for a full license statement.                     |
  |                                                                       |
  | PURPOSE:                                                              |
  |   Export the selected address book as vCard file                      |
@@ -24,6 +27,7 @@
 // Use search result
 if (!empty($_REQUEST['_search']) && isset($_SESSION['search'][$_REQUEST['_search']]))
 {
+    $sort_col = $RCMAIL->config->get('addressbook_sort_col', 'name');
     $search  = (array)$_SESSION['search'][$_REQUEST['_search']];
     $records = array();
 
@@ -41,7 +45,7 @@ if (!empty($_REQUEST['_search']) && isset($_SESSION['search'][$_REQUEST['_search
 
         while ($row = $result->next()) {
             $row['sourceid'] = $s;
-            $key = $row['name'] . ':' . $row['sourceid'];
+            $key = rcmail_contact_key($row, $sort_col);
             $records[$key] = $row;
         }
         unset($result);
@@ -85,7 +89,7 @@ while ($result && ($row = $result->next())) {
         foreach ($row as $key => $values) {
             list($field, $section) = explode(':', $key);
             foreach ((array)$values as $value) {
-                if (is_array($value) || strlen($value))
+                if (is_array($value) || @strlen($value))
                     $vcard->set($field, $value, strtoupper($section));
             }
         }

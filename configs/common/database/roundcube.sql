@@ -1,34 +1,27 @@
 --
 -- EasySCP a Virtual Hosting Control Panel
--- Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+-- Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
 --
--- This program is free software; you can redistribute it and/or
--- modify it under the terms of the GNU General Public License
--- as published by the Free Software Foundation; either version 2
--- of the License, or (at your option) any later version.
---
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
---
--- You should have received a copy of the GNU General Public License
--- along with this program; if not, write to the Free Software
--- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-- This work is licensed under the Creative Commons Attribution-NoDerivs 3.0 Unported License.
+-- To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/3.0/.
 --
 -- @link 		http://www.easyscp.net
 -- @author 		EasySCP Team
 -- --------------------------------------------------------
 
-create database `roundcubemail` CHARACTER SET utf8 COLLATE utf8_unicode_ci;
-
+--
+-- Database : `roundcubemail`
+--
+CREATE DATABASE IF NOT EXISTS `roundcubemail`
+  DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 use `roundcubemail`;
+-- --------------------------------------------------------
 
 /*!40014  SET FOREIGN_KEY_CHECKS=0 */;
 
 -- Table structure for table `session`
 
-CREATE TABLE `session` (
+CREATE TABLE IF NOT EXISTS `session` (
  `sess_id` varchar(128) NOT NULL,
  `created` datetime NOT NULL DEFAULT '1000-01-01 00:00:00',
  `changed` datetime NOT NULL DEFAULT '1000-01-01 00:00:00',
@@ -41,7 +34,7 @@ CREATE TABLE `session` (
 
 -- Table structure for table `users`
 
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS `users` (
  `user_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
  `username` varchar(128) BINARY NOT NULL,
  `mail_host` varchar(128) NOT NULL,
@@ -58,12 +51,12 @@ CREATE TABLE `users` (
 
 -- Table structure for table `cache`
 
-CREATE TABLE `cache` (
+CREATE TABLE IF NOT EXISTS `cache` (
  `cache_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
  `cache_key` varchar(128) /*!40101 CHARACTER SET ascii COLLATE ascii_general_ci */ NOT NULL ,
  `created` datetime NOT NULL DEFAULT '1000-01-01 00:00:00',
  `data` longtext NOT NULL,
- `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0',
+ `user_id` int(10) UNSIGNED NOT NULL,
  PRIMARY KEY(`cache_id`),
  CONSTRAINT `user_id_fk_cache` FOREIGN KEY (`user_id`)
    REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -74,8 +67,8 @@ CREATE TABLE `cache` (
 
 -- Table structure for table `cache_index`
 
-CREATE TABLE `cache_index` (
- `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0',
+CREATE TABLE IF NOT EXISTS `cache_index` (
+ `user_id` int(10) UNSIGNED NOT NULL,
  `mailbox` varchar(255) BINARY NOT NULL,
  `changed` datetime NOT NULL DEFAULT '1000-01-01 00:00:00',
  `valid` tinyint(1) NOT NULL DEFAULT '0',
@@ -89,8 +82,8 @@ CREATE TABLE `cache_index` (
 
 -- Table structure for table `cache_thread`
 
-CREATE TABLE `cache_thread` (
- `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0',
+CREATE TABLE IF NOT EXISTS `cache_thread` (
+ `user_id` int(10) UNSIGNED NOT NULL,
  `mailbox` varchar(255) BINARY NOT NULL,
  `changed` datetime NOT NULL DEFAULT '1000-01-01 00:00:00',
  `data` longtext NOT NULL,
@@ -103,8 +96,8 @@ CREATE TABLE `cache_thread` (
 
 -- Table structure for table `cache_messages`
 
-CREATE TABLE `cache_messages` (
- `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0',
+CREATE TABLE IF NOT EXISTS `cache_messages` (
+ `user_id` int(10) UNSIGNED NOT NULL,
  `mailbox` varchar(255) BINARY NOT NULL,
  `uid` int(11) UNSIGNED NOT NULL DEFAULT '0',
  `changed` datetime NOT NULL DEFAULT '1000-01-01 00:00:00',
@@ -119,28 +112,28 @@ CREATE TABLE `cache_messages` (
 
 -- Table structure for table `contacts`
 
-CREATE TABLE `contacts` (
+CREATE TABLE IF NOT EXISTS `contacts` (
  `contact_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
  `changed` datetime NOT NULL DEFAULT '1000-01-01 00:00:00',
  `del` tinyint(1) NOT NULL DEFAULT '0',
  `name` varchar(128) NOT NULL DEFAULT '',
- `email` varchar(255) NOT NULL,
+ `email` text NOT NULL DEFAULT '',
  `firstname` varchar(128) NOT NULL DEFAULT '',
  `surname` varchar(128) NOT NULL DEFAULT '',
  `vcard` longtext NULL,
  `words` text NULL,
- `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0',
+ `user_id` int(10) UNSIGNED NOT NULL,
  PRIMARY KEY(`contact_id`),
  CONSTRAINT `user_id_fk_contacts` FOREIGN KEY (`user_id`)
    REFERENCES `users`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
- INDEX `user_contacts_index` (`user_id`,`email`)
+ INDEX `user_contacts_index` (`user_id`,`del`)
 ) /*!40000 ENGINE=INNODB */ /*!40101 CHARACTER SET utf8 COLLATE utf8_general_ci */;
 
 -- Table structure for table `contactgroups`
 
-CREATE TABLE `contactgroups` (
+CREATE TABLE IF NOT EXISTS `contactgroups` (
   `contactgroup_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0',
+  `user_id` int(10) UNSIGNED NOT NULL,
   `changed` datetime NOT NULL DEFAULT '1000-01-01 00:00:00',
   `del` tinyint(1) NOT NULL DEFAULT '0',
   `name` varchar(128) NOT NULL DEFAULT '',
@@ -150,9 +143,9 @@ CREATE TABLE `contactgroups` (
   INDEX `contactgroups_user_index` (`user_id`,`del`)
 ) /*!40000 ENGINE=INNODB */ /*!40101 CHARACTER SET utf8 COLLATE utf8_general_ci */;
 
-CREATE TABLE `contactgroupmembers` (
+CREATE TABLE IF NOT EXISTS `contactgroupmembers` (
   `contactgroup_id` int(10) UNSIGNED NOT NULL,
-  `contact_id` int(10) UNSIGNED NOT NULL DEFAULT '0',
+  `contact_id` int(10) UNSIGNED NOT NULL,
   `created` datetime NOT NULL DEFAULT '1000-01-01 00:00:00',
   PRIMARY KEY (`contactgroup_id`, `contact_id`),
   CONSTRAINT `contactgroup_id_fk_contactgroups` FOREIGN KEY (`contactgroup_id`)
@@ -165,9 +158,9 @@ CREATE TABLE `contactgroupmembers` (
 
 -- Table structure for table `identities`
 
-CREATE TABLE `identities` (
+CREATE TABLE IF NOT EXISTS `identities` (
  `identity_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
- `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0',
+ `user_id` int(10) UNSIGNED NOT NULL,
  `changed` datetime NOT NULL DEFAULT '1000-01-01 00:00:00',
  `del` tinyint(1) NOT NULL DEFAULT '0',
  `standard` tinyint(1) NOT NULL DEFAULT '0',
@@ -187,7 +180,7 @@ CREATE TABLE `identities` (
 
 -- Table structure for table `dictionary`
 
-CREATE TABLE `dictionary` (
+CREATE TABLE IF NOT EXISTS `dictionary` (
   `user_id` int(10) UNSIGNED DEFAULT NULL,
   `language` varchar(5) NOT NULL,
   `data` longtext NOT NULL,
@@ -199,9 +192,9 @@ CREATE TABLE `dictionary` (
 
 -- Table structure for table `searches`
 
-CREATE TABLE `searches` (
+CREATE TABLE IF NOT EXISTS `searches` (
  `search_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
- `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0',
+ `user_id` int(10) UNSIGNED NOT NULL,
  `type` int(3) NOT NULL DEFAULT '0',
  `name` varchar(128) NOT NULL,
  `data` text,

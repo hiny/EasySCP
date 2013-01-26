@@ -22,7 +22,6 @@
 			<h1 class="settings">{$TR_MENU_SETTINGS}</h1>
 		</div>
 		<ul class="location-menu">
-			
 			<li><a href="../index.php?logout" class="logout">{$TR_MENU_LOGOUT}</a></li>
 		</ul>
 		<ul class="path">
@@ -165,15 +164,6 @@
 							<select name="create_default_email_addresses" id="create_default_email_addresses">
 								<option value="0" {$CREATE_DEFAULT_EMAIL_ADDRESSES_OFF}>{$TR_DISABLED}</option>
 								<option value="1" {$CREATE_DEFAULT_EMAIL_ADDRESSES_ON}>{$TR_ENABLED}</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td><label for="count_default_email_addresses">{$TR_COUNT_DEFAULT_EMAIL_ADDRESSES}</label></td>
-						<td>
-							<select name="count_default_email_addresses" id="count_default_email_addresses">
-								<option value="0" {$COUNT_DEFAULT_EMAIL_ADDRESSES_OFF}>{$TR_DISABLED}</option>
-								<option value="1" {$COUNT_DEFAULT_EMAIL_ADDRESSES_ON}>{$TR_ENABLED}</option>
 							</select>
 						</td>
 					</tr>

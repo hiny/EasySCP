@@ -6,7 +6,10 @@
  |                                                                       |
  | This file is part of the Roundcube Webmail client                     |
  | Copyright (C) 2005-2009, The Roundcube Dev Team                       |
- | Licensed under the GNU GPL                                            |
+ |                                                                       |
+ | Licensed under the GNU General Public License version 3 or            |
+ | any later version with exceptions for skins & plugins.                |
+ | See the README file for a full license statement.                     |
  |                                                                       |
  | PURPOSE:                                                              |
  |   Add the submitted contact to the users address book                 |
@@ -15,7 +18,7 @@
  | Author: Thomas Bruederli <roundcube@gmail.com>                        |
  +-----------------------------------------------------------------------+
 
- $Id: addcontact.inc 5415 2011-11-11 15:04:45Z alec $
+ $Id$
 
 */
 
@@ -37,7 +40,7 @@ if ($abook == null || !is_object($CONTACTS)) {
 
 if (!empty($_POST['_address']) && is_object($CONTACTS))
 {
-  $contact_arr = $IMAP->decode_address_list(get_input_value('_address', RCUBE_INPUT_POST, true), 1, false);
+  $contact_arr = rcube_mime::decode_address_list(get_input_value('_address', RCUBE_INPUT_POST, true), 1, false);
 
   if (!empty($contact_arr[1]['mailto'])) {
     $contact = array(
@@ -58,7 +61,10 @@ if (!empty($_POST['_address']) && is_object($CONTACTS))
     }
 
     $contact['email'] = rcube_idn_to_utf8($contact['email']);
-    $contact['name'] = rcube_addressbook::compose_display_name($contact);
+    $contact = $RCMAIL->plugins->exec_hook('contact_displayname', $contact);
+
+    if (empty($contact['firstname']) || empty($contact['surname']))
+      $contact['name'] = rcube_addressbook::compose_display_name($contact);
 
     // validate contact record
     if (!$CONTACTS->validate($contact, true)) {

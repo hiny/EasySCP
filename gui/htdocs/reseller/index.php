@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,40 +31,25 @@ $tpl = EasySCP_TemplateEngine::getInstance();
 $template = 'reseller/index.tpl';
 
 // dynamic page data
-
 generate_page_data($tpl, $_SESSION['user_id'], $_SESSION['user_logged']);
 
-// Makes sure that the language selected is the reseller's language
-if (!isset($_SESSION['logged_from']) && !isset($_SESSION['logged_from_id'])) {
-	list($user_def_lang, $user_def_layout) = get_user_gui_props($sql, $_SESSION['user_id']);
-} else {
-	$user_def_layout = $_SESSION['user_theme'];
-	$user_def_lang = $_SESSION['user_def_lang'];
-}
+gen_messages_table($tpl, $_SESSION['user_id']);
+
+gen_system_message($tpl, $sql);
 
 // static page messages
 gen_logged_from($tpl);
 
 $tpl->assign(
 	array(
-		'TR_PAGE_TITLE' => tr('EasySCP - Reseller/Main Index'),
-		'TR_SAVE' => tr('Save'),
-		'TR_MESSAGES' => tr('Messages'),
-		'TR_LANGUAGE' => tr('Language'),
-		'TR_CHOOSE_DEFAULT_LANGUAGE' => tr('Choose default language'),
-		'TR_TRAFFIC_USAGE' => tr('Traffic usage'),
-		'TR_DISK_USAGE' => tr ('Disk usage')
+		'TR_PAGE_TITLE'		=> tr('EasySCP - Reseller/Main Index'),
+		'TR_TRAFFIC_USAGE'	=> tr('Traffic usage'),
+		'TR_DISK_USAGE'		=> tr ('Disk usage')
 	)
 );
 
 gen_reseller_mainmenu($tpl, 'reseller/main_menu_general_information.tpl');
 gen_reseller_menu($tpl, 'reseller/menu_general_information.tpl');
-
-gen_messages_table($tpl, $_SESSION['user_id']);
-
-gen_def_language($tpl, $sql, $cfg);
-
-gen_system_message($tpl, $sql);
 
 gen_page_message($tpl);
 
@@ -112,9 +97,9 @@ function gen_system_message($tpl, $sql) {
 	} else {
 		$tpl->assign(
 			array(
-				'TR_NEW_MSGS' => tr('You have <strong>%d</strong> new support questions', $num_question),
-				'NEW_MSG_TYPE' => 'info',
-				'TR_VIEW' => tr('View')
+				'TR_NEW_MSGS'	=> tr('You have <strong>%d</strong> new support questions', $num_question),
+				'NEW_MSG_TYPE'	=> 'info',
+				'TR_VIEW'		=> tr('View')
 			)
 		);
 
@@ -254,18 +239,18 @@ function generate_page_data($tpl, $reseller_id, $reseller_name) {
 
 	$tpl->assign(
 		array(
-			"ACCOUNT_NAME" => tr("Account name"),
-			"GENERAL_INFO" => tr("General information"),
-			"DOMAINS" => tr("User accounts"),
-			"SUBDOMAINS" => tr("Subdomains"),
-			"ALIASES" => tr("Aliases"),
-			"MAIL_ACCOUNTS" => tr("Mail account"),
-			"TR_FTP_ACCOUNTS" => tr("FTP account"),
-			"SQL_DATABASES" => tr("SQL databases"),
-			"SQL_USERS" => tr("SQL users"),
-			"TRAFFIC" => tr("Traffic"),
-			"DISK" => tr("Disk"),
-			"TR_EXTRAS" => tr("Extras")
+			"ACCOUNT_NAME"		=> tr("Account name"),
+			"GENERAL_INFO"		=> tr("General information"),
+			"DOMAINS"			=> tr("User accounts"),
+			"SUBDOMAINS"		=> tr("Subdomains"),
+			"ALIASES"			=> tr("Aliases"),
+			"MAIL_ACCOUNTS"		=> tr("Mail account"),
+			"TR_FTP_ACCOUNTS"	=> tr("FTP account"),
+			"SQL_DATABASES"		=> tr("SQL databases"),
+			"SQL_USERS"			=> tr("SQL users"),
+			"TRAFFIC"			=> tr("Traffic"),
+			"DISK"				=> tr("Disk"),
+			"TR_EXTRAS"			=> tr("Extras")
 		)
 	);
 
@@ -338,9 +323,9 @@ function gen_messages_table($tpl, $admin_id) {
 	} else {
 		$tpl->assign(
 			array(
-				'TR_NEW_MSGS' => tr('You have <strong>%d</strong> new support questions', $questions),
-				'NO_MESSAGES' => '',
-				'TR_VIEW' => tr('View')
+				'TR_NEW_MSGS'	=> tr('You have <strong>%d</strong> new support questions', $questions),
+				'NO_MESSAGES'	=> '',
+				'TR_VIEW'		=> tr('View')
 			)
 		);
 

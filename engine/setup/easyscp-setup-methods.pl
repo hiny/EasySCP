@@ -2,7 +2,7 @@
 
 # EasySCP a Virtual Hosting Control Panel
 # Copyright (C) 2006-2010 by isp Control Panel - http://ispcp.net
-# Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+# Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
 #
 # The contents of this file are subject to the Mozilla Public License
 # Version 1.1 (the "License"); you may not use this file except in
@@ -1616,7 +1616,7 @@ sub setup_named {
 }
 
 ################################################################################
-# EasySCP Apache fastCGI modules configuration - (Setup / Update)
+# EasySCP Apache fcgi modules configuration - (Setup / Update)
 #
 # This subroutine do the following tasks:
 #  - Built, store and install all system php related configuration files
@@ -1624,7 +1624,7 @@ sub setup_named {
 #
 # @return int 0 on success, other on failure
 #
-sub setup_fastcgi_modules {
+sub setup_fcgi_modules {
 
 	push_el(\@main::el, 'setup_php()', 'Starting...');
 
@@ -1713,11 +1713,11 @@ sub setup_fastcgi_modules {
 		$rs = sys_command("/usr/sbin/a2enmod actions");
 		return $rs if($rs != 0);
 
-		# Enable EasySCP fastcgi loader
+		# Enable EasySCP fcgi loader
 		$rs = sys_command("/usr/sbin/a2enmod fcgid_easyscp");
 		return $rs if($rs != 0);
 
-		# Disable default  fastcgi/fcgid modules loaders to avoid conflicts
+		# Disable default fcgid modules loaders to avoid conflicts
 		# with EasySCP loaders
 		$rs = sys_command("/usr/sbin/a2dismod fcgid");
 		return $rs if($rs != 0);
@@ -2160,7 +2160,7 @@ sub setup_mta {
 
 	# Installing the new file in the production dir
 	$rs = sys_command(
-		"$main::cfg{'CMD_CP'} -pf $cfgDir/master.cf " .
+		"$main::cfg{'CMD_CP'} -pf $wrkDir/master.cf " .
 		"$main::cfg{'POSTFIX_MASTER_CONF_FILE'}"
 	);
 	return $rs if ($rs != 0);
@@ -3086,7 +3086,7 @@ sub setup_gui_pma {
 }
 
 ################################################################################
-# EasySCP GUI roundcube configuration file (Setup / Update)
+# EasySCP GUI RoundCube configuration file (Setup / Update)
 #
 # This subroutine built, store and install the RoundCube configuration file
 #
@@ -3530,10 +3530,9 @@ sub setup_services_cfg {
 			[\&setup_system_dirs, 'EasySCP directories:'],
 			[\&setup_config, 'EasySCP main configuration file:'],
 			[\&setup_easyscp_database, 'EasySCP database:'],
-			[\&setup_default_language_table, 'EasySCP default language table:'],
 			[\&setup_default_sql_data, 'EasySCP default SQL data:'],
 			[\&setup_hosts, 'EasySCP system hosts file:'],
-			[\&setup_pma_database, 'EasySCP create phpMyAdmin database:'],
+			[\&setup_pma_database, 'EasySCP create PhpMyAdmin database:'],
 			[\&setup_roundcube_database, 'EasySCP create RoundCube database:']
 		) {
 			subtitle($_->[1]);
@@ -3546,7 +3545,7 @@ sub setup_services_cfg {
 		[\&setup_resolver, 'EasySCP system resolver:'],
 		[\&setup_crontab, 'EasySCP crontab file:'],
 		[\&setup_named, 'EasySCP Bind9 main configuration file:'],
-		[\&setup_fastcgi_modules, 'EasySCP Apache fastCGI modules configuration:'],
+		[\&setup_fcgi_modules, 'EasySCP Apache fcgi modules configuration:'],
 		[\&setup_httpd_main_vhost, 'EasySCP Apache main vhost file:'],
 		[\&setup_awstats_vhost, 'EasySCP Apache AWStats vhost file:'],
 		[\&setup_mta, 'EasySCP Postfix configuration files:'],

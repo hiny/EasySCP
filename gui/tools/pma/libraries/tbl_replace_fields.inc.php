@@ -18,16 +18,7 @@
  * note: grab_globals has extracted the fields from _FILES or HTTP_POST_FILES
  *
  *
- * @uses $_REQUEST
- * @uses defined()
- * @uses define()
- * @uses bin2hex()
- * @uses strlen()
- * @uses md5()
- * @uses implode()
- * @uses PMA_NO_VARIABLES_IMPORT
- * @uses PMA_sqlAddslashes()
- * @package phpMyAdmin
+ * @package PhpMyAdmin
  */
 if (! defined('PHPMYADMIN')) {
     exit;
@@ -68,17 +59,19 @@ if (false !== $possibly_uploaded_val) {
     }
 
     // $key contains the md5() of the fieldname
-    if (0 === strlen($val) && $type != 'protected') {
+    if ($type != 'protected' && $type != 'set' && 0 === strlen($val)) {
         // best way to avoid problems in strict mode (works also in non-strict mode)
         if (isset($me_auto_increment)  && isset($me_auto_increment[$key])) {
             $val = 'NULL';
         } else {
             $val = "''";
-        } 
+        }
     } elseif ($type == 'set') {
         if (! empty($_REQUEST['fields']['multi_edit'][$rownumber][$key])) {
             $val = implode(',', $_REQUEST['fields']['multi_edit'][$rownumber][$key]);
-            $val = "'" . PMA_sqlAddslashes($val) . "'";
+            $val = "'" . PMA_sqlAddSlashes($val) . "'";
+        } else {
+             $val = "''";
         }
     } elseif ($type == 'protected') {
         // here we are in protected mode (asked in the config)
@@ -96,15 +89,15 @@ if (false !== $possibly_uploaded_val) {
             }
     } elseif ($type == 'bit') {
         $val = preg_replace('/[^01]/', '0', $val);
-        $val = "b'" . PMA_sqlAddslashes($val) . "'";
+        $val = "b'" . PMA_sqlAddSlashes($val) . "'";
     } elseif (! (($type == 'datetime' || $type == 'timestamp') && $val == 'CURRENT_TIMESTAMP')) {
-        $val = "'" . PMA_sqlAddslashes($val) . "'";
+        $val = "'" . PMA_sqlAddSlashes($val) . "'";
     }
 
     // Was the Null checkbox checked for this field?
     // (if there is a value, we ignore the Null checkbox: this could
     // be possible if Javascript is disabled in the browser)
-    if (isset($me_fields_null[$key])
+    if (! empty($me_fields_null[$key])
      && ($val == "''" || $val == '')) {
         $val = 'NULL';
     }

@@ -5,8 +5,11 @@
  | program/include/iniset.php                                            |
  |                                                                       |
  | This file is part of the Roundcube Webmail client                     |
- | Copyright (C) 2008-2011, The Roundcube Dev Team                       |
- | Licensed under the GNU GPL                                            |
+ | Copyright (C) 2008-2012, The Roundcube Dev Team                       |
+ |                                                                       |
+ | Licensed under the GNU General Public License version 3 or            |
+ | any later version with exceptions for skins & plugins.                |
+ | See the README file for a full license statement.                     |
  |                                                                       |
  | PURPOSE:                                                              |
  |   Setup the application envoronment required to process               |
@@ -16,28 +19,30 @@
  |         Thomas Bruederli <roundcube@gmail.com>                        |
  +-----------------------------------------------------------------------+
 
- $Id: iniset.php 5582 2011-12-09 08:55:40Z thomasb $
+ $Id$
 
 */
 
-// Some users are not using Installer, so we'll check some
-// critical PHP settings here. Only these, which doesn't provide
-// an error/warning in the logs later. See (#1486307).
-$crit_opts = array(
-    'mbstring.func_overload' => 0,
+$config = array(
+    'error_reporting'         => E_ALL &~ (E_NOTICE | E_STRICT),
+    // Some users are not using Installer, so we'll check some
+    // critical PHP settings here. Only these, which doesn't provide
+    // an error/warning in the logs later. See (#1486307).
+    'mbstring.func_overload'  => 0,
     'suhosin.session.encrypt' => 0,
-    'session.auto_start' => 0,
-    'file_uploads' => 1,
-    'magic_quotes_runtime' => 0,
+    'session.auto_start'      => 0,
+    'file_uploads'            => 1,
+    'magic_quotes_runtime'    => 0,
+    'magic_quotes_sybase'     => 0, // #1488506
 );
-foreach ($crit_opts as $optname => $optval) {
-    if ($optval != ini_get($optname)) {
+foreach ($config as $optname => $optval) {
+    if ($optval != ini_get($optname) && @ini_set($optname, $optval) === false) {
         die("ERROR: Wrong '$optname' option value. Read REQUIREMENTS section in INSTALL file or use Roundcube Installer, please!");
     }
 }
 
 // application constants
-define('RCMAIL_VERSION', '0.7');
+define('RCMAIL_VERSION', '0.8.4');
 define('RCMAIL_CHARSET', 'UTF-8');
 define('JS_OBJECT_NAME', 'rcmail');
 define('RCMAIL_START', microtime(true));
@@ -64,8 +69,6 @@ $include_path.= ini_get('include_path');
 if (set_include_path($include_path) === false) {
     die("Fatal error: ini_set/set_include_path does not work.");
 }
-
-ini_set('error_reporting', E_ALL&~E_NOTICE);
 
 // increase maximum execution time for php scripts
 // (does not work in safe mode)

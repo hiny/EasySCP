@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -183,12 +183,6 @@ function gen_detaildom_page($tpl, $user_id, $domain_id) {
 		FROM `mail_users`
 		WHERE `domain_id` = ?
 		AND `mail_type` NOT RLIKE '_catchall'";
-	if ($cfg->COUNT_DEFAULT_EMAIL_ADDRESSES == 0) {
-		$query .= " AND `mail_acc` != 'abuse'
-			AND `mail_acc` != 'postmaster'
-			AND `mail_acc` != 'webmaster'
-		;";
-	}
 	$res6 = exec_query($sql, $query, $data['domain_id']);
 	$dat3 = $res6->fetchRow();
 	$mail_limit = translate_limit_value($data['domain_mailacc_limit']);

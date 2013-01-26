@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -112,18 +112,6 @@ $domain_php = preg_replace("/\_/", "", $domain_php);
 $domain_cgi = preg_replace("/\_/", "", $domain_cgi);
 $domain_dns = preg_replace("/\_/", "", $domain_dns);
 
-if ($cfg->COUNT_DEFAULT_EMAIL_ADDRESSES == 0) {
-	$query = "SELECT COUNT(`mail_id`) AS cnt
-		FROM `mail_users`
-		WHERE `domain_id` = ?
-		AND (`mail_acc` = 'abuse'
-		OR `mail_acc` = 'postmaster'
-		OR `mail_acc` = 'webmaster')";
-	$rs = exec_query($sql, $query, $dmn_id);
-	$default_mails = $rs->fields['cnt'];
-	$mail += $default_mails;
-}
-
 $ed_error = '';
 
 if (!easyscp_limit_check($sub, -1)) {
@@ -185,10 +173,6 @@ if (empty($ed_error)) {
 }
 
 if (empty($ed_error)) {
-	if ($cfg->COUNT_DEFAULT_EMAIL_ADDRESSES == 0) {
-		$umail_max -= $default_mails;
-	}
-
 	$user_props = "$usub_current;$usub_max;";
 	$user_props .= "$uals_current;$uals_max;";
 	$user_props .= "$umail_current;$umail_max;";

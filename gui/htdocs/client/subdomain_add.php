@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,51 +23,21 @@
 
 require '../../include/easyscp-lib.php';
 
-check_login(__FILE__);
-
 $cfg = EasySCP_Registry::get('Config');
 
-// common page data.
+check_login(__FILE__);
 
-// Avoid unneeded generation during Ajax request
-if (!is_xhr()) {
-	$tpl = EasySCP_TemplateEngine::getInstance();
-	$template = 'client/subdomain_add.tpl';
+$tpl = EasySCP_TemplateEngine::getInstance();
+$template = 'client/subdomain_add.tpl';
 
-	// check user sql permission
-	if (isset($_SESSION['subdomain_support']) &&
-		$_SESSION['subdomain_support'] == "no") {
-		header('Location: index.php');
-	}
+// common page data
 
-	// static page messages.
-	gen_logged_from($tpl);
-
-	check_permissions($tpl);
-
-	$tpl->assign(
-		array(
-			'TR_PAGE_TITLE'						=> tr('EasySCP - Client/Add Subdomain'),
-			'TR_ADD_SUBDOMAIN'					=> tr('Add subdomain'),
-			'TR_SUBDOMAIN_DATA'					=> tr('Subdomain data'),
-			'TR_SUBDOMAIN_NAME'					=> tr('Subdomain name'),
-			'TR_DIR_TREE_SUBDOMAIN_MOUNT_POINT'	=> tr('Directory tree mount point'),
-			'TR_FORWARD'						=> tr('Forward to URL'),
-			'TR_ADD'							=> tr('Add'),
-			'TR_DMN_HELP'						=> tr('You do not need \'www.\' ispCP will add it on its own.'),
-			'TR_ENABLE_FWD'						=> tr('Enable Forward'),
-			'TR_ENABLE'							=> tr('Enable'),
-			'TR_DISABLE'						=> tr('Disable'),
-			'TR_PREFIX_HTTP'					=> 'http://',
-			'TR_PREFIX_HTTPS'					=> 'https://',
-			'TR_PREFIX_FTP'						=> 'ftp://',
-			'TR_MNT_POINT_HELP'					=>	tr('Path is relativ to your root directory. The mount point will contain a subfolder named htdocs.'),
-		)
-	);
-
-	gen_client_mainmenu($tpl, 'client/main_menu_manage_domains.tpl');
-	gen_client_menu($tpl, 'client/menu_manage_domains.tpl');
+/*
+// check user subdomain permission
+if (isset($_SESSION['subdomain_support']) && $_SESSION['subdomain_support'] == "no") {
+	header('Location: index.php');
 }
+*/
 
 $err_txt = '_off_';
 
@@ -86,13 +56,41 @@ if(isset($_POST['uaction'])) {
 	} elseif($_POST['uaction'] == 'add_subd') {
 		$dmn_name = check_subdomain_permissions($_SESSION['user_id']);
 		gen_user_add_subdomain_data($tpl, $_SESSION['user_id']);
-		check_subdomain_data($tpl, $err_txt, $_SESSION['user_id'], $dmn_name);
+		check_subdomain_data($err_txt, $_SESSION['user_id'], $dmn_name);
 	} else {
 		throw new EasySCP_Exception(tr("Error: unknown action!" . " " . $_POST['uaction']));
 	}
 } else { // Default view
 	gen_user_add_subdomain_data($tpl, $_SESSION['user_id']);
 }
+
+// static page messages.
+gen_logged_from($tpl);
+
+check_permissions($tpl);
+
+$tpl->assign(
+	array(
+		'TR_PAGE_TITLE'						=> tr('EasySCP - Client/Add Subdomain'),
+		'TR_ADD_SUBDOMAIN'					=> tr('Add subdomain'),
+		'TR_SUBDOMAIN_DATA'					=> tr('Subdomain data'),
+		'TR_SUBDOMAIN_NAME'					=> tr('Subdomain name'),
+		'TR_DIR_TREE_SUBDOMAIN_MOUNT_POINT'	=> tr('Directory tree mount point'),
+		'TR_FORWARD'						=> tr('Forward to URL'),
+		'TR_ADD'							=> tr('Add'),
+		'TR_DMN_HELP'						=> tr("You do not need 'www.' EasySCP will add it on its own."),
+		'TR_ENABLE_FWD'						=> tr('Enable Forward'),
+		'TR_ENABLE'							=> tr('Enable'),
+		'TR_DISABLE'						=> tr('Disable'),
+		'TR_PREFIX_HTTP'					=> 'http://',
+		'TR_PREFIX_HTTPS'					=> 'https://',
+		'TR_PREFIX_FTP'						=> 'ftp://',
+		'TR_MNT_POINT_HELP'					=>	tr('Path is relativ to your root directory. The mount point will contain a subfolder named htdocs.'),
+	)
+);
+
+gen_client_mainmenu($tpl, 'client/main_menu_manage_domains.tpl');
+gen_client_menu($tpl, 'client/menu_manage_domains.tpl');
 
 gen_page_msg($tpl, $err_txt);
 
@@ -102,8 +100,8 @@ if ($cfg->DUMP_GUI_DEBUG) {
 
 $tpl->display($template);
 
-// page functions.
 
+// page functions.
 /**
  *
  * @param EasySCP_TemplateEngine $tpl
@@ -114,10 +112,7 @@ function gen_page_msg($tpl, $error_txt) {
 	if ($error_txt != '_off_') {
 		$tpl->assign('MESSAGE', $error_txt);
 		$tpl->assign('MSG_TYPE', 'error');
-	} else {
-		$tpl->assign('PAGE_MESSAGE', '');
 	}
-
 }
 
 /**
@@ -165,7 +160,7 @@ function gen_user_add_subdomain_data($tpl, $user_id) {
 	$cfg = EasySCP_Registry::get('Config');
 	$sql = EasySCP_Registry::get('Db');
 
-	$subdomain_name = $subdomain_mnt_pt = $forward_prefix = '';
+	$subdomain_name = $subdomain_mnt_pt = $forward = $forward_prefix = '';
 
 	$query = "
 		SELECT
@@ -273,14 +268,6 @@ function gen_dmn_als_list($tpl, $dmn_id, $post_check) {
 
 	$rs = exec_query($sql, $query, array($dmn_id, $ok_status));
 	if ($rs->recordCount() == 0) {
-		$tpl->assign(
-			array(
-				'ALS_ID' => '0',
-				'ALS_SELECTED' => $cfg->HTML_SELECTED,
-				'ALS_NAME' => tr('Empty list')
-			)
-		);
-		$tpl->assign('TO_ALIAS_DOMAIN', '');
 		$_SESSION['alias_count'] = "no";
 	} else {
 		$first_passed = false;
@@ -386,7 +373,6 @@ function subdmn_exists($user_id, $domain_id, $sub_name) {
 }
 
 /**
- *
  * @param int $user_id
  * @param int $domain_id
  * @param <type> $sub_name
@@ -440,15 +426,13 @@ function subdomain_schedule($user_id, $domain_id, $sub_name, $sub_mnt_pt, $forwa
 }
 
 /**
- *
  * @global <type> $validation_err_msg
- * @param <type> $tpl
- * @param <type> $err_sub
- * @param <type> $user_id
- * @param <type> $dmn_name
- * @return <type>
+ * @param $err_sub
+ * @param int $user_id
+ * @param $dmn_name
+ * @return void <type>
  */
-function check_subdomain_data($tpl, &$err_sub, $user_id, $dmn_name) {
+function check_subdomain_data(&$err_sub, $user_id, $dmn_name) {
 	global $validation_err_msg;
 
 	$sql = EasySCP_Registry::get('Db');
@@ -465,7 +449,7 @@ function check_subdomain_data($tpl, &$err_sub, $user_id, $dmn_name) {
 		$sub_name = strtolower($_POST['subdomain_name']);
 
 		if ($_POST['status'] == 1) {
-			$forward = strtolower(clean_input($_POST['forward']));
+			$forward = clean_input($_POST['forward']);
 			$forward_prefix = clean_input($_POST['forward_prefix']);
 		} else {
 			$forward = 'no';
@@ -571,7 +555,7 @@ function check_subdomain_data($tpl, &$err_sub, $user_id, $dmn_name) {
 			return;
 		}
 		subdomain_schedule($user_id, $domain_id, $sub_name, $sub_mnt_pt, $forward);
-		set_page_message(tr('Subdomain scheduled for addition!'), 'info');
+		set_page_message(tr('Subdomain scheduled for addition!'), 'success');
 		user_goto('domains_manage.php');
 	}
 }

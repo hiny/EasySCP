@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
 # EasySCP a Virtual Hosting Control Panel
-# Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+# Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -41,20 +41,20 @@ install:
 	$(SYSTEM_MAKE_DIRS) $(SYSTEM_ENGINE_ROOT)/backup
 	$(CMD_DIR_INSTALL) -m 0700 $(SYSTEM_ENGINE_ROOT)/backup
 
-	$(SYSTEM_MAKE_DIRS) $(SYSTEM_ENGINE_ROOT)/quota
-	$(CMD_DIR_INSTALL) -m 0700 $(SYSTEM_ENGINE_ROOT)/quota
-
-	$(SYSTEM_MAKE_DIRS) $(SYSTEM_ENGINE_ROOT)/traffic
-	$(CMD_DIR_INSTALL) -m 0700 $(SYSTEM_ENGINE_ROOT)/traffic
-
 	$(SYSTEM_MAKE_DIRS) $(SYSTEM_ENGINE_ROOT)/messenger
 	$(CMD_DIR_INSTALL) -m 0755 $(SYSTEM_ENGINE_ROOT)/messenger
+
+	$(SYSTEM_MAKE_DIRS) $(SYSTEM_ENGINE_ROOT)/quota
+	$(CMD_DIR_INSTALL) -m 0700 $(SYSTEM_ENGINE_ROOT)/quota
 
 	$(SYSTEM_MAKE_DIRS) $(SYSTEM_ENGINE_ROOT)/setup
 	$(CMD_DIR_INSTALL) -m 0700 $(SYSTEM_ENGINE_ROOT)/setup
 
 	$(SYSTEM_MAKE_DIRS) $(SYSTEM_ENGINE_ROOT)/tools
 	$(CMD_DIR_INSTALL) -m 0700 $(SYSTEM_ENGINE_ROOT)/tools
+
+	$(SYSTEM_MAKE_DIRS) $(SYSTEM_ENGINE_ROOT)/traffic
+	$(CMD_DIR_INSTALL) -m 0700 $(SYSTEM_ENGINE_ROOT)/traffic
 
 	cd ./traffic && $(MAKE) install
 
@@ -82,9 +82,9 @@ install:
 	$(CMD_INSTALL) ./backup/easyscp-backup-all $(SYSTEM_ENGINE_ROOT)/backup
 	$(CMD_INSTALL) ./backup/easyscp-backup-easyscp $(SYSTEM_ENGINE_ROOT)/backup
 
-	$(CMD_INSTALL) ./quota/easyscp-dsk-quota $(SYSTEM_ENGINE_ROOT)/quota
-
 	$(CMD_INSTALL) ./messenger/easyscp-arpl-msgr $(SYSTEM_ENGINE_ROOT)/messenger
+
+	$(CMD_INSTALL) ./quota/easyscp-dsk-quota $(SYSTEM_ENGINE_ROOT)/quota
 
 	$(CMD_INSTALL) ./setup/easyscp-permission-functions.sh $(SYSTEM_ENGINE_ROOT)/setup
 	$(CMD_INSTALL) ./setup/set-engine-permissions.sh $(SYSTEM_ENGINE_ROOT)/setup

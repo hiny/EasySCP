@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,17 +32,11 @@ $template = 'admin/easyscp_debugger.tpl';
 
 $exec_count = count_requests($sql, 'domain_status', 'domain');
 
-$exec_count = $exec_count + count_requests(
-	$sql, 'alias_status', 'domain_aliasses'
-);
+$exec_count = $exec_count + count_requests($sql, 'alias_status', 'domain_aliasses');
 
-$exec_count = $exec_count + count_requests(
-	$sql, 'subdomain_status', 'subdomain'
-);
+$exec_count = $exec_count + count_requests($sql, 'subdomain_status', 'subdomain');
 
-$exec_count = $exec_count + count_requests(
-	$sql, 'subdomain_alias_status', 'subdomain_alias'
-);
+$exec_count = $exec_count + count_requests($sql, 'subdomain_alias_status', 'subdomain_alias');
 
 $exec_count = $exec_count + count_requests($sql, 'status', 'mail_users');
 $exec_count = $exec_count + count_requests($sql, 'status', 'htaccess');
@@ -184,7 +178,7 @@ unset_messages();
  *
  * @param  EasySCP_Database $sql EasySCP_Database instance
  * @param  string $statusField status database field name
- * @param  string $tableName ispCP database table name
+ * @param  string $tableName EasySCP database table name
  * @return int Number of request
  */
 function count_requests($sql, $statusField, $tableName) {

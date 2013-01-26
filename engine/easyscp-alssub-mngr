@@ -3,7 +3,7 @@
 # EasySCP a Virtual Hosting Control Panel
 # Copyright (C) 2001-2006 by moleSoftware GmbH - http://www.molesoftware.com
 # Copyright (C) 2006-2010 by isp Control Panel - http://ispcp.net
-# Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+# Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
 #
 # Version: $Id$
 #
@@ -628,7 +628,7 @@ sub alssub_add_httpd_file_data {
 		return -1 if ($rs != 0);
 
 		$rs = setfmode(
-			"$subAlsDir/htdocs/easyscp.css", $sys_user, $sys_group, 0644
+			"$subAlsDir/htdocs/easyscp.css", $sysUser, $sysGroup, 0644
 		);
 		return -1 if ($rs != 0);
 

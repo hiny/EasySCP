@@ -1,34 +1,18 @@
 ﻿/**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * This work is licensed under the Creative Commons Attribution-NoDerivs 3.0 Unported License.
+ * To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/3.0/.
  *
  * @link 		http://www.easyscp.net
  * @author 		EasySCP Team
  */
 
+@import url('easyscp.reset.css');
 @import url('easyscp.messages.css');
 
 @CHARSET "UTF-8";
-
-* {
-	font-family: Arial, sans-serif;
-	margin: 0;
-	padding: 0;
-}
 
 a img {
 	border: none;
@@ -36,8 +20,8 @@ a img {
 
 body {
 	background: url(../images/background/left_bg.png) repeat-y top left;
+	font-family: Arial, sans-serif;
 	font-size: 0.9em;
-	min-height: 100%;
 	min-width: 850px;
 }
 
@@ -219,10 +203,25 @@ table .icon {
 	text-align : center;
 }
 
+/***********************************************************************************
+ * Form elements
+ ***********************************************************************************/
+
 form table tbody td input[type="text"],
 form table tbody td input[type="password"],
 form table tbody td textarea{
 	min-width : 200px;
+ }
+
+form table tbody td input[type="text"],
+form table tbody td input[type="password"],
+form table tbody td select,
+form table tbody td textarea {
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	padding: 2px;
 }
 
 /***********************************************************************************
@@ -354,7 +353,6 @@ ul.menuLeft, ul.menuLeft ul {
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
-	/* width: 297px; */
 }
 
 ul.menuLeft a {
@@ -367,14 +365,13 @@ ul.menuLeft li {
 }
 
 ul.menuLeft li a {
-	/* background: #333; */
 	color: #fff;
 	padding: 0.5em;
-	text-indent: 50px;
+	text-indent: 40px;
+	white-space: nowrap;
 }
 
 ul.menuLeft li a:hover {
-	/* background: #000; */
 	color: #5cbada;
 }
 
@@ -386,23 +383,17 @@ ul.menuLeft li a.icon_link {
 }
 
 ul.menuLeft li ul li a {
-	/* background: #ccc; */
-	/* background: transparent url(../images/background/bullet.png) no-repeat 20px center; */
 	background-image: url(../images/background/bullet.png);
 	background-position: 20px center;
 	background-repeat: no-repeat;
-	/* color: #000; */
 	padding-left: 10px;
 }
 
 ul.menuLeft li ul li a:hover {
-	/* background: #aaa; */
 	background-image: url(../images/background/bullet_hover.png);
 	background-position: 20px center;
 	background-repeat: no-repeat;
 	color: #5cbada;
-	/* border-left: 5px #000 solid; */
-	/* padding-left: 10px; */
 }
 
 /***********************************************************************************
@@ -541,7 +532,6 @@ ul.menuLeft li ul li a:hover {
 .menuLeft .webtools_active { background-image: url(../images/menu/webtools_a.png);}
 
 /* Main menu icons */
-.main_menu .custom_link { background-image: url(../images/menu/custom_link.png); }
 .main_menu .database { background-image: url(../images/menu/database.png); }
 .main_menu .domains { background-image: url(../images/menu/domains.png); }
 .main_menu .email { background-image: url(../images/menu/email.png); }
@@ -554,7 +544,6 @@ ul.menuLeft li ul li a:hover {
 .main_menu .statistics { background-image: url(../images/menu/statistics.png); }
 .main_menu .support { background-image: url(../images/menu/support.png); }
 .main_menu .webtools { background-image: url(../images/menu/webtools.png); }
-.main_menu .custom_link:hover { background-image: url(../images/menu/custom_link_a.png); }
 .main_menu .database:hover { background-image: url(../images/menu/database_a.png); }
 .main_menu .domains:hover { background-image: url(../images/menu/domains_a.png); }
 .main_menu .email:hover { background-image: url(../images/menu/email_a.png); }
@@ -591,6 +580,7 @@ ul.menuLeft li ul li a:hover {
 .main .purchasing { background-image: url(../images/content/table_icon_purchasing.png); }
 .main .serverstatus { background-image: url(../images/content/table_icon_serverstatus.png); }
 .main .settings { background-image: url(../images/content/table_icon_settings.png); }
+.main .ssl { background-image: url(../images/content/table_icon_ssl.png); }
 .main .sql { background-image: url(../images/content/table_icon_sql.png); }
 .main .stats { background-image: url(../images/content/table_icon_stats.png); }
 .main .support { background-image: url(../images/content/table_icon_support.png); }

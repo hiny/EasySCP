@@ -35,23 +35,13 @@ send us your install instructions.
 LICENSING
 ---------
 
-EasySCP was originally developed by moleSoftware http://molesoftware.com/ under
-the Name VHCS. After getting Open Source it was released under the MPL (Mozilla
-Public License) Version 1.1.
-
 The maillogconvert.pl script is from awstats which is licensed under the GNU
 General Public License version 2 and states the following:
 Copyright (C) 2000-2007 - Laurent Destailleur - eldy@users.sourceforge.net
 
-Unless otherwise stated all code is licensed under the GNU General Public License 2 and has a
-Copyright 2010-2012 by EasySCP.
-
-Please have a look at these Licenses if interested. They are shipped with this
-release in the docs folder:
-
-LICENSE-MPL1.1
-LICENSE-GPL2
-LICENSE-LGPL2.1
+Unless otherwise stated all code is licensed under the Creative Commons Attribution-NoDerivs 3.0 Unported License
+and has a Copyright 2010-2012 by EasySCP.
+To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/3.0/.
 
 ================================================================
 CREDITS

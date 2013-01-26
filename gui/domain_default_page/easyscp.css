@@ -1,6 +1,6 @@
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -74,8 +74,14 @@ body {
  * Header STYLE
  ***********************************************************************************/
 .header {
-	background:			url(./images/top_bg.jpg) repeat-x top left;
+	background:			url(./images/top_bg.png) repeat-x scroll left top transparent;
 	height:				89px;
+}
+
+.location {
+    background:			url(./images/top_bar_bg.png) repeat-x scroll left top #000000;
+    height: 25px;
+    line-height: 25px;
 }
 
 /***********************************************************************************

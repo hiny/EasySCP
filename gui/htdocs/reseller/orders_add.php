@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -265,7 +265,7 @@ $query = "
 $res = exec_query($sql, $query, array($record_id, $user_def_lang,
 		$user_theme_color));
 
-// send query to the ispcp daemon
+// send query to the EasySCP daemon
 send_request();
 
 $admin_login = $_SESSION['user_logged'];

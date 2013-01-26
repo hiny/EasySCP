@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -363,7 +363,7 @@ function check_user_permissions($tpl, $dmn_sqld_limit, $dmn_sqlu_limit, $dmn_php
 
 	// check if PHP Support is available for this user
 	if ($dmn_php == 'yes') {
-		$tpl->assign( array('PHP_SUPPORT' => tr('Yes') . ' / PHP ' . substr(phpversion(), 0, strpos(phpversion(), '-'))));
+		$tpl->assign( array('PHP_SUPPORT' => tr('Yes') . ' / PHP ' . substr(PHP_VERSION, 0, strpos(PHP_VERSION, '-'))));
 	}
 
 	// check if CGI Support is available for this user

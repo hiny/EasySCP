@@ -61,7 +61,7 @@
 						<td>{$VL_DOMAIN_NAME}</td>
 					</tr>
 					<tr>
-						<td>{$TR_DOMAIN_IP}</td>
+						<td>{$TR_DOMAIN_EXPIRE}</td>
 						<td>
 							<input type="text" name="dmn_expire_date" id="dmn_exp_date" value="{$VL_DOMAIN_EXPIRE}" {$VL_EXPIRE_DATE_DISABLED} />
 							&nbsp;{$TR_EXPIRE_CHECKBOX} <input type="checkbox" name="dmn_expire_never" id="dmn_exp_never" {$VL_EXPIRE_NEVER_SELECTED} />

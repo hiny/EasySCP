@@ -6,7 +6,10 @@
  |                                                                       |
  | This file is part of the Roundcube Webmail client                     |
  | Copyright (C) 2011, Kolab Systems AG                                  |
- | Licensed under the GNU GPL                                            |
+ |                                                                       |
+ | Licensed under the GNU General Public License version 3 or            |
+ | any later version with exceptions for skins & plugins.                |
+ | See the README file for a full license statement.                     |
  |                                                                       |
  | PURPOSE:                                                              |
  |   Undelete contacts (CIDs) from last delete action                    |
@@ -15,7 +18,7 @@
  | Author: Aleksander Machniak <machniak@kolabsys.com>                   |
  +-----------------------------------------------------------------------+
 
- $Id: undo.inc 4916 2011-07-07 11:44:26Z alec $
+ $Id$
 
 */
 
@@ -64,13 +67,6 @@ if ($delcnt && ($search_request = $_REQUEST['_search']) && isset($_SESSION['sear
             unset($search[$s]);
             continue;
         }
-
-        while ($row = $result->next()) {
-            $row['sourceid'] = $s;
-            $key = $row['name'] . ':' . $row['sourceid'];
-            $records[$key] = $row;
-        }
-        unset($result);
 
         $search[$s] = $source->get_search_set();
     }

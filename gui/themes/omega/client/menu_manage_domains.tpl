@@ -7,6 +7,6 @@
 	<li><a href="alias_add.php">{$TR_MENU_ADD_ALIAS}</a></li>
 	{/if}
 	{if isset($ISACTIVE_DNS_MENU)}
-	<li><a href="dns_add.php">{$TR_MENU_ADD_DNS}</a></li>
+	<li><a href="dns_add.php">{$TR_MENU_MANAGE_DNS}</a></li>
 	{/if}
 </ul>

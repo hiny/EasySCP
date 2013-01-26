@@ -7,7 +7,7 @@
  * @author Aleksander Machniak <alec@alec.pl>
  *
  *
- * Copyright (C) 2011, Kolab Systems AG
+ * Copyright (C) 2011-2012, Kolab Systems AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2
@@ -58,8 +58,7 @@ class acl extends rcube_plugin
         $action = trim(get_input_value('_act', RCUBE_INPUT_GPC));
 
         // Connect to IMAP
-        $this->rc->imap_init();
-        $this->rc->imap_connect();
+        $this->rc->storage_init();
 
         // Load localization and configuration
         $this->add_texts('localization/');
@@ -129,8 +128,10 @@ class acl extends rcube_plugin
      */
     function folder_form($args)
     {
-        // Edited folder name (empty in create-folder mode)
         $mbox_imap = $args['options']['name'];
+        $myrights  = $args['options']['rights'];
+
+        // Edited folder name (empty in create-folder mode)
         if (!strlen($mbox_imap)) {
             return $args;
         }
@@ -140,18 +141,8 @@ class acl extends rcube_plugin
             return $args;
         }
 */
-        // Namespace root
-        if ($args['options']['is_root']) {
-            return $args;
-        }
-
         // Get MYRIGHTS
-        if (!($myrights = $args['options']['rights'])) {
-            return $args;
-        }
-
-        // Do nothing if no ACL support
-        if (!$this->rc->imap->get_capability('ACL')) {
+        if (empty($myrights)) {
             return $args;
         }
 
@@ -242,8 +233,7 @@ class acl extends rcube_plugin
 
         // Advanced rights
         $attrib['id'] = 'advancedrights';
-        foreach ($supported as $val) {
-            $id = "acl$val";
+        foreach ($supported as $idx => $val) {
             $ul .= html::tag('li', null,
                 $input->show('', array(
                     'name' => "acl[$val]", 'value' => $val, 'id' => $id))
@@ -335,7 +325,7 @@ class acl extends rcube_plugin
     private function list_rights($attrib=array())
     {
         // Get ACL for the folder
-        $acl = $this->rc->imap->get_acl($this->mbox);
+        $acl = $this->rc->storage->get_acl($this->mbox);
 
         if (!is_array($acl)) {
             $acl = array();
@@ -389,13 +379,14 @@ class acl extends rcube_plugin
         // Create table header
         $table->add_header('user', $this->gettext('identifier'));
         foreach (array_keys($items) as $key) {
-            $table->add_header('acl'.$key, $this->gettext('shortacl'.$key));
+            $label = $this->gettext('shortacl'.$key);
+            $table->add_header(array('class' => 'acl'.$key, 'title' => $label), $label);
         }
 
         $i = 1;
         $js_table = array();
         foreach ($acl as $user => $rights) {
-            if ($this->rc->imap->conn->user == $user) {
+            if ($this->rc->storage->conn->user == $user) {
                 continue;
             }
 
@@ -441,26 +432,37 @@ class acl extends rcube_plugin
         $acl   = trim(get_input_value('_acl', RCUBE_INPUT_GPC));
         $oldid = trim(get_input_value('_old', RCUBE_INPUT_GPC));
 
-        $acl = array_intersect(str_split($acl), $this->rights_supported());
+        $acl   = array_intersect(str_split($acl), $this->rights_supported());
+        $users = $oldid ? array($user) : explode(',', $user);
 
-        if (!empty($this->specials) && in_array($user, $this->specials)) {
-            $username = $this->gettext($user);
-        }
-        else {
-            if (!strpos($user, '@') && ($realm = $this->get_realm())) {
-                $user .= '@' . rcube_idn_to_ascii(preg_replace('/^@/', '', $realm));
+        foreach ($users as $user) {
+            $user = trim($user);
+
+            if (!empty($this->specials) && in_array($user, $this->specials)) {
+                $username = $this->gettext($user);
             }
-            $username = $user;
-        }
+            else {
+                if (!strpos($user, '@') && ($realm = $this->get_realm())) {
+                    $user .= '@' . rcube_idn_to_ascii(preg_replace('/^@/', '', $realm));
+                }
+                $username = $user;
+            }
 
-        if ($acl && $user && $user != $_SESSION['username'] && strlen($mbox)) {
-            $result = $this->rc->imap->set_acl($mbox, $user, $acl);
+            if (!$acl || !$user || !strlen($mbox)) {
+                continue;
+            }
+
+            if ($user != $_SESSION['username'] && $username != $_SESSION['username']) {
+                if ($this->rc->storage->set_acl($mbox, $user, $acl)) {
+                    $ret = array('id' => html_identifier($user),
+                         'username' => $username, 'acl' => implode($acl), 'old' => $oldid);
+                    $this->rc->output->command('acl_update', $ret);
+                    $result++;
+                }
+            }
         }
 
         if ($result) {
-            $ret = array('id' => html_identifier($user),
-                 'username' => $username, 'acl' => implode($acl), 'old' => $oldid);
-            $this->rc->output->command('acl_update', $ret);
             $this->rc->output->show_message($oldid ? 'acl.updatesuccess' : 'acl.createsuccess', 'confirmation');
         }
         else {
@@ -479,7 +481,8 @@ class acl extends rcube_plugin
         $user = explode(',', $user);
 
         foreach ($user as $u) {
-            if ($this->rc->imap->delete_acl($mbox, $u)) {
+            $u = trim($u);
+            if ($this->rc->storage->delete_acl($mbox, $u)) {
                 $this->rc->output->command('acl_remove_row', html_identifier($u));
             }
             else {
@@ -591,7 +594,7 @@ class acl extends rcube_plugin
             return $this->supported;
         }
 
-        $capa = $this->rc->imap->get_capability('RIGHTS');
+        $capa = $this->rc->storage->get_capability('RIGHTS');
 
         if (is_array($capa)) {
             $rights = strtolower($capa[0]);
@@ -624,7 +627,7 @@ class acl extends rcube_plugin
         // whether or not the user ID in ACL entries need to be qualified and how
         // they would need to be qualified.
         if (empty($domain)) {
-            $acl = $this->rc->imap->get_acl('INBOX');
+            $acl = $this->rc->storage->get_acl('INBOX');
             if (is_array($acl)) {
                 $regexp = '/^' . preg_quote($_SESSION['username'], '/') . '@(.*)$/';
                 foreach (array_keys($acl) as $name) {

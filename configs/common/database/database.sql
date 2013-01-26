@@ -1,20 +1,9 @@
 --
 -- EasySCP a Virtual Hosting Control Panel
--- Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+-- Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
 --
--- This program is free software; you can redistribute it and/or
--- modify it under the terms of the GNU General Public License
--- as published by the Free Software Foundation; either version 2
--- of the License, or (at your option) any later version.
---
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
---
--- You should have received a copy of the GNU General Public License
--- along with this program; if not, write to the Free Software
--- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-- This work is licensed under the Creative Commons Attribution-NoDerivs 3.0 Unported License.
+-- To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/3.0/.
 --
 -- @link 		http://www.easyscp.net
 -- @author 		EasySCP Team
@@ -97,22 +86,22 @@ CREATE TABLE IF NOT EXISTS `config` (
 --
 
 INSERT INTO `config` (`name`, `value`) VALUES
-('PORT_FTP', '21;tcp;FTP;1;0;'),
-('PORT_SSH', '22;tcp;SSH;1;1;'),
-('PORT_TELNET', '23;tcp;TELNET;1;0;'),
-('PORT_SMTP', '25;tcp;SMTP;1;0;'),
-('PORT_SMTP-SSL', '465;tcp;SMTP-SSL;1;0;'),
+('PORT_AMAVIS', '10024;tcp;AMaVis;0;1;localhost'),
 ('PORT_DNS', '53;tcp;DNS;1;0;'),
+('PORT_FTP', '21;tcp;FTP;1;0;'),
 ('PORT_HTTP', '80;tcp;HTTP;1;0;'),
 ('PORT_HTTPS', '443;tcp;HTTPS;0;0;'),
-('PORT_POP3', '110;tcp;POP3;1;0;'),
-('PORT_POP3-SSL', '995;tcp;POP3-SSL;1;0;'),
 ('PORT_IMAP', '143;tcp;IMAP;1;0;'),
 ('PORT_IMAP-SSL', '993;tcp;IMAP-SSL;0;0;'),
-('PORT_POSTGREY', '10023;tcp;POSTGREY;1;1;localhost'),
-('PORT_AMAVIS', '10024;tcp;AMaVis;1;1;localhost'),
-('PORT_SPAMASSASSIN', '783;tcp;SPAMASSASSIN;1;1;localhost'),
 ('PORT_POLICYD-WEIGHT', '12525;tcp;POLICYD-WEIGHT;1;1;localhost'),
+('PORT_POP3', '110;tcp;POP3;1;0;'),
+('PORT_POP3-SSL', '995;tcp;POP3-SSL;0;0;'),
+('PORT_POSTGREY', '10023;tcp;POSTGREY;1;1;localhost'),
+('PORT_SMTP', '25;tcp;SMTP;1;0;'),
+('PORT_SMTP-SSL', '465;tcp;SMTP-SSL;1;0;'),
+('PORT_SPAMASSASSIN', '783;tcp;SPAMASSASSIN;0;1;localhost'),
+('PORT_SSH', '22;tcp;SSH;1;1;'),
+('PORT_TELNET', '23;tcp;TELNET;1;0;'),
 ('SHOW_COMPRESSION_SIZE', '1'),
 ('PREVENT_EXTERNAL_LOGIN_ADMIN', '1'),
 ('PREVENT_EXTERNAL_LOGIN_RESELLER', '1'),

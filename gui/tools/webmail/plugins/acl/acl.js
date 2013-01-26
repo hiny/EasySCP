@@ -1,7 +1,7 @@
 /**
  * ACL plugin script
  *
- * @version 0.6.3
+ * @version @package_version@
  * @author Aleksander Machniak <alec@alec.pl>
  */
 
@@ -28,6 +28,9 @@ if (window.rcmail) {
 
         rcmail.enable_command('acl-create', 'acl-save', 'acl-cancel', 'acl-mode-switch', true);
         rcmail.enable_command('acl-delete', 'acl-edit', false);
+
+        if (rcmail.env.acl_advanced)
+            $('#acl-switch').addClass('selected');
     });
 }
 
@@ -129,6 +132,8 @@ rcube_webmail.prototype.acl_mode_switch = function(elem)
 // ACL table initialization
 rcube_webmail.prototype.acl_list_init = function()
 {
+    $('#acl-switch')[this.env.acl_advanced ? 'addClass' : 'removeClass']('selected');
+
     this.acl_list = new rcube_list_widget(this.gui_objects.acltable,
         {multiselect:true, draggable:false, keyboard:true, toggleselect:true});
     this.acl_list.addEventListener('select', function(o) { rcmail.acl_list_select(o); });
@@ -179,9 +184,8 @@ rcube_webmail.prototype.acl_get_usernames = function()
         if (this.env.acl_specials.length && $.inArray(selection[n], this.env.acl_specials) >= 0) {
             users.push(selection[n]);
         }
-        else {
-            row = list.rows[selection[n]].obj;
-            cell = $('td.user', row);
+        else if (row = list.rows[selection[n]]) {
+            cell = $('td.user', row.obj);
             if (cell.length == 1)
                 users.push(cell.text());
         }
@@ -193,10 +197,17 @@ rcube_webmail.prototype.acl_get_usernames = function()
 // Removes ACL table row
 rcube_webmail.prototype.acl_remove_row = function(id)
 {
-    this.acl_list.remove_row(id);
+    var list = this.acl_list;
+
+    list.remove_row(id);
+    list.clear_selection();
+
     // we don't need it anymore (remove id conflict)
     $('#rcmrow'+id).remove();
     this.env.acl[id] = null;
+
+    this.enable_command('acl-delete', list.selection.length > 0);
+    this.enable_command('acl-edit', list.selection.length == 1);
 }
 
 // Adds ACL table row
@@ -259,7 +270,7 @@ rcube_webmail.prototype.acl_add_row = function(o, sel)
 // Initializes and shows ACL create/edit form
 rcube_webmail.prototype.acl_init_form = function(id)
 {
-    var ul, row, val = '', type = 'user', li_elements, body = $('body'),
+    var ul, row, td, val = '', type = 'user', li_elements, body = $('body'),
         adv_ul = $('#advancedrights'), sim_ul = $('#simplerights'),
         name_input = $('#acluser');
 
@@ -286,10 +297,11 @@ rcube_webmail.prototype.acl_init_form = function(id)
     li_elements = $(':checkbox', ul);
     li_elements.attr('checked', false);
 
-    if (id) {
-        row = this.acl_list.rows[id].obj;
+    if (id && (row = this.acl_list.rows[id])) {
+        row = row.obj;
         li_elements.map(function() {
-            var val = this.value, td = $('td.'+this.id, row);
+            val = this.value;
+            td = $('td.'+this.id, row);
             if (td && td.hasClass('enabled'))
                 this.checked = true;
         });
@@ -299,6 +311,9 @@ rcube_webmail.prototype.acl_init_form = function(id)
         else
             type = id;
     }
+    // mark read (lrs) rights by default
+    else
+        li_elements.filter(function() { return this.id.match(/^acl([lrs]|read)$/); }).prop('checked', true);
 
     name_input.val(val);
     $('input[value='+type+']').prop('checked', true);

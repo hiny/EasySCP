@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@
  */
 
 require_once '../../include/easyscp-lib.php';
-require_once '../../include/Net/DNS.php';
+require_once '../../include/Net/DNS2.php';
 
 check_login(__FILE__);
 
@@ -31,46 +31,10 @@ $cfg = EasySCP_Registry::get('Config');
 $tpl = EasySCP_TemplateEngine::getInstance();
 $template = 'client/dns_edit.tpl';
 
-$DNS_allowed_types = array('A', 'AAAA', 'CNAME', 'MX', 'SRV');
+$DNS_allowed_types = array('A', 'AAAA', 'CNAME', 'MX', 'SRV', 'NS');
 
 $add_mode = preg_match('~dns_add.php~', $_SERVER['REQUEST_URI']);
 
-// static page messages
-$tpl->assign(
-	array(
-		'TR_PAGE_TITLE'			=> ($add_mode)
-			? tr("EasySCP - Manage Domain Alias/Add DNS zone's record")
-			: tr("EasySCP - Manage Domain Alias/Edit DNS zone's record"),
-		'ACTION_MODE'			=> ($add_mode) ? 'dns_add.php' : 'dns_edit.php?edit_id={ID}',
-		'TR_MODIFY'				=> tr('Modify'),
-		'TR_CANCEL'				=> tr('Cancel'),
-		'TR_ADD'				=> tr('Add'),
-		'TR_DOMAIN'				=> tr('Domain'),
-		'TR_EDIT_DNS'			=> ($add_mode) ? tr("Add DNS zone's record") : tr("Edit DNS zone's record"),
-		'TR_DNS'				=> tr("DNS zone's records"),
-		'TR_DNS_NAME'			=> tr('Name'),
-		'TR_DNS_CLASS'			=> tr('Class'),
-		'TR_DNS_TYPE'			=> tr('Type'),
-		'TR_DNS_SRV_NAME'		=> tr('Service name'),
-		'TR_DNS_IP_ADDRESS'		=> tr('IP address'),
-		'TR_DNS_IP_ADDRESS_V6'	=> tr('IPv6 address'),
-		'TR_DNS_SRV_PROTOCOL'	=> tr('Service protocol'),
-		'TR_DNS_SRV_TTL'		=> tr('TTL'),
-		'TR_DNS_SRV_PRIO'		=> tr('Priority'),
-		'TR_DNS_SRV_WEIGHT'		=> tr('Relative weight for records with the same priority'),
-		'TR_DNS_SRV_HOST'		=> tr('Target host'),
-		'TR_DNS_SRV_PORT'		=> tr('Target port'),
-		'TR_DNS_TXT'			=> tr('Text'),
-		'TR_DNS_CNAME'			=> tr('Canonical name'),
-		'TR_DNS_PLAIN'			=> tr('Plain record data'),
-		'TR_MANAGE_DOMAIN_DNS'	=> tr("DNS zone's records")
-	)
-);
-
-gen_client_mainmenu($tpl, 'client/main_menu_manage_domains.tpl');
-gen_client_menu($tpl, 'client/menu_manage_domains.tpl');
-
-gen_logged_from($tpl);
 $tpl->assign(($add_mode) ? 'FORM_ADD_MODE' : 'FORM_EDIT_MODE', true);
 
 // "Modify" button has been pressed
@@ -106,6 +70,46 @@ if (isset($_POST['uaction']) && ($_POST['uaction'] === 'modify')) {
 }
 
 gen_editdns_page($tpl, $editid);
+
+// static page messages
+gen_logged_from($tpl);
+
+$tpl->assign(
+	array(
+		'TR_PAGE_TITLE'			=> ($add_mode)
+			? tr("EasySCP - Manage Domain Alias/Add DNS zone's record")
+			: tr("EasySCP - Manage Domain Alias/Edit DNS zone's record"),
+		'ACTION_MODE'			=> ($add_mode) ? 'dns_add.php' : 'dns_edit.php?edit_id={ID}',
+		'TR_MODIFY'				=> tr('Modify'),
+		'TR_CANCEL'				=> tr('Cancel'),
+		'TR_ADD'				=> tr('Add'),
+		'TR_DOMAIN'				=> tr('Domain'),
+		'TR_EDIT_DNS'			=> ($add_mode) ? tr("Add DNS zone's record") : tr("Edit DNS zone's record"),
+		'TR_DNS'				=> tr("DNS zone's records"),
+		'TR_DNS_NAME'			=> tr('Name'),
+		'TR_DNS_CLASS'			=> tr('Class'),
+		'TR_DNS_TYPE'			=> tr('Type'),
+		'TR_DNS_SRV_NAME'		=> tr('Service name'),
+		'TR_DNS_IP_ADDRESS'		=> tr('IP address'),
+		'TR_DNS_IP_ADDRESS_V6'	=> tr('IPv6 address'),
+		'TR_DNS_SRV_PROTOCOL'	=> tr('Service protocol'),
+		'TR_DNS_SRV_TTL'		=> tr('TTL'),
+		'TR_DNS_SRV_PRIO'		=> tr('Priority'),
+		'TR_DNS_SRV_WEIGHT'		=> tr('Relative weight for records with the same priority'),
+		'TR_DNS_SRV_HOST'		=> tr('Target host'),
+		'TR_DNS_SRV_PORT'		=> tr('Target port'),
+		'TR_DNS_TXT'			=> tr('Text'),
+		'TR_DNS_CNAME'			=> tr('Canonical name'),
+		'TR_DNS_PLAIN'			=> tr('Plain record data'),
+		'TR_MANAGE_DOMAIN_DNS'	=> tr("DNS zone's records"),
+		'TR_DNS_NS'				=> tr('Hostname of Nameserver'),
+	)
+);
+
+gen_client_mainmenu($tpl, 'client/main_menu_manage_domains.tpl');
+gen_client_menu($tpl, 'client/menu_manage_domains.tpl');
+
+gen_page_message($tpl);
 
 if ($cfg->DUMP_GUI_DEBUG) {
 	dump_gui_debug($tpl);
@@ -157,7 +161,7 @@ function not_allowed() {
 function decode_zone_data($data) {
 
 	$address = $addressv6 = $srv_name = $srv_proto = $cname = $txt = $name = '';
-	$srv_TTL = $srv_prio = $srv_weight = $srv_host = $srv_port = '';
+	$srv_TTL = $srv_prio = $srv_weight = $srv_host = $srv_port = $ns = '';
 
 	if (is_array($data)) {
 		$name = $data['domain_dns'];
@@ -170,6 +174,9 @@ function decode_zone_data($data) {
 				break;
 			case 'CNAME':
 				$cname = $data['domain_text'];
+				break;
+			case 'NS':
+				$ns = $data['domain_text'];
 				break;
 			case 'SRV':
 				$name = '';
@@ -202,7 +209,7 @@ function decode_zone_data($data) {
 	}
 	return array(
 		$name, $address, $addressv6, $srv_name, $srv_proto, $srv_TTL, $srv_prio,
-		$srv_weight, $srv_host, $srv_port, $cname, $txt, $data['protected']
+		$srv_weight, $srv_host, $srv_port, $cname, $txt, $ns, $data['protected']
 	);
 }
 
@@ -223,8 +230,10 @@ function gen_editdns_page($tpl, $edit_id) {
 	if ($dmn_dns != 'yes') {
 		not_allowed();
 	}
+
 	if ($GLOBALS['add_mode']) {
 		$data = null;
+
 		$query = "
 			SELECT
 				'0' AS `alias_id`,
@@ -273,7 +282,7 @@ function gen_editdns_page($tpl, $edit_id) {
 
 	list(
 		$name, $address, $addressv6, $srv_name, $srv_proto, $srv_ttl, $srv_prio,
-		$srv_weight, $srv_host, $srv_port, $cname, $plain, $protected
+		$srv_weight, $srv_host, $srv_port, $cname, $plain, $protected, $ns
 	) = decode_zone_data($data);
 
 	// Protection against edition (eg. for external mail MX record)
@@ -304,6 +313,7 @@ function gen_editdns_page($tpl, $edit_id) {
 			'DNS_SRV_PORT'				=> tohtml(tryPost('dns_srv_port', $srv_port)),
 			'DNS_CNAME'					=> tohtml(tryPost('dns_cname', $cname)),
 			'DNS_PLAIN'					=> tohtml(tryPost('dns_plain_data', $plain)),
+			'DNS_NS_HOSTNAME'			=> tohtml(tryPost('dns_ns', $ns)),
 			'ID'						=> $edit_id
 		)
 	);
@@ -316,6 +326,18 @@ function tryPost($id, $data) {
 		return $_POST[$id];
 	}
 	return $data;
+}
+
+function validate_NS($record, &$err = null) {
+	if (!preg_match('~([^a-z,A-Z,0-9\.])~u', $record['dns_ns'], $e)) {
+		$err .= sprintf(tr('Use of disallowed char("%s") in NS'), $e[1]);
+		return false;
+	}
+	if (empty($record['dns_ns'])) {
+		$err .= tr('Name must be filled.');
+		return false;
+	}
+	return true;
 }
 
 function validate_CNAME($record, &$err = null) {
@@ -391,8 +413,8 @@ function validate_SRV($record, &$err, &$dns, &$text) {
 		return false;
 	}
 
-	$dns = sprintf("_%s._%s\t%d", $record['dns_srv_name'], $record['srv_proto'], $record['dns_srv_ttl']);
-	$text = sprintf("%d\t%d\t%d\t%s", $record['dns_srv_prio'], $record['dns_srv_weight'], $record['dns_srv_port'], $record['dns_srv_host']);
+	$dns = sprintf("_%s._%s %d", $record['dns_srv_name'], $record['srv_proto'], $record['dns_srv_ttl']);
+	$text = sprintf("%d %d %d %s", $record['dns_srv_prio'], $record['dns_srv_weight'], $record['dns_srv_port'], $record['dns_srv_host']);
 
 	return true;
 }
@@ -421,8 +443,14 @@ function validate_MX($record, &$err, &$text) {
 
 function check_CNAME_conflict($domain, &$err) {
 
-	$resolver = new Net_DNS_resolver();
-	$resolver->nameservers = array('localhost');
+	$resolver = new Net_DNS2_Resolver(
+		array(
+
+			'nameservers'   => array('127.0.0.1'),
+			'use_tcp'       => true
+		)
+	);
+	// $resolver->setServers = array('localhost');
 	$res = $resolver->query($domain, 'CNAME');
 
 	if ($res === false) {
@@ -562,6 +590,13 @@ function check_fwd_data($tpl, $edit_id) {
 				$_dns = $record_domain . '.';
 			}
 			break;
+		case 'NS':
+			$_text = '';
+			if (!validate_NS($_POST, $err)) {
+				$ed_error = sprintf(tr('Cannot validate %s record. Reason \'%s\'.'), $_POST['type'], $err);
+			}
+			$_text = $_POST['dns_ns'];
+			break;
 		default :
 			$ed_error = sprintf(tr('Unknown zone type %s!'), $_POST['type']);
 	}
@@ -656,17 +691,16 @@ function check_fwd_data($tpl, $edit_id) {
 			);
 		}
 
-		// Send request to ispCP daemon
+		// Send request to EasySCP daemon
 		send_request();
 
 		$admin_login = $_SESSION['user_logged'];
 		write_log("$admin_login: " . (($add_mode) ? 'add new' : ' modify') . " dns zone record.");
 
 		unset($_SESSION['edit_ID']);
-		$tpl->assign('MESSAGE', "");
 		return true;
 	} else {
-		$tpl->assign('MESSAGE', $ed_error);
+		set_page_message($ed_error, 'error');
 		return false;
 	}
 } // End of check_user_data()

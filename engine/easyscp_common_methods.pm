@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # EasySCP a Virtual Hosting Control Panel
-# Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+# Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -30,7 +30,7 @@ sub generateRandomPass {
 	$length = shift;
 	$password = '';
 	$possible = 'abcdefghijkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-	while (length($password) < $length) {
+	while (length($password) <= $length) {
 		$password .= substr($possible, (int(rand(length($possible)))), 1);
 	}
 	return $password

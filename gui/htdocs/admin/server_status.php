@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,22 +30,21 @@ $cfg = EasySCP_Registry::get('Config');
 $tpl = EasySCP_TemplateEngine::getInstance();
 $template = 'admin/server_status.tpl';
 
+getServerStatus($tpl, $sql);
+
 // static page messages
-
-gen_admin_mainmenu($tpl, 'admin/main_menu_general_information.tpl');
-gen_admin_menu($tpl, 'admin/menu_general_information.tpl');
-
 $tpl->assign(
 	array(
-		'TR_PAGE_TITLE' => tr('EasySCP Admin / System Tools / Server Status'),
-		'TR_HOST' => tr('Host'),
-		'TR_SERVICE' => tr('Service'),
-		'TR_STATUS' => tr('Status'),
-		'TR_SERVER_STATUS' => tr('Server status'),
+		'TR_PAGE_TITLE'		=> tr('EasySCP Admin / System Tools / Server Status'),
+		'TR_HOST'			=> tr('Host'),
+		'TR_SERVICE'		=> tr('Service'),
+		'TR_STATUS'			=> tr('Status'),
+		'TR_SERVER_STATUS'	=> tr('Server status'),
 	)
 );
 
-get_server_status($tpl, $sql);
+gen_admin_mainmenu($tpl, 'admin/main_menu_general_information.tpl');
+gen_admin_menu($tpl, 'admin/menu_general_information.tpl');
 
 gen_page_message($tpl);
 
@@ -61,33 +60,30 @@ unset_messages();
  * Site functions
  */
 
-/**
- * @todo respect naming convention: getSth not GetSth and class Status not status
- */
 class status {
 	var $all = array();
 
 	/**
 	 * AddService adds a service to a multi-dimensional array
 	 */
-	function AddService($ip, $port, $service, $type) {
+	function addService($ip, $port, $service, $type) {
 		$small_array = array('ip' => $ip, 'port' => $port, 'service' => $service, 'type' => $type, 'status' => '');
 		array_push($this->all, $small_array);
 		return $this->all;
 	}
 
 	/**
-	 * GetCount returns the number of services added
+	 * getCount returns the number of services added
 	 */
-	function GetCount() {
+	function getCount() {
 		return count($this->all);
 	}
 
 	/**
-	 * CheckStatus checks the status
+	 * checkStatus checks the status
 	 */
-	function CheckStatus($timeout = 5) {
-		for ($i = 0, $x = $this->GetCount() - 1; $i <= $x; $i++) {
+	function checkStatus($timeout = 5) {
+		for ($i = 0, $x = $this->getCount() - 1; $i <= $x; $i++) {
 			$ip = $this->all[$i]['ip'];
 			$port = $this->all[$i]['port'];
 			$errno = null;
@@ -117,16 +113,16 @@ class status {
 	}
 
 	/**
-	 * GetStatus a unecessary function to return the status
+	 * getStatus a unecessary function to return the status
 	 */
-	function GetStatus() {
+	function getStatus() {
 		return $this->all;
 	}
 
 	/**
-	 * GetSingleStatus will get the status of single address
+	 * getSingleStatus will get the status of single address
 	 */
-	function GetSingleStatus($ip, $port, $type, $timeout = 5) {
+	function getSingleStatus($ip, $port, $type, $timeout = 5) {
 		$errno = null;
 		$errstr = null;
 		if ($type == 'tcp') {
@@ -152,7 +148,7 @@ class status {
  * @param EasySCP_TemplateEngine $tpl
  * @param EasySCP_Database $sql
  */
-function get_server_status($tpl, $sql) {
+function getServerStatus($tpl, $sql) {
 
 	$cfg = EasySCP_Registry::get('Config');
 
@@ -171,7 +167,7 @@ function get_server_status($tpl, $sql) {
 
 	$easyscp_status = new status;
 
-	$easyscp_status->AddService('localhost', 9876, 'EasySCP Daemon', 'tcp');
+	$easyscp_status->addService('localhost', 9876, 'EasySCP Daemon', 'tcp');
 
 	// Dynamic added Ports
 	while (!$rs->EOF) {
@@ -180,14 +176,14 @@ function get_server_status($tpl, $sql) {
 			: $rs->fields['value'];
 		list($port, $protocol, $name, $status, , $ip) = explode(";", $value);
 		if ($status) {
-			$easyscp_status->AddService(($ip == '127.0.0.1' ? 'localhost' : (empty($ip) ? $cfg->BASE_SERVER_IP : $ip)), (int)$port, $name, $protocol);
+			$easyscp_status->addService(($ip == '127.0.0.1' ? 'localhost' : (empty($ip) ? $cfg->BASE_SERVER_IP : $ip)), (int)$port, $name, $protocol);
 		}
 
 		$rs->moveNext();
 	} // end while
 
-	$easyscp_status->CheckStatus(5);
-	$data = $easyscp_status->GetStatus();
+	$easyscp_status->checkStatus(5);
+	$data = $easyscp_status->getStatus();
 	$up = tr('UP');
 	$down = tr('DOWN');
 
@@ -212,11 +208,11 @@ function get_server_status($tpl, $sql) {
 
 		$tpl->append(
 			array(
-				'HOST' => $data[$i]['ip'],
-				'PORT' => $data[$i]['port'],
-				'SERVICE' => tohtml($data[$i]['service']),
-				'STATUS' => $img,
-				'CLASS' => $class,
+				'HOST'		=> $data[$i]['ip'],
+				'PORT'		=> $data[$i]['port'],
+				'SERVICE'	=> tohtml($data[$i]['service']),
+				'STATUS'	=> $img,
+				'CLASS'		=> $class
 			)
 		);
 

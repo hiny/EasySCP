@@ -87,9 +87,7 @@ function read_line(&$socket) {
  * @return string Daemon answer
  * @todo Remove error operator
  */
-function send_request() {
-
-	$cfg = EasySCP_Registry::get('Config');
+function send_request($execute = 'legacy') {
 
 	@$socket = socket_create (AF_INET, SOCK_STREAM, 0);
 	if ($socket < 0) {
@@ -106,50 +104,13 @@ function send_request() {
 	// read one line with welcome string
 	$out = read_line($socket);
 
-	list($code) = explode(' ', $out);
-	if ($code == 999) {
-		return $out;
-	}
-
-	// send hello query
-	$query = "helo  {$cfg->Version}\r\n";
-	socket_write($socket, $query, strlen ($query));
-
-	// read one line with helo answer
-	$out = read_line($socket);
-
-	list($code) = explode(' ', $out);
-	if ($code == 999) {
-		return $out;
-	}
-
 	// send reg check query
-	$query = "execute query\r\n";
+	$query = $execute . "\r\n";
 	socket_write ($socket, $query, strlen ($query));
-	// read one line key replay
-	$execute_reply = read_line($socket);
-
-	list($code) = explode(' ', $execute_reply);
-	if ($code == 999) {
-		return $out;
-	}
-
-	// send quit query
-	$quit_query = "bye\r\n";
-	socket_write ($socket, $quit_query, strlen($quit_query));
-	// read quit answer
-	$quit_reply = read_line($socket);
-
-	list($code) = explode(' ', $quit_reply);
-	if ($code == 999) {
-		return $out;
-	}
-
-	list($answer) = explode(' ', $execute_reply);
 
 	socket_close ($socket);
 
-	return $answer;
+
 }
 
 /**
@@ -237,37 +198,46 @@ function update_user_props($user_id, $props) {
 		// ... and go update
 
 		// update the domain
-		$query = "
+		$sql_param = array(
+			':domain_last_modified'	=> $domain_last_modified,
+			':domain_mailacc_limit'	=> $mail_max,
+			':domain_ftpacc_limit'	=> $ftp_max,
+			':domain_traffic_limit'	=> $traff_max,
+			':domain_sqld_limit'	=> $sql_db_max,
+			':domain_sqlu_limit'	=> $sql_user_max,
+			':domain_status'		=> $update_status,
+			':domain_alias_limit'	=> $als_max,
+			':domain_subd_limit'	=> $sub_max,
+			':domain_disk_limit'	=> $disk_max,
+			':domain_php'			=> $domain_php,
+			':domain_cgi'			=> $domain_cgi,
+			':domain_dns'			=> $domain_dns,
+			':domain_id'			=> $user_id,
+		);
+
+		$sql_query = "
 			UPDATE
-				`domain`
+				domain
 			SET
-				`domain_last_modified` = ?,
-				`domain_mailacc_limit` = ?,
-				`domain_ftpacc_limit` = ?,
-				`domain_traffic_limit` = ?,
-				`domain_sqld_limit` = ?,
-				`domain_sqlu_limit` = ?,
-				`domain_status` = ?,
-				`domain_alias_limit` = ?,
-				`domain_subd_limit` = ?,
-				`domain_disk_limit` = ?,
-				`domain_php` = ?,
-				`domain_cgi` = ?,
-				`domain_dns` = ?
+				domain_last_modified = :domain_last_modified,
+				domain_mailacc_limit = :domain_mailacc_limit,
+				domain_ftpacc_limit = :domain_ftpacc_limit,
+				domain_traffic_limit = :domain_traffic_limit,
+				domain_sqld_limit = :domain_sqld_limit,
+				domain_sqlu_limit = :domain_sqlu_limit,
+				domain_status = :domain_status,
+				domain_alias_limit = :domain_alias_limit,
+				domain_subd_limit = :domain_subd_limit,
+				domain_disk_limit = :domain_disk_limit,
+				domain_php = :domain_php,
+				domain_cgi = :domain_cgi,
+				domain_dns = :domain_dns
 			WHERE
-				`domain_id` = ?
-			;
+				domain_id = :domain_id;
 		";
 
-		exec_query(
-			$db,
-			$query,
-			array(
-				$domain_last_modified, $mail_max, $ftp_max, $traff_max,
-				$sql_db_max, $sql_user_max, $update_status, $als_max, $sub_max,
-				$disk_max, $domain_php, $domain_cgi, $domain_dns, $user_id
-			)
-		);
+		DB::prepare($sql_query);
+		DB::execute($sql_param);
 
 		// let's update all alias domains for this domain
 
@@ -387,7 +357,11 @@ function array_encode_idna($arr, $asPath = false) {
 	}
 
 	foreach ($arr as $k => $v) {
-		$arr[$k] = encode_idna($v);
+		if (strpos($v, 'xn--') === 0) {
+			$arr[$k] = $v;
+		} else {
+			$arr[$k] = encode_idna($v);
+		}
 	}
 	return $arr;
 }
@@ -400,8 +374,9 @@ function array_encode_idna($arr, $asPath = false) {
  */
 function decode_idna($input) {
 
-	if (function_exists('idn_to_unicode')) {
-		return idn_to_utf8($input, IDNA_USE_STD3_RULES);
+	if (function_exists('idn_to_utf8')) {
+		// return idn_to_utf8($input, IDNA_USE_STD3_RULES);
+		return idn_to_utf8($input);
 	} else {
 
 		$IDNA = new Net_IDNA2();
