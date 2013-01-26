@@ -25,7 +25,7 @@
 		<table>
 			<thead>
 				<tr>
-					<th>{$TR_DOMAIN_ERRORS}</th>
+					<th>{$TR_DOMAIN}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -38,10 +38,8 @@
 			{if isset($TR_DOMAIN_NAME)}
 				{section name=i loop=$TR_DOMAIN_NAME}
 				<tr>
-					<td>&nbsp;</td>
 					<td>
-						{$TR_DOMAIN_NAME[i]} - <a href="easyscp_debugger.php?action=change_status&amp;id={$CHANGE_ID[i]}&amp;type={$CHANGE_TYPE[i]}" class="link">{$TR_CHANGE_STATUS}</a><br />
-						<span style="color:red;">{$TR_DOMAIN_ERROR[i]}</span>
+						{$TR_DOMAIN_NAME[i]} - <span style="color:red;">{$TR_DOMAIN_ERROR[i]}</span>
 					</td>
 				</tr>
 				{/section}
@@ -52,7 +50,7 @@
 		<table>
 			<thead>
 				<tr>
-					<th>{$TR_ALIAS_ERRORS}</th>
+					<th>{$TR_ALIAS}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -78,7 +76,7 @@
 		<table>
 			<thead>
 				<tr>
-					<th>{$TR_SUBDOMAIN_ERRORS}</th>
+					<th>{$TR_SUBDOMAIN}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -90,10 +88,8 @@
 			{if isset($TR_SUBDOMAIN_NAME)}
 				{section name=i loop=$TR_SUBDOMAIN_NAME}
 				<tr>
-					<td>&nbsp;</td>
 					<td>
-						{$TR_SUBDOMAIN_NAME[i]} - <a href="easyscp_debugger.php?action=change_status&amp;id={$CHANGE_ID[i]}&amp;type={$CHANGE_TYPE[i]}" class="link">{$TR_CHANGE_STATUS}</a><br />
-						<span style="color:red;">{$TR_SUBDOMAIN_ERROR[i]}</span>
+						{$TR_SUBDOMAIN_NAME[i]} - <span style="color:red;">{$TR_SUBDOMAIN_ERROR[i]}</span>
 					</td>
 				</tr>
 				{/section}
@@ -104,7 +100,7 @@
 		<table>
 			<thead>
 				<tr>
-					<th>{$TR_SUBDOMAIN_ALIAS_ERRORS}</th>
+					<th>{$TR_SUBDOMAIN_ALIAS}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -130,7 +126,7 @@
 		<table>
 			<thead>
 				<tr>
-					<th>{$TR_MAIL_ERRORS}</th>
+					<th>{$TR_MAIL}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -142,10 +138,8 @@
 			{if isset($TR_MAIL_NAME)}
 				{section name=i loop=$TR_MAIL_NAME}
 				<tr>
-					<td>&nbsp;</td>
 					<td>
-						{$TR_MAIL_NAME[i]} - <a href="easyscp_debugger.php?action=change_status&amp;id={$CHANGE_ID[i]}&amp;type={$CHANGE_TYPE[i]}" class="link">{$TR_CHANGE_STATUS}</a><br />
-						<span style="color:red;">{$TR_MAIL_ERROR[i]}</span>
+						{$TR_MAIL_NAME[i]} - <span style="color:red;">{$TR_MAIL_ERROR[i]}</span>
 					</td>
 				</tr>
 				{/section}
@@ -156,7 +150,7 @@
 		<table>
 			<thead>
 				<tr>
-					<th>{$TR_HTACCESS_ERRORS}</th>
+					<th>{$TR_HTACCESS}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -168,10 +162,8 @@
 			{if isset($TR_HTACCESS_NAME)}
 				{section name=i loop=$TR_HTACCESS_NAME}
 				<tr>
-					<td>&nbsp;</td>
 					<td>
-						{$TR_HTACCESS_NAME[i]} - <a href="easyscp_debugger.php?action=change_status&amp;id={$CHANGE_ID[i]}&amp;type={$CHANGE_TYPE[i]}" class="link">{$TR_CHANGE_STATUS}</a><br />
-						<span style="color:red;">{$TR_HTACCESS_ERROR[i]}</span>
+						{$TR_HTACCESS_TYPE[i]} - {$TR_HTACCESS_NAME[i]} - <span style="color:red;">{$TR_HTACCESS_ERROR[i]}</span>
 					</td>
 				</tr>
 				{/section}
@@ -187,7 +179,13 @@
 			</tbody>
 			<tbody>
 				<tr>
-					<td><a href="easyscp_debugger.php?action=run_engine" class="link">{$EXEC_COUNT} {$TR_EXEC_REQUESTS}</a></td>
+					<td>
+						{if $EXEC_COUNT eq "0"}
+							{$EXEC_COUNT} {$TR_EXEC_REQUESTS}
+						{else}
+							<a href="easyscp_debugger.php?action=run_engine" class="link">{$EXEC_COUNT} {$TR_EXEC_REQUESTS}</a>
+						{/if}
+					</td>
 				</tr>
 				<tr>
 					<td>{$TR_ERRORS}</td>

@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -85,7 +85,7 @@ function send_backup_restore_request($sql, $user_id) {
 			UPDATE
 				`domain`
 			SET
-				`domain_status` = 'restore'
+				`status` = 'restore'
 			WHERE
 				`domain_admin_id` = ?
 		";

@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -69,13 +69,13 @@ if (!is_xhr()) {
 
 		$query = "
 			SELECT
-				`domain_id`, `domain_status`
+				domain_id, status
 			FROM
-				`domain`
+				domain
 			WHERE
-				`domain_id` = ?
+				domain_id = ?
 			AND
-				`domain_created_id` = ?
+				domain_created_id = ?
 		;";
 
 		$result = exec_query($sql, $query, array($domain_id, $reseller_id));
@@ -90,7 +90,7 @@ if (!is_xhr()) {
 			user_goto('users.php?psi=last');
 		} else {
 			$row = $result->fetchRow();
-			$dmn_status = $row['domain_status'];
+			$dmn_status = $row['status'];
 
 			if ($dmn_status != $cfg->ITEM_OK_STATUS && $dmn_status != $cfg->ITEM_ADD_STATUS) {
 				set_page_message(
@@ -245,7 +245,7 @@ function gen_al_page($tpl, $reseller_id) {
 		SELECT
 			`alias_id`,
 			`alias_name`,
-			`alias_status`,
+			`status`,
 			`url_forward`
 		FROM
 			`domain_aliasses`
@@ -259,15 +259,11 @@ function gen_al_page($tpl, $reseller_id) {
 		$tpl->assign('ALIAS_LIST', '');
 	} else {
 		while (!$rs->EOF) {
-			$alias_name = decode_idna($rs->fields['alias_name']);
-			$alias_status = translate_dmn_status($rs->fields['alias_status']);
-			$show_als_fwd = ($rs->fields['url_forward'] == 'no') ? "-" : $rs->fields['url_forward'];
-
 			$tpl->append(
 				array(
-					'DOMAIN_ALIAS'	=> tohtml($alias_name),
-					'STATUS'		=> $alias_status,
-					'FORWARD_URL'	=> $show_als_fwd
+					'DOMAIN_ALIAS'	=> tohtml(decode_idna($rs->fields['alias_name'])),
+					'STATUS'		=> translate_dmn_status($rs->fields['status']),
+					'FORWARD_URL'	=> ($rs->fields['url_forward'] == 'no') ? "-" : $rs->fields['url_forward']
 				)
 			);
 
@@ -397,7 +393,7 @@ function add_domain_alias(&$err_al) {
 	$query = "
 		INSERT INTO
 			`domain_aliasses` (
-				`domain_id`, `alias_name`, `alias_mount`, `alias_status`,
+				`domain_id`, `alias_name`, `alias_mount`, `status`,
 				`alias_ip_id`, `url_forward`
 			)
 		VALUES
@@ -412,7 +408,7 @@ function add_domain_alias(&$err_al) {
 
 	update_reseller_c_props(get_reseller_id($cr_user_id));
 
-	send_request();
+	send_request('110 DOMAIN '.$alias_name.' alias_name');
 	$admin_login = $_SESSION['user_logged'];
 	write_log("$admin_login: add domain alias: $alias_name");
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -148,7 +148,7 @@ function gen_dmn_als_list($tpl, $sql, $dmn_id, $post_check) {
 		WHERE
 			`domain_id` = ?
 		AND
-			`alias_status` = ?
+			`status` = ?
 		ORDER BY
 			`alias_name`
 	";
@@ -215,7 +215,7 @@ function gen_dmn_sub_list($tpl, $sql, $dmn_id, $dmn_name, $post_check) {
 		WHERE
 			`domain_id` = ?
 		AND
-			`subdomain_status` = ?
+			`status` = ?
 		ORDER BY
 			`subdomain_name`
 ";
@@ -286,7 +286,7 @@ function gen_dmn_als_sub_list($tpl, $sql, $dmn_id, $post_check) {
 		WHERE
 			t1.`alias_id` IN (SELECT `alias_id` FROM `domain_aliasses` WHERE `domain_id` = ?)
 		AND
-			t1.`subdomain_alias_status` = ?
+			t1.`status` = ?
 		ORDER BY
 			t1.`subdomain_alias_name`
 	";
@@ -340,7 +340,7 @@ function schedule_mail_account($sql, $domain_id, $dmn_name, $mail_acc) {
 
 	$mail_auto_respond = false;
 	$mail_auto_respond_text = '';
-	$mail_addr = '';
+	$mail_addr = $mail_acc.'@'.decode_idna($dmn_name); // the complete address
 
 	if (array_key_exists('mail_type_normal',$_POST)) {
 		$mail_pass = $_POST['pass'];
@@ -348,19 +348,15 @@ function schedule_mail_account($sql, $domain_id, $dmn_name, $mail_acc) {
 		if ($_POST['dmn_type'] === 'dmn') {
 			$mail_type[] = MT_NORMAL_MAIL;
 			$sub_id = '0';
-			$mail_addr = $mail_acc.'@'.$dmn_name; // the complete address
 		} else if ($_POST['dmn_type'] === 'sub') {
 			$mail_type[] = MT_SUBDOM_MAIL;
 			$sub_id = $_POST['sub_id'];
-			$mail_addr = $mail_acc.'@'.decode_idna($dmn_name); // the complete address
 		} else if ($_POST['dmn_type'] === 'als_sub') {
 			$mail_type[] = MT_ALSSUB_MAIL;
 			$sub_id = $_POST['als_sub_id'];
-			$mail_addr = $mail_acc.'@'.decode_idna($dmn_name); // the complete address
 		} else if ($_POST['dmn_type'] === 'als') {
 			$mail_type[] = MT_ALIAS_MAIL;
 			$sub_id = $_POST['als_id'];
-			$mail_addr = $mail_acc.'@'.decode_idna($dmn_name); // the complete address
 		} else {
 			set_page_message(tr('Unknown domain type'), 'warning');
 			return false;
@@ -480,6 +476,25 @@ function schedule_mail_account($sql, $domain_id, $dmn_name, $mail_acc) {
 
 	write_log($_SESSION['user_logged'] . ": adds new mail account: " . (!empty($mail_addr) ? $mail_addr : $mail_acc));
 	set_page_message(tr('Mail account scheduled for addition!'), 'success');
+
+	/*
+	$sql_param = array(
+		':domain_id' => $domain_id
+	);
+	$sql_query = "
+		SELECT
+			domain_name
+		FROM
+			domain
+		WHERE
+			domain_id = :domain_id
+	";
+
+	// Einzelne Schreibweise
+	DB::prepare($sql_query);
+	$row = DB::execute($sql_param, true);
+	send_request('130 MAIL '.$row['domain_name']);
+	*/
 	send_request('130 MAIL '.$domain_id);
 	user_goto('mail_accounts.php');
 }
@@ -627,24 +642,21 @@ function check_mail_acc_data($sql, $dmn_id, $dmn_name) {
 }
 
 function gen_page_mail_acc_props($tpl, $sql, $user_id) {
-	list($dmn_id,
-		$dmn_name,,,,,,,
-		$dmn_mailacc_limit,,,,,,,,,,,,,,
-	) = get_domain_default_props($sql, $user_id);
+	$dmn_props = get_domain_default_props($user_id);
 
-	list($mail_acc_cnt,,,,) = get_domain_running_mail_acc_cnt($sql, $dmn_id);
+	list($mail_acc_cnt,,,,) = get_domain_running_mail_acc_cnt($sql, $dmn_props['domain_id']);
 
-	if ($dmn_mailacc_limit != 0 && $mail_acc_cnt >= $dmn_mailacc_limit) {
+	if ($dmn_props['domain_mailacc_limit'] != 0 && $mail_acc_cnt >= $dmn_props['domain_mailacc_limit']) {
 		set_page_message(tr('Mail accounts limit reached!'), 'warning');
 		user_goto('mail_accounts.php');
 	} else {
 		$post_check = isset($_POST['uaction']) ? 'yes' : 'no';
-		gen_page_form_data($tpl, $dmn_name, $post_check);
-		gen_dmn_als_list($tpl, $sql, $dmn_id, $post_check);
-		gen_dmn_sub_list($tpl, $sql, $dmn_id, $dmn_name, $post_check);
-		gen_dmn_als_sub_list($tpl, $sql, $dmn_id, $post_check);
+		gen_page_form_data($tpl, $dmn_props['domain_name'], $post_check);
+		gen_dmn_als_list($tpl, $sql, $dmn_props['domain_id'], $post_check);
+		gen_dmn_sub_list($tpl, $sql, $dmn_props['domain_id'], $dmn_props['domain_name'], $post_check);
+		gen_dmn_als_sub_list($tpl, $sql, $dmn_props['domain_id'], $post_check);
 		if (isset($_POST['uaction']) && $_POST['uaction'] === 'add_user') {
-			check_mail_acc_data($sql, $dmn_id, $dmn_name);
+			check_mail_acc_data($sql, $dmn_props['domain_id'], $dmn_props['domain_name']);
 		}
 	}
 }

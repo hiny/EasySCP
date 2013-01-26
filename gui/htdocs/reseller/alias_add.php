@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -272,8 +272,8 @@ function add_domain_alias(&$err_al) {
 
 	if (easyscp_domain_exists($alias_name, $_SESSION['user_id'])) {
 		$err_al = tr('Domain with that name already exists on the system!');
-	} else if (!validates_mpoint($mount_point) && $mount_point != '/') {
-		$err_al = tr("Incorrect mount point syntax");
+//	} else if (!validates_mpoint($mount_point) && $mount_point != '/') {
+//		$err_al = tr("Incorrect mount point syntax");
 	} else if ($alias_name == $cfg->BASE_SERVER_VHOST) {
 		$err_al = tr('Master domain cannot be used!');
 	} else if ($_POST['status'] == 1) {
@@ -385,12 +385,11 @@ function add_domain_alias(&$err_al) {
 
 	// Begin add new alias domain
 	$alias_name = htmlspecialchars($alias_name, ENT_QUOTES, "UTF-8");
-	check_for_lock_file();
 
 	$query = "
 		INSERT INTO
 			`domain_aliasses` (
-				`domain_id`, `alias_name`, `alias_mount`,  `alias_status`,
+				`domain_id`, `alias_name`, `alias_mount`,  `status`,
 				`alias_ip_id`, `url_forward`
 			)
 		VALUES
@@ -428,7 +427,7 @@ function add_domain_alias(&$err_al) {
 		);
 	}
 
-	send_request();
+	send_request('110 DOMAIN '.$als_id.' alias');
 	$admin_login = $_SESSION['user_logged'];
 	write_log("$admin_login: add domain alias: $alias_name");
 

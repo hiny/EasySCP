@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -110,14 +110,11 @@ $tpl->display($template);
  */
 function check_client_domainalias_counts($sql, $user_id) {
 
-	list(
-		$dmn_id, , , ,	, ,	, , , ,	, , , ,
-		$dmn_als_limit, , , , , , , ,
-		) = get_domain_default_props($sql, $user_id);
+	$dmn_props = get_domain_default_props($user_id);
 
-	$als_cnt = get_domain_running_als_cnt($sql, $dmn_id);
+	$als_cnt = get_domain_running_als_cnt($sql, $dmn_props['domain_id']);
 
-	if ($dmn_als_limit != 0 && $als_cnt >= $dmn_als_limit) {
+	if ($dmn_props['domain_alias_limit'] != 0 && $als_cnt >= $dmn_props['domain_alias_limit']) {
 		set_page_message(tr('Domain alias limit reached!'), 'warning');
 		user_goto('domains_manage.php');
 	}
@@ -190,7 +187,7 @@ function gen_al_page($tpl, $reseller_id) {
 	$tpl->assign(
 		array(
 			'DOMAIN'	=> tohtml(decode_idna($alias_name)),
-			'MP'		=> tohtml($mount_point),
+//			'MP'		=> tohtml($mount_point),
 			'FORWARD'	=> tohtml($forward),
 			'CHECK_EN'	=> $check_en,
 			'CHECK_DIS' => $check_dis,
@@ -221,7 +218,7 @@ function add_domain_alias(&$err_al) {
 
 	$cr_user_id = get_user_domain_id($sql, $_SESSION['user_id']);
 	$alias_name	= strtolower($_POST['ndomain_name']);
-	$mount_point = array_encode_idna(strtolower($_POST['ndomain_mpoint']), true);
+//	$mount_point = array_encode_idna(strtolower($_POST['ndomain_mpoint']), true);
 
 	if ($_POST['status'] == 1) {
 		$forward = encode_idna(strtolower(clean_input($_POST['forward'])));
@@ -254,8 +251,8 @@ function add_domain_alias(&$err_al) {
 
 	if (easyscp_domain_exists($alias_name, 0)) {
 	 $err_al = tr('Domain with that name already exists on the system!');
-	} else if (!validates_mpoint($mount_point) && $mount_point != '/') {
-		$err_al = tr("Incorrect mount point syntax");
+//	} else if (!validates_mpoint($mount_point) && $mount_point != '/') {
+//		$err_al = tr("Incorrect mount point syntax");
 	} else if ($alias_name == $cfg->BASE_SERVER_VHOST) {
 		$err_al = tr('Master domain cannot be used!');
 	} else if ($_POST['status'] == 1) {
@@ -321,43 +318,43 @@ function add_domain_alias(&$err_al) {
 			$err_al = tr("Domain with this name already exist");
 		}
 
-		$query = "
-			SELECT
-				COUNT(`subdomain_id`) AS cnt
-			FROM
-				`subdomain`
-			WHERE
-					`domain_id` = ?
-				AND
-					`subdomain_mount` = ?
-		;";
-		$subdomres = exec_query($sql, $query, array($cr_user_id, $mount_point));
-		$subdomdata = $subdomres->fetchRow();
-
-		$query = "
-			SELECT
-				COUNT(`subdomain_alias_id`) AS alscnt
-			FROM
-				`subdomain_alias`
-			WHERE
-					`alias_id`
-				IN (
-					SELECT
-						`alias_id`
-					FROM
-						`domain_aliasses`
-					WHERE
-						`domain_id` = ?
-				)
-				AND
-					`subdomain_alias_mount` = ?
-		;";
-		$alssubdomres = exec_query($sql, $query, array($cr_user_id, $mount_point));
-		$alssubdomdata = $alssubdomres->fetchRow();
-
-		if ($subdomdata['cnt'] > 0 || $alssubdomdata['alscnt'] > 0) {
-			$err_al = tr("There is a subdomain with the same mount point!");
-		}
+//		$query = "
+//			SELECT
+//				COUNT(`subdomain_id`) AS cnt
+//			FROM
+//				`subdomain`
+//			WHERE
+//					`domain_id` = ?
+//				AND
+//					`subdomain_mount` = ?
+//		;";
+//		$subdomres = exec_query($sql, $query, array($cr_user_id, $mount_point));
+//		$subdomdata = $subdomres->fetchRow();
+//
+//		$query = "
+//			SELECT
+//				COUNT(`subdomain_alias_id`) AS alscnt
+//			FROM
+//				`subdomain_alias`
+//			WHERE
+//					`alias_id`
+//				IN (
+//					SELECT
+//						`alias_id`
+//					FROM
+//						`domain_aliasses`
+//					WHERE
+//						`domain_id` = ?
+//				)
+//				AND
+//					`subdomain_alias_mount` = ?
+//		;";
+//		$alssubdomres = exec_query($sql, $query, array($cr_user_id, $mount_point));
+//		$alssubdomdata = $alssubdomres->fetchRow();
+//
+//		if ($subdomdata['cnt'] > 0 || $alssubdomdata['alscnt'] > 0) {
+//			$err_al = tr("There is a subdomain with the same mount point!");
+//		}
 	}
 
 	if ('_off_' !== $err_al) {
@@ -371,7 +368,7 @@ function add_domain_alias(&$err_al) {
 	$query = "
 		INSERT INTO
 			`domain_aliasses` (
-				`domain_id`, `alias_name`, `alias_mount`, `alias_status`,
+				`domain_id`, `alias_name`, `alias_mount`, `status`,
 				`alias_ip_id`, `url_forward`
 			)
 		VALUES
@@ -397,7 +394,7 @@ function add_domain_alias(&$err_al) {
 			'success'
 		);
 	} else {
-		send_request();
+		send_request('110 DOMAIN '.$alias_name.' alias_name');
 		write_log("$admin_login: domain alias scheduled for addition: $alias_name.");
 		set_page_message(
 			tr('Alias scheduled for addition!'),

@@ -63,7 +63,7 @@
 						<td>{$WEB_ALL}</td>
 						<td>{$FTP_ALL}</td>
 						<td>{$SMTP_ALL}</td>
-						<td>{$POP_ALL}</td>
+						<td>{$POP3_ALL}</td>
 						<td>{$SUM_ALL}</td>
 					</tr>
 				</tfoot>
@@ -71,11 +71,11 @@
 					{section name=i loop=$DATE}
 						<tr>
 							<td>{$DATE[i]}</td>
-							<td>{$WEB_TRAFF[i]}</td>
-							<td>{$FTP_TRAFF[i]}</td>
-							<td>{$SMTP_TRAFF[i]}</td>
-							<td>{$POP_TRAFF[i]}</td>
-							<td>{$SUM_TRAFF[i]}</td>
+							<td>{$WEB_TRAFFIC[i]}</td>
+							<td>{$FTP_TRAFFIC[i]}</td>
+							<td>{$SMTP_TRAFFIC[i]}</td>
+							<td>{$POP3_TRAFFIC[i]}</td>
+							<td>{$SUM_TRAFFIC[i]}</td>
 						</tr>
 					{/section}
 				</tbody>

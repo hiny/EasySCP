@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,6 +24,10 @@
 require '../../include/easyscp-lib.php';
 
 $cfg = EasySCP_Registry::get('Config');
+$cfg2 = EasySCP_Configuration::getInstance();
+
+$cfg2->PREVENT_EXTERNAL_LOGIN_ADMIN = 'blablub';
+$cfg2->DUMP_GUI_DEBUG = 'blablub';
 
 check_login(__FILE__, $cfg->PREVENT_EXTERNAL_LOGIN_ADMIN);
 

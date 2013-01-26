@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -192,7 +192,7 @@ function gen_page_catchall_list($tpl, $sql, $dmn_id, $dmn_name) {
 			WHERE
 				`domain_id` = '$dmn_id'
 			AND
-				`alias_status` = 'ok'
+				`status` = 'ok'
 		";
 
 		$rs = execute_query($sql, $query);
@@ -247,7 +247,7 @@ function gen_page_catchall_list($tpl, $sql, $dmn_id, $dmn_name) {
 			AND
 				a.`alias_id` = b.`alias_id`
 			AND
-				a.`subdomain_alias_status` = 'ok'
+				a.`status` = 'ok'
 		";
 
 		$rs = execute_query($sql, $query);
@@ -302,7 +302,7 @@ function gen_page_catchall_list($tpl, $sql, $dmn_id, $dmn_name) {
 			AND
 				a.`domain_id` = b.`domain_id`
 			AND
-				a.`subdomain_status` = 'ok'
+				a.`status` = 'ok'
 		";
 
 		$rs = execute_query($sql, $query);
@@ -348,8 +348,8 @@ function gen_page_catchall_list($tpl, $sql, $dmn_id, $dmn_name) {
 
 function gen_page_lists($tpl, $sql, $user_id)
 {
-	list($dmn_id,$dmn_name) = get_domain_default_props($sql, $user_id);
+	$dmn_props = get_domain_default_props($user_id);
 
-	gen_page_catchall_list($tpl, $sql, $dmn_id, $dmn_name);
+	gen_page_catchall_list($tpl, $sql, $dmn_props['domain_id'], $dmn_props['domain_name']);
 }
 ?>

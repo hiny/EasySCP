@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -484,11 +484,11 @@ function check_user_data($tpl, $sql, $reseller_id, $user_id) {
 	if (empty($ed_error)) {
 		// Set domains status to 'change' to update mod_cband's limit
 		if ($previous_utraff_max != $utraff_max) {
-			$query = "UPDATE `domain` SET `domain_status` = 'change' WHERE `domain_id` = ?";
+			$query = "UPDATE `domain` SET `status` = 'change' WHERE `domain_id` = ?";
 			exec_query($sql, $query, $user_id);
-			$query = "UPDATE `subdomain` SET `subdomain_status` = 'change' WHERE `domain_id` = ?";
+			$query = "UPDATE `subdomain` SET `status` = 'change' WHERE `domain_id` = ?";
 			exec_query($sql, $query, $user_id);
-			send_request();
+			send_request('110 DOMAIN '.$user_id.' domain');
 		}
 
 		$user_props = "$usub_current;$usub_max;";

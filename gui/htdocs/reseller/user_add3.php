@@ -1,21 +1,10 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * This work is licensed under the Creative Commons Attribution-NoDerivs 3.0 Unported License.
+ * To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/3.0/.
  *
  * @link 		http://www.easyscp.net
  * @author 		EasySCP Team
@@ -29,6 +18,15 @@ $cfg = EasySCP_Registry::get('Config');
 
 $tpl = EasySCP_TemplateEngine::getInstance();
 $template = 'reseller/user_add3.tpl';
+
+if (isset($_SESSION['user_add3_added']) && $_SESSION['user_add3_added'] == "_yes_") {
+	user_goto('users.php?psi=last');
+}
+
+if (isset($_SESSION['user_add3_add_alias']) && $_SESSION['user_add3_add_alias'] == "_yes_") {
+	unset($_SESSION["user_add3_add_alias"]);
+	user_goto('user_add4.php?accout=' . $_SESSION['dmn_id']);
+}
 
 // static page messages
 gen_logged_from($tpl);
@@ -58,7 +56,6 @@ $tpl->assign(
 		'TR_COUNTRY'			=> tr('Country'),
 		'TR_STREET1'			=> tr('Street 1'),
 		'TR_STREET2'			=> tr('Street 2'),
-		'TR_MAIL'				=> tr('Email'),
 		'TR_PHONE'				=> tr('Phone'),
 		'TR_FAX'				=> tr('Fax'),
 		'TR_BTN_ADD_USER'		=> tr('Add user'),
@@ -78,6 +75,7 @@ if (!init_in_values()) {
 	unset_messages();
 	user_goto('user_add1.php');
 }
+
 
 // Process the action ...
 if (isset($_POST['uaction'])
@@ -154,7 +152,7 @@ function init_in_values() {
 function gen_user_add3_page($tpl) {
 	global $dmn_name, $hpid, $dmn_user_name, $user_email, $customer_id,
 		$first_name, $last_name, $gender, $firm, $zip, $city, $state, $country,
-		$street_one, $street_two, $mail, $phone, $fax;
+		$street_one, $street_two, $phone, $fax;
 
 	$cfg = EasySCP_Registry::get('Config');
 
@@ -178,7 +176,6 @@ function gen_user_add3_page($tpl) {
 			'VL_COUNTRY'		=> tohtml($country),
 			'VL_STREET1'		=> tohtml($street_one),
 			'VL_STREET2'		=> tohtml($street_two),
-			'VL_MAIL'			=> tohtml($mail),
 			'VL_PHONE'			=> tohtml($phone),
 			'VL_FAX'			=> tohtml($fax)
 		)
@@ -211,7 +208,6 @@ function gen_empty_data() {
 	$street_one		= '';
 	$street_two		= '';
 	$phone			= '';
-	$mail			= '';
 	$fax			= '';
 	$domain_ip		= '';
 
@@ -223,7 +219,7 @@ function gen_empty_data() {
 function add_user_data($reseller_id) {
 	global $hpid, $dmn_name, $dmn_expire, $dmn_user_name, $admin_login, 
 		$user_email, $customer_id, $first_name, $last_name, $gender, $firm,
-		$zip, $city, $state, $country, $street_one, $street_two, $mail, $phone,
+		$zip, $city, $state, $country, $street_one, $street_two, $phone,
 		$fax, $inpass, $domain_ip, $dns, $backup;
 
 	$sql = EasySCP_Registry::get('Db');
@@ -257,6 +253,7 @@ function add_user_data($reseller_id) {
 
 	list(
 		$php,
+		$phpe,
 		$cgi,
 		$sub,
 		$als,
@@ -272,6 +269,7 @@ function add_user_data($reseller_id) {
 	) = explode(";", $props);
 
 	$php			= preg_replace("/\_/", "", $php);
+	$phpe			= preg_replace("/\_/", "", $phpe);
 	$cgi			= preg_replace("/\_/", "", $cgi);
 	$ssl			= preg_replace("/\_/", "", $ssl);
 	$backup			= preg_replace("/\_/", "", $backup);
@@ -294,8 +292,6 @@ function add_user_data($reseller_id) {
 	if (!validates_dname(decode_idna($dmn_user_name))) {
 		return;
 	}
-
-	check_for_lock_file();
 
 	$query = "
 		INSERT INTO `admin` (
@@ -339,10 +335,10 @@ function add_user_data($reseller_id) {
 			`domain_created_id`, `domain_created`, `domain_expires`,
 			`domain_mailacc_limit`, `domain_ftpacc_limit`,
 			`domain_traffic_limit`, `domain_sqld_limit`,
-			`domain_sqlu_limit`, `domain_status`,
+			`domain_sqlu_limit`, `status`,
 			`domain_subd_limit`, `domain_alias_limit`,
 			`domain_ip_id`, `domain_disk_limit`,
-			`domain_disk_usage`, `domain_php`, `domain_cgi`,
+			`domain_disk_usage`, `domain_php`, `domain_php_edit`, `domain_cgi`,
 			`allowbackup`, `domain_dns`, `domain_ssl`
 		)
 		VALUES (
@@ -352,8 +348,8 @@ function add_user_data($reseller_id) {
 			?, ?,
 			?, ?,
 			?, ?,
-			?, ?, '0',
 			?, ?,
+			'0', ?, ?, ?,
 			?, ?, ?
 		)
 	";
@@ -365,13 +361,13 @@ function add_user_data($reseller_id) {
 			$dmn_name, $record_id,
 			$reseller_id, $mail, $ftp, $traff, $sql_db,
 			$sql_user, $cfg->ITEM_ADD_STATUS, $sub, $als, $domain_ip,
-			$disk, $php, $cgi, $backup, $dns, $ssl
+			$disk, $php, $phpe, $cgi, $backup, $dns, $ssl
 		)
 	);
 	
 	$dmn_id = $sql->insertId();
 	
-	AddDefaultDNSEntries($dmn_id, 0, $dmn_name, $domain_ip);
+	// AddDefaultDNSEntries($dmn_id, 0, $dmn_name, $domain_ip);
 
 	// TODO: Check if max user and group id is reached
 	// update domain and gid
@@ -457,7 +453,8 @@ function add_user_data($reseller_id) {
 			$user_def_lang,
 			$user_theme_color));
 	// send request to daemon
-	send_request('110 DOMAIN '.$dmn_user_name);
+	// TODO Prüfen, da es hier zu einem Fehler kommt ("Domain data has been altered. Please enter again.")
+	send_request('110 DOMAIN '.$dmn_id.' domain');
 	send_request('130 MAIL '.$dmn_id);
 
 	$admin_login = $_SESSION['user_logged'];
@@ -470,6 +467,7 @@ function add_user_data($reseller_id) {
 		// we have to add some aliases for this looser
 		$_SESSION['dmn_id'] = $dmn_id;
 		$_SESSION['dmn_ip'] = $domain_ip;
+		$_SESSION['user_add3_add_alias'] = "_yes_";
 		user_goto('user_add4.php?accout=' . $dmn_id);
 	} else {
 		// we have not to add alias

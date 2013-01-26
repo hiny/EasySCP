@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -47,7 +47,7 @@ if (isset($_POST['uaction']) && ('sub_data' === $_POST['uaction'])) {
 		user_goto('users.php?psi=last');
 	}
 
-	if (check_user_data($tpl, $sql, $_SESSION['user_id'], $editid)) { // Save data to db
+	if (check_user_data($sql, $_SESSION['user_id'], $editid)) { // Save data to db
 		$_SESSION['dedit'] = "_yes_";
 		user_goto('users.php?psi=last');
 	}
@@ -76,6 +76,7 @@ $tpl->assign(
 		'TR_DOMAIN_EXPIRE'		=> tr('Domain expire'),
 		'TR_DOMAIN_IP'			=> tr('Domain IP'),
 		'TR_PHP_SUPP'			=> tr('PHP support'),
+		'TR_PHP_EDIT'			=> tr('PHP editor'),
 		'TR_CGI_SUPP'			=> tr('CGI support'),
 		'TR_SSL_SUPP'			=> tr('SSL support'),
 		'TR_DNS_SUPP'			=> tr('Manual DNS support'),
@@ -177,7 +178,7 @@ function load_user_data($user_id, $domain_id) {
  * Load additional data
  */
 function load_additional_data($user_id, $domain_id) {
-	global $domain_name, $domain_expires, $domain_ip, $php_sup;
+	global $domain_name, $domain_expires, $domain_ip, $php_sup, $phpe_sup;
 	global $cgi_supp, $ssl_supp, $username, $allowbackup;
 	global $dns_supp;
 
@@ -191,6 +192,7 @@ function load_additional_data($user_id, $domain_id) {
 			`domain_expires`,
 			`domain_ip_id`,
 			`domain_php`,
+			`domain_php_edit`,
 			`domain_cgi`,
 			`domain_ssl`,
 			`domain_admin_id`,
@@ -217,12 +219,13 @@ function load_additional_data($user_id, $domain_id) {
 		$domain_expires = date($date_format, $domain_expires);
 	}
 
-	$domain_ip_id		= $data['domain_ip_id'];
+	$domain_ip_id	= $data['domain_ip_id'];
 	$php_sup		= $data['domain_php'];
+	$phpe_sup		= $data['domain_php_edit'];
 	$cgi_supp		= $data['domain_cgi'];
 	$ssl_supp		= $data['domain_ssl'];
-	$allowbackup		= $data['allowbackup'];
-	$domain_admin_id	= $data['domain_admin_id'];
+	$allowbackup	= $data['allowbackup'];
+	$domain_admin_id= $data['domain_admin_id'];
 	$dns_supp		= $data['domain_dns'];
 	// Get IP of domain
 	$query = "
@@ -264,7 +267,7 @@ function load_additional_data($user_id, $domain_id) {
  * @param EasySCP_TemplateEngine $tpl
  */
 function gen_editdomain_page($tpl) {
-	global $domain_name, $domain_expires, $domain_ip, $php_sup;
+	global $domain_name, $domain_expires, $domain_ip, $php_sup, $phpe_sup;
 	global $cgi_supp, $ssl_supp, $sub, $als;
 	global $mail, $ftp, $sql_db;
 	global $sql_user, $traff, $disk;
@@ -338,6 +341,8 @@ function gen_editdomain_page($tpl) {
 		array(
 			'PHP_YES'					=> ($php_sup == 'yes') ? $cfg->HTML_SELECTED : '',
 			'PHP_NO'					=> ($php_sup != 'yes') ? $cfg->HTML_SELECTED : '',
+			'PHP_EDIT_YES'				=> ($phpe_sup == 'yes') ? $cfg->HTML_SELECTED : '',
+			'PHP_EDIT_NO'				=> ($phpe_sup != 'yes') ? $cfg->HTML_SELECTED : '',
 			'CGI_YES'					=> ($cgi_supp == 'yes') ? $cfg->HTML_SELECTED : '',
 			'CGI_NO'					=> ($cgi_supp != 'yes') ? $cfg->HTML_SELECTED : '',
 			'SSL_YES'					=> ($ssl_supp == 'yes') ? $cfg->HTML_SELECTED : '',
@@ -364,15 +369,14 @@ function gen_editdomain_page($tpl) {
 
 /**
  * Check input data
- * @param EasySCP_TemplateEngine $tpl
  * @param EasySCP_Database $sql
  * @param int $reseller_id
  * @param int $user_id
  */
-function check_user_data($tpl, $sql, $reseller_id, $user_id) {
+function check_user_data($sql, $reseller_id, $user_id) {
 
 	global $sub, $als, $mail, $ftp, $sql_db, $sql_user, $traff, $disk, $sql,
-		$domain_php, $domain_cgi, $domain_ssl, $allowbackup, $domain_dns, $domain_expires;
+		$domain_php, $domain_php_edit, $domain_cgi, $domain_ssl, $allowbackup, $domain_dns, $domain_expires;
 
 	$domain_expires_date  = (isset($_POST['dmn_expire_date'])) ? clean_input($_POST['dmn_expire_date']) : 0;
 	$domain_expires_never = (isset($_POST['dmn_expire_never'])) ? $_POST['dmn_expire_never'] : "off";
@@ -387,6 +391,7 @@ function check_user_data($tpl, $sql, $reseller_id, $user_id) {
 
 	// $domain_ip = $_POST['domain_ip'];
 	$domain_php		= preg_replace("/\_/", "", $_POST['domain_php']);
+	$domain_php_edit= preg_replace("/\_/", "", $_POST['domain_php_edit']);
 	$domain_cgi		= preg_replace("/\_/", "", $_POST['domain_cgi']);
 	$domain_ssl		= preg_replace("/\_/", "", $_POST['domain_ssl']);
 	$domain_dns		= preg_replace("/\_/", "", $_POST['domain_dns']);
@@ -507,13 +512,12 @@ function check_user_data($tpl, $sql, $reseller_id, $user_id) {
 	if (empty($ed_error)) {
 		// Set domains status to 'change' to update mod_cband's limit
 		if ($previous_utraff_max != $utraff_max) {
-			$query = "UPDATE `domain` SET `domain_status` = 'change' WHERE `domain_id` = ?";
+			$query = "UPDATE `domain` SET `status` = 'change' WHERE `domain_id` = ?";
 			exec_query($sql, $query, $user_id);
-			$query = "UPDATE `subdomain` SET `subdomain_status` = 'change' WHERE `domain_id` = ?";
+			$query = "UPDATE `subdomain` SET `status` = 'change' WHERE `domain_id` = ?";
 			exec_query($sql, $query, $user_id);
 
-			$row = DB::query("SELECT domain_name FROM domain WHERE domain_id = '".$user_id."'", true);
-			send_request('110 DOMAIN '.$row['domain_name']);
+			send_request('110 DOMAIN '.$user_id.' domain');
 		}
 
 		$user_props  = "$usub_current;$usub_max;";
@@ -526,6 +530,7 @@ function check_user_data($tpl, $sql, $reseller_id, $user_id) {
 		$user_props .= "$udisk_max;";
 		// $user_props .= "$domain_ip;";
 		$user_props .= "$domain_php;";
+		$user_props .= "$domain_php_edit;";
 		$user_props .= "$domain_cgi;";
 		$user_props .= "$domain_ssl;";
 		$user_props .= "$allowbackup;";

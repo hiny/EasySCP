@@ -57,10 +57,10 @@
 					<td>{$TR_DOMAIN_NAME} <span id="dmn_help" class="icon i_help">&nbsp;</span></td>
 					<td><input type="text" name="ndomain_name" id="ndomain_name" value="{$DOMAIN}" onblur="makeUser();" /></td>
 				</tr>
-				<tr>
+<!--				<tr>
 					<td>{$TR_MOUNT_POINT}</td>
 					<td><input type="text" name="ndomain_mpoint" id="ndomain_mpoint" value='{$MP}' /></td>
-				</tr>
+				</tr>-->
 				<tr>
 					<td>{$TR_ENABLE_FWD}</td>
 					<td>

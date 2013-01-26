@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -141,7 +141,7 @@ function gen_dmn_als_list($tpl, $sql, $dmn_id, $post_check) {
 		WHERE
 			`domain_id` = ?
 		AND
-			`alias_status` = ?
+			`status` = ?
 		ORDER BY
 			`alias_name`
 	";
@@ -196,7 +196,7 @@ function gen_dmn_sub_list($tpl, $sql, $dmn_id, $dmn_name, $post_check) {
 		WHERE
 			`domain_id` = ?
 		AND
-			`subdomain_status` = ?
+			`status` = ?
 		ORDER BY
 			`subdomain_name`
 	";
@@ -250,11 +250,7 @@ function get_ftp_user_gid($sql, $dmn_name, $ftp_user) {
 	$rs = exec_query($sql, $query, $dmn_name);
 
 	if ($rs->recordCount() == 0) { // there is no such group. we'll need a new one.
-		list(,
-			$temp_dmn_name,
-			$temp_dmn_gid,,,,,,,,,,,,,,,
-			$temp_dmn_disk_limit
-		) = get_domain_default_props($sql, $_SESSION['user_id']);
+		$temp_dmn_props = get_domain_default_props($_SESSION['user_id']);
 
 		$query = "
 			INSERT INTO ftp_group
@@ -263,17 +259,17 @@ function get_ftp_user_gid($sql, $dmn_name, $ftp_user) {
 				(?, ?, ?)
 		";
 
-		exec_query($sql, $query, array($dmn_name, $temp_dmn_gid, $ftp_user));
+		exec_query($sql, $query, array($dmn_name, $temp_dmn_props['domain_gid'], $ftp_user));
 		// add entries in the quota tables
 		// first check if we have it by one or other reason
 		$query = "SELECT COUNT(`name`) AS cnt FROM `quotalimits` WHERE `name` = ?";
-		$rs = exec_query($sql, $query, $temp_dmn_name);
+		$rs = exec_query($sql, $query, $temp_dmn_props['domain_name']);
 		if ($rs->fields['cnt'] == 0) {
 			// ok insert it
-			if ($temp_dmn_disk_limit == 0) {
+			if ($temp_dmn_props['domain_disk_limit'] == 0) {
 				$dlim = 0;
 			} else {
-				$dlim = $temp_dmn_disk_limit * 1024 * 1024;
+				$dlim = $temp_dmn_props['domain_disk_limit'] * 1024 * 1024;
 			}
 
 			$query = "
@@ -285,10 +281,10 @@ function get_ftp_user_gid($sql, $dmn_name, $ftp_user) {
 					(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 			";
 
-			exec_query($sql, $query, array($temp_dmn_name, 'group', 'false', 'hard', $dlim, 0, 0, 0, 0, 0));
+			exec_query($sql, $query, array($temp_dmn_props['domain_name'], 'group', 'false', 'hard', $dlim, 0, 0, 0, 0, 0));
 		}
 
-		return $temp_dmn_gid;
+		return $temp_dmn_props['domain_gid'];
 	} else {
 		$ftp_gid = $rs->fields['gid'];
 		$members = $rs->fields['members'];
@@ -334,9 +330,9 @@ function get_ftp_user_uid($sql, $dmn_name, $ftp_user, $ftp_user_gid) {
 		return -1;
 	}
 
-	list(,,,$temp_dmn_uid) = get_domain_default_props($sql, $_SESSION['user_id']);
+	$temp_dmn_props = get_domain_default_props($_SESSION['user_id']);
 
-	return $temp_dmn_uid;
+	return $temp_dmn_props['domain_uid'];
 }
 
 function add_ftp_user($sql, $dmn_name) {
@@ -422,8 +418,8 @@ function add_ftp_user($sql, $dmn_name) {
 
 	exec_query($sql, $query, array($ftp_user, $ftp_passwd, $ftp_loginpasswd, $ftp_uid, $ftp_gid, $ftp_shell, $ftp_home));
 
-	$domain_props = get_domain_default_props($sql, $_SESSION['user_id']);
-	update_reseller_c_props($domain_props[4]);
+	$domain_props = get_domain_default_props($_SESSION['user_id']);
+	update_reseller_c_props($domain_props['domain_created_id']);
 
 	write_log($_SESSION['user_logged'] . ": add new FTP account: $ftp_user");
 	set_page_message(tr('FTP account added!'), 'success');
@@ -501,27 +497,24 @@ function check_ftp_acc_data($tpl, $sql, $dmn_id, $dmn_name) {
 }
 
 function gen_page_ftp_acc_props($tpl, $sql, $user_id) {
-	list($dmn_id,
-		$dmn_name,,,,,,,,
-		$dmn_ftpacc_limit
-	) = get_domain_default_props($sql, $user_id);
+	$dmn_props = get_domain_default_props($user_id);
 
-	list($ftp_acc_cnt, , , ) = get_domain_running_ftp_acc_cnt($sql, $dmn_id);
+	list($ftp_acc_cnt, , , ) = get_domain_running_ftp_acc_cnt($sql, $dmn_props['domain_id']);
 
-	if ($dmn_ftpacc_limit != 0 && $ftp_acc_cnt >= $dmn_ftpacc_limit) {
+	if ($dmn_props['domain_ftpacc_limit'] != 0 && $ftp_acc_cnt >= $dmn_props['domain_ftpacc_limit']) {
 		set_page_message(tr('FTP accounts limit reached!'), 'warning');
 		user_goto('ftp_accounts.php');
 	} else {
 		if (!isset($_POST['uaction'])) {
-			gen_page_form_data($tpl, $dmn_name, 'no');
-			gen_dmn_als_list($tpl, $sql, $dmn_id, 'no');
-			gen_dmn_sub_list($tpl, $sql, $dmn_id, $dmn_name, 'no');
+			gen_page_form_data($tpl, $dmn_props['domain_name'], 'no');
+			gen_dmn_als_list($tpl, $sql, $dmn_props['domain_id'], 'no');
+			gen_dmn_sub_list($tpl, $sql, $dmn_props['domain_id'], $dmn_props['domain_name'], 'no');
 			gen_page_js($tpl);
 		} else if (isset($_POST['uaction']) && $_POST['uaction'] === 'add_user') {
-			gen_page_form_data($tpl, $dmn_name, 'yes');
-			gen_dmn_als_list($tpl, $sql, $dmn_id, 'yes');
-			gen_dmn_sub_list($tpl, $sql, $dmn_id, $dmn_name, 'yes');
-			check_ftp_acc_data($tpl, $sql, $dmn_id, $dmn_name);
+			gen_page_form_data($tpl, $dmn_props['domain_name'], 'yes');
+			gen_dmn_als_list($tpl, $sql, $dmn_props['domain_id'], 'yes');
+			gen_dmn_sub_list($tpl, $sql, $dmn_props['domain_id'], $dmn_props['domain_name'], 'yes');
+			check_ftp_acc_data($tpl, $sql, $dmn_props['domain_id'], $dmn_props['domain_name']);
 		}
 	}
 }

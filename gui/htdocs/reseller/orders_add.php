@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -145,8 +145,6 @@ if (easyscp_domain_exists($dmn_user_name, $_SESSION['user_id'])) {
 	user_goto('orders.php');
 }
 
-check_for_lock_file();
-
 $query = "
 	INSERT INTO `admin` (
 		`admin_name`, `admin_pass`, `admin_type`, `domain_created`,
@@ -193,7 +191,7 @@ $query = "
 		`domain_created_id`, `domain_created`,
 		`domain_mailacc_limit`, `domain_ftpacc_limit`,
 		`domain_traffic_limit`, `domain_sqld_limit`,
-		`domain_sqlu_limit`, `domain_status`,
+		`domain_sqlu_limit`, `status`,
 		`domain_subd_limit`, `domain_alias_limit`,
 		`domain_ip_id`, `domain_disk_limit`,
 		`domain_disk_usage`, `domain_php`, `domain_cgi`,

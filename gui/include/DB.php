@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This work is licensed under the Creative Commons Attribution-NoDerivs 3.0 Unported License.
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/3.0/.
@@ -34,6 +34,7 @@ class DB extends DB_Config {
 	 * Zusätzlich werden einige Optionen für die Datenbank verbindung gesetzt:
 	 * ATTR_PERSISTENT = Die Datenbank verbindung bleibt solange bestehen bis das Script sich beendet hat.
 	 *
+	 * @throws Exception
 	 * @return object DB::$connectid Gibt das Objekt für die Datenbankverbindung zurück oder erstellt dieses falls es noch nicht vohanden ist.
 	 */
 	static public function getInstance(){
@@ -53,7 +54,18 @@ class DB extends DB_Config {
 				throw new Exception($e->getMessage());
 			}
 		}
+
 		return self::$connectid;
+	}
+
+	/**
+	 * Beendet die aktuelle Instanz der Datenbank verbindung.
+	 */
+	static public function closeInstance(){
+		self::$connectid = null;
+		self::$connectid = false;
+		self::$stmt = null;
+		self::$stmt = false;
 	}
 
 	/**
@@ -74,6 +86,7 @@ class DB extends DB_Config {
 	 *
 	 * @param array $sql_param Eine Array von Parametern/Daten für den Query.
 	 * @param bool $single Gibt an ob bei erfolg nur der erste Datensatz zurückgeliefert werden soll.
+	 * @throws Exception
 	 * @return mixed Wenn single = true wird der erste Datensatz zurückgegeben, ansonsten das Objekt für die Datenbank abfrage welches dann per fetch()/fetch_all() abgerufen werden kann.
 	 *
 	 * Die Anzahl der zurückgegebenen Zeilen kann mittels "Object->rowCount()" ermittelt werden.
@@ -98,9 +111,10 @@ class DB extends DB_Config {
 
 	/**
 	 * Direktes ausführen eines SQL Query ohne optionale Parametern/Daten.
-	 * 
+	 *
 	 * @param string $sql_query Der Query den man ausführen möchte.
 	 * @param bool $single Gibt an ob bei erfolg nur der erste Datensatz zurückgeliefert werden soll.
+	 * @throws Exception
 	 * @return mixed Wenn single = true wird der erste Datensatz zurückgegeben, ansonsten das Objekt für die Datenbank abfrage welche dann per fetch()/fetch_all()/foreach abgerufen werden kann.
 	 *
 	 * Die Anzahl der zurückgegebenen Zeilen kann mittels "Object->rowCount()" ermittelt werden.
@@ -125,10 +139,11 @@ class DB extends DB_Config {
 
 	/**
 	 * Vorbereiten und Ausführen eines SQL Query mit optionalen Parametern/Daten.
-	 * 
+	 *
 	 * @param string $sql_query Der Query den man vorbereiten möchte (Prepared Statement).
 	 * @param array $sql_param Eine Array von Parametern/Daten für den Query.
 	 * @param bool $single Gibt an ob bei erfolg nur der erste Datensatz zurückgeliefert werden soll.
+	 * @throws Exception
 	 * @return mixed Wenn single = true wird der erste Datensatz zurückgegeben, ansonsten das Objekt für die Datenbank abfrage welches dann per fetch()/fetch_all() abgerufen werden kann.
 	 */
 	static public function query_new($sql_query, $sql_param, $single = false){
@@ -173,6 +188,7 @@ class DB extends DB_Config {
 	 * Decrypt data
 	 *
 	 * @param string $data Encrypted data
+	 * @throws Exception
 	 * @return string Decrypted data
 	 */
 	static public function decrypt_data($data) {
@@ -204,6 +220,7 @@ class DB extends DB_Config {
 	 * Encrypt data
 	 *
 	 * @param string $data Data for encryption
+	 * @throws Exception
 	 * @return string Encrypted data
 	 */
 	static public function encrypt_data($data) {
@@ -239,6 +256,11 @@ class DB extends DB_Config {
 		$startzeit=explode(' ',$startzeit);
 		$endzeit=explode(' ',$endzeit);
 		return round($endzeit[0]-$startzeit[0]+$endzeit[1]-$startzeit[1],6);
+	}
+
+	static public function setDatabase(){
+		self::$stmt = self::getInstance()->query('use '.self::$DB_DATABASE);
+		self::$stmt->closeCursor();
 	}
 }
 ?>

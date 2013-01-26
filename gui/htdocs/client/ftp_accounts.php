@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -105,8 +105,6 @@ function gen_page_ftp_list($tpl, $sql, $dmn_id, $dmn_name) {
 		);
 
 	} else {
-		$tpl->assign('FTP_MESSAGE', '');
-
 		$ftp_accs = explode(',', $rs->fields['members']);
 		sort($ftp_accs);
 		reset($ftp_accs);
@@ -142,8 +140,8 @@ function gen_page_ftp_list($tpl, $sql, $dmn_id, $dmn_name) {
 
 function gen_page_lists($tpl, $sql, $user_id) {
 
-	list($dmn_id,$dmn_name) = get_domain_default_props($sql, $user_id);
+	$dmn_props = get_domain_default_props($user_id);
 
-	gen_page_ftp_list($tpl, $sql, $dmn_id, $dmn_name);
+	gen_page_ftp_list($tpl, $sql, $dmn_props['domain_id'], $dmn_props['domain_name']);
 }
 ?>

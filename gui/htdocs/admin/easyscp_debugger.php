@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,113 +30,33 @@ $cfg = EasySCP_Registry::get('Config');
 $tpl = EasySCP_TemplateEngine::getInstance();
 $template = 'admin/easyscp_debugger.tpl';
 
-$exec_count = count_requests($sql, 'domain_status', 'domain');
-
-$exec_count = $exec_count + count_requests($sql, 'alias_status', 'domain_aliasses');
-
-$exec_count = $exec_count + count_requests($sql, 'subdomain_status', 'subdomain');
-
-$exec_count = $exec_count + count_requests($sql, 'subdomain_alias_status', 'subdomain_alias');
-
-$exec_count = $exec_count + count_requests($sql, 'status', 'mail_users');
-$exec_count = $exec_count + count_requests($sql, 'status', 'htaccess');
-$exec_count = $exec_count + count_requests($sql, 'status', 'htaccess_groups');
-$exec_count = $exec_count + count_requests($sql, 'status', 'htaccess_users');
-
 if (isset($_GET['action'])) {
-	if ($_GET['action'] == 'run_engine' && $exec_count > 0) {
+	if ($_GET['action'] == 'run_engine') {
 		$code = send_request('100 CORE checkAll');
-		set_page_message(
-			tr('Daemon returned %d as status code', $code),
-			'info'
-		);
-	} elseif($_GET['action'] == 'change_status' &&
-		(isset($_GET['id']) && isset($_GET['type']))) {
-
-		switch ($_GET['type']) {
-			case 'domain':
-				$query = "
-					UPDATE
-						`domain`
-					SET
-						`domain_status` = 'change'
-					WHERE
-						`domain_id` = ?
-				;";
-				break;
-			case 'alias':
-				$query = "
-					UPDATE
-						`domain_aliasses`
-					SET
-						`alias_status` = 'change'
-					WHERE
-						`alias_id` = ?
-				;";
-				break;
-			case 'subdomain':
-				$query = "
-					UPDATE
-						`subdomain`
-					SET
-						`subdomain_status` = 'change'
-					WHERE
-						`subdomain_id` = ?
-				;";
-				break;
-			case 'subdomain_alias':
-				$query = "
-					UPDATE
-						`subdomain_alias`
-					SET
-						`subdomain_alias_status` = 'change'
-					WHERE
-						`subdomain_alias_id` = ?
-				;";
-				break;
-			case 'mail':
-				$query = "
-					UPDATE
-						`mail_users`
-					SET
-						`status` = 'change'
-					WHERE
-						`mail_id` = ?
-				;";
-				break;
-			case 'htaccess':
-			case 'htaccess_users':
-			case 'htaccess_groups':
-				$query = "
-					UPDATE
-						`". $_GET['type']."`
-					SET
-						`status` = 'change'
-					WHERE
-						`id` = ?
-				;";
-				break;
-			default:
-				set_page_message(tr('Unknown type!'), 'warning');
-				user_goto('easyscp_debugger.php');
-		}
-
-		$rs = exec_query($sql, $query, $_GET['id']);
-
-		if ($rs !== false) {
-			set_page_message(tr('Done'), 'success');
-			user_goto('easyscp_debugger.php');
+		if ($code != 'Ok'){
+			set_page_message($code, 'error');
 		} else {
-			$msg = tr('Unknown Error') . '<br />' . $sql->errorMsg();
-			set_page_message($msg, 'error');
-			user_goto('easyscp_debugger.php');
+			set_page_message(tr('Execute requests'), 'success');
 		}
 	}
 }
 
-$errors = get_error_domains($sql, $tpl);
+$exec_count = count_requests('domain');
+
+$exec_count = $exec_count + count_requests('domain_aliasses');
+
+$exec_count = $exec_count + count_requests('subdomain');
+
+$exec_count = $exec_count + count_requests('subdomain_alias');
+
+$exec_count = $exec_count + count_requests('mail_users');
+$exec_count = $exec_count + count_requests('htaccess');
+$exec_count = $exec_count + count_requests('htaccess_groups');
+$exec_count = $exec_count + count_requests('htaccess_users');
+
+$errors = get_error_domains($tpl);
 $errors += get_error_aliases($sql, $tpl);
-$errors += get_error_subdomains($sql, $tpl);
+$errors += get_error_subdomains($tpl);
 $errors += get_error_alias_subdomains($sql, $tpl);
 $errors += get_error_mails($sql, $tpl);
 $errors += get_error_htaccess($sql, $tpl);
@@ -144,19 +64,18 @@ $errors += get_error_htaccess($sql, $tpl);
 // static page messages
 $tpl->assign(
 	array(
-		'TR_PAGE_TITLE'				=> tr('EasySCP - Virtual Hosting Control System'),
-		'TR_DEBUGGER_TITLE'			=> tr('EasySCP debugger'),
-		'TR_DOMAIN_ERRORS'			=> tr('Domain errors'),
-		'TR_ALIAS_ERRORS'			=> tr('Domain alias errors'),
-		'TR_SUBDOMAIN_ERRORS'		=> tr('Subdomain errors'),
-		'TR_SUBDOMAIN_ALIAS_ERRORS'	=> tr('Alias subdomain errors'),
-		'TR_MAIL_ERRORS'			=> tr('Mail account errors'),
-		'TR_HTACCESS_ERRORS'		=> tr('.htaccess related errors'),
-		'TR_DAEMON_TOOLS'			=> tr('EasySCP Daemon tools'),
-		'TR_EXEC_REQUESTS'			=> tr('Execute requests'),
-		'TR_CHANGE_STATUS'			=> tr('Set status to \'change\''),
-		'EXEC_COUNT'				=> $exec_count,
-		'TR_ERRORS'					=> tr('%s Errors in database', $errors)
+		'TR_PAGE_TITLE'			=> tr('EasySCP - Virtual Hosting Control System'),
+		'TR_DEBUGGER_TITLE'		=> tr('EasySCP debugger'),
+		'TR_DOMAIN'				=> tr('Domains'),
+		'TR_ALIAS'				=> tr('Domain alias'),
+		'TR_SUBDOMAIN'			=> tr('Subdomains'),
+		'TR_SUBDOMAIN_ALIAS'	=> tr('Subdomain alias'),
+		'TR_MAIL'				=> tr('Mail accounts'),
+		'TR_HTACCESS'			=> tr('.htaccess related errors'),
+		'TR_DAEMON_TOOLS'		=> tr('EasySCP Daemon tools'),
+		'TR_EXEC_REQUESTS'		=> tr('Execute requests'),
+		'EXEC_COUNT'			=> $exec_count,
+		'TR_ERRORS'				=> tr('%s Errors in database', $errors)
 	)
 );
 
@@ -181,96 +100,70 @@ unset_messages();
  * @param  string $tableName EasySCP database table name
  * @return int Number of request
  */
-function count_requests($sql, $statusField, $tableName) {
+function count_requests($tableName) {
 
 	$cfg = EasySCP_Registry::get('Config');
 
-	$query = "
+	$sql_query = "
 		SELECT
-			`$statusField`
+			status
 		FROM
-			`$tableName`
+			$tableName
 		WHERE
-			`$statusField` IN (?, ?, ?, ?, ?, ?, ?)
-		;
+			status
+		IN (
+				'$cfg->ITEM_ADD_STATUS',
+				'$cfg->ITEM_CHANGE_STATUS',
+				'$cfg->ITEM_DELETE_STATUS',
+				'$cfg->ITEM_RESTORE_STATUS',
+				'$cfg->ITEM_TOENABLE_STATUS',
+				'$cfg->ITEM_TODISABLED_STATUS',
+				'$cfg->ITEM_DNSCHANGE_STATUS'
+			);
 	";
 
-	$rs = exec_query(
-			$sql, $query,
-			array(
-				$cfg->ITEM_ADD_STATUS, $cfg->ITEM_CHANGE_STATUS,
-				$cfg->ITEM_DELETE_STATUS, $cfg->ITEM_RESTORE_STATUS,
-				$cfg->ITEM_TOENABLE_STATUS, $cfg->ITEM_TODISABLED_STATUS,
-				$cfg->ITEM_DNSCHANGE_STATUS
-
-			)
-	);
-
-	$count = $rs->recordCount();
-
-	return $count;
+	return DB::query($sql_query)->rowCount();
 }
 
 /**
  * Get domain errors generated by a engine request
  *
- * @param  EasySCP_Database $sql EasySCP_Database instance
  * @param  EasySCP_TemplateEngine $tpl EasySCP_TemplateEngine instance
- * @return void
+ * @return int Number of errors
  */
-function get_error_domains($sql, $tpl) {
+function get_error_domains($tpl) {
 
 	$cfg = EasySCP_Registry::get('Config');
 
-	$ok_status = $cfg->ITEM_OK_STATUS;
-	$disabled_status = $cfg->ITEM_DISABLED_STATUS;
-	$delete_status = $cfg->ITEM_DELETE_STATUS;
-	$add_status = $cfg->ITEM_ADD_STATUS;
-	$restore_status = $cfg->ITEM_RESTORE_STATUS;
-	$change_status = $cfg->ITEM_CHANGE_STATUS;
-	$dnschange_status = $cfg->ITEM_DNSCHANGE_STATUS;
-	$toenable_status = $cfg->ITEM_TOENABLE_STATUS;
-	$todisable_status = $cfg->ITEM_TODISABLED_STATUS;
-
-	$dmn_query = "
+	$sql_query = "
 		SELECT
-			`domain_name`, `domain_status`, `domain_id`
+			domain_name, status, domain_id
 		FROM
-			`domain`
+			domain
 		WHERE
-			`domain_status` NOT IN (?, ?, ?, ?, ?, ?, ?, ?, ?)
-		;
+			status <> '$cfg->ITEM_OK_STATUS';
 	";
 
-	$rs = exec_query(
-		$sql, $dmn_query,
-		array(
-			$ok_status, $disabled_status, $delete_status, $add_status,
-			$restore_status, $change_status, $toenable_status,
-			$todisable_status, $dnschange_status
-		)
-	);
+	$rs = DB::query($sql_query);
 
-	$errors = $rs->recordCount();
+	$errors = 0;
 
-	if ($errors == 0) {
+	if ($rs->rowCount() == 0) {
 		$tpl->assign(
 			array(
 				'TR_DOMAIN_MESSAGE' => tr('No domain system errors')
 			)
 		);
 	} else {
-		while (!$rs->EOF) {
+		while($row = $rs->fetch()){
+			//TODO Check auf status_msg einbauen
+			//if ($row['domain_name']){$errors++;}
 			$tpl->append(
 				array(
-					'TR_DOMAIN_NAME'	=> tohtml($rs->fields['domain_name']),
-					'TR_DOMAIN_ERROR'	=> tohtml($rs->fields['domain_status']),
-					'CHANGE_ID'			=> tohtml($rs->fields['domain_id']),
-					'CHANGE_TYPE'		=> 'domain'
+					'TR_DOMAIN_NAME'	=> tohtml($row['domain_name']),
+					'TR_DOMAIN_ERROR'	=> tohtml($row['status'])
 				)
 			);
-
-			$rs->moveNext();
 		}
 	}
 
@@ -301,11 +194,11 @@ function get_error_aliases($sql, $tpl) {
 
 	$dmn_query = "
 		SELECT
-			`alias_name`, `alias_status`, `alias_id`
+			alias_name, status, alias_id
 		FROM
-			`domain_aliasses`
+			domain_aliasses
 		WHERE
-			`alias_status`
+			status
 		NOT IN
 			(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		;
@@ -334,7 +227,7 @@ function get_error_aliases($sql, $tpl) {
 			$tpl->append(
 				array(
 					'TR_ALIAS_NAME'		=> tohtml($rs->fields['alias_name']),
-					'TR_ALIAS_ERROR'	=> tohtml($rs->fields['alias_status']),
+					'TR_ALIAS_ERROR'	=> tohtml($rs->fields['status']),
 					'CHANGE_ID'			=> $rs->fields['alias_id'],
 					'CHANGE_TYPE'		=> 'alias'
 				)
@@ -350,45 +243,30 @@ function get_error_aliases($sql, $tpl) {
 /**
  * Get subdomains errors generated by a engine request
  *
- * @param  EasySCP_Database $sql EasySCP_Database instance
  * @param  EasySCP_TemplateEngine $tpl EasySCP_TemplateEngine instance
- * @return void
+ * @return int Number of errors
  */
-function get_error_subdomains($sql, $tpl) {
+function get_error_subdomains($tpl) {
 
 	$cfg = EasySCP_Registry::get('Config');
 
-	$ok_status = $cfg->ITEM_OK_STATUS;
-	$disabled_status = $cfg->ITEM_DISABLED_STATUS;
-	$delete_status = $cfg->ITEM_DELETE_STATUS;
-	$add_status = $cfg->ITEM_ADD_STATUS;
-	$restore_status = $cfg->ITEM_RESTORE_STATUS;
-	$change_status = $cfg->ITEM_CHANGE_STATUS;
-	$toenable_status = $cfg->ITEM_TOENABLE_STATUS;
-	$todisable_status = $cfg->ITEM_TODISABLED_STATUS;
-
-	$dmn_query = "
+	$sql_query = "
 		SELECT
-			`subdomain_name`, `subdomain_status`, `subdomain_id`
+			d.domain_name, s.subdomain_name, s.status, s.subdomain_id
 		FROM
-			`subdomain`
+			domain d,
+			subdomain s
 		WHERE
-			`subdomain_status`
-		NOT IN
-			(?, ?, ?, ?, ?, ?, ?, ?)
+			d.domain_id = s.domain_id
+		AND
+			s.status <> '$cfg->ITEM_OK_STATUS';
 	";
 
-	$rs = exec_query(
-		$sql, $dmn_query,
-		array(
-			$ok_status, $disabled_status, $delete_status, $add_status,
-			$restore_status, $change_status, $toenable_status, $todisable_status
-		)
-	);
+	$rs = DB::query($sql_query);
 
-	$errors = $rs->recordCount();
+	$errors = 0;
 
-	if ($errors == 0) {
+	if ($rs->rowCount() == 0) {
 		$tpl->assign(
 			array(
 				'TR_SUBDOMAIN_MESSAGE' => tr('No subdomain system errors')
@@ -396,17 +274,15 @@ function get_error_subdomains($sql, $tpl) {
 		);
 
 	} else {
-		while (!$rs->EOF) {
+		while($row = $rs->fetch()){
+			//TODO Check auf status_msg einbauen
+			//if ($row['subdomain_name']){$errors++;}
 			$tpl->append(
 				array(
-					'TR_SUBDOMAIN_NAME'		=> tohtml($rs->fields['subdomain_name']),
-					'TR_SUBDOMAIN_ERROR'	=> tohtml($rs->fields['subdomain_status']),
-					'CHANGE_ID'				=> $rs->fields['subdomain_id'],
-					'CHANGE_TYPE'			=> 'subdomain'
+					'TR_SUBDOMAIN_NAME'		=> tohtml($row['subdomain_name']).'.'.tohtml($row['domain_name']),
+					'TR_SUBDOMAIN_ERROR'	=> tohtml($row['status'])
 				)
 			);
-
-			$rs->moveNext();
 		}
 	}
 	return $errors;
@@ -434,12 +310,12 @@ function get_error_alias_subdomains($sql, $tpl) {
 
 	$dmn_query = "
 		SELECT
-			`subdomain_alias_name`, `subdomain_alias_status`,
-			`subdomain_alias_id`
+			subdomain_alias_name, status,
+			subdomain_alias_id
 		FROM
-			`subdomain_alias`
+			subdomain_alias
 		WHERE
-			`subdomain_alias_status`
+			status
 		NOT IN
 			(?, ?, ?, ?, ?, ?, ?, ?)
 		;
@@ -467,7 +343,7 @@ function get_error_alias_subdomains($sql, $tpl) {
 			$tpl->append(
 				array(
 					'TR_SUBDOMAIN_ALIAS_NAME'	=> tohtml($rs->fields['subdomain_alias_name']),
-					'TR_SUBDOMAIN_ALIAS_ERROR'	=> tohtml($rs->fields['subdomain_alias_status']),
+					'TR_SUBDOMAIN_ALIAS_ERROR'	=> tohtml($rs->fields['status']),
 					'CHANGE_ID'					=> $rs->fields['subdomain_alias_id'],
 					'CHANGE_TYPE'				=> 'subdomain_alias'
 				)
@@ -484,46 +360,26 @@ function get_error_alias_subdomains($sql, $tpl) {
  *
  * @param  EasySCP_Database $sql EasySCP_Database instance
  * @param  EasySCP_TemplateEngine $tpl EasySCP_TemplateEngine instance
- * @return void
+ * @return int Number of errors
  */
 function get_error_mails($sql, $tpl) {
 
 	$cfg = EasySCP_Registry::get('Config');
 
-	$ok_status = $cfg->ITEM_OK_STATUS;
-	$disabled_status = $cfg->ITEM_DISABLED_STATUS;
-	$delete_status = $cfg->ITEM_DELETE_STATUS;
-	$add_status = $cfg->ITEM_ADD_STATUS;
-	$restore_status = $cfg->ITEM_RESTORE_STATUS;
-	$change_status = $cfg->ITEM_CHANGE_STATUS;
-	$toenable_status = $cfg->ITEM_TOENABLE_STATUS;
-	$todisable_status = $cfg->ITEM_TODISABLED_STATUS;
-	$ordered_status = $cfg->ITEM_ORDERED_STATUS;
-
-	$dmn_query = "
+	$sql_query = "
 		SELECT
-			`mail_acc`, `domain_id`, `mail_type`, `status`, `mail_id`
+			mail_acc, domain_id, mail_type, status, mail_id
 		FROM
-			`mail_users`
+			mail_users
 		WHERE
-			`status`
-		NOT IN
-			(?, ?, ?, ?, ?, ?, ?, ?, ?)
-		;
+			status <> '$cfg->ITEM_OK_STATUS';
 	";
 
-	$rs = exec_query(
-		$sql, $dmn_query,
-		array(
-			$ok_status, $disabled_status, $delete_status, $add_status,
-			$restore_status, $change_status, $toenable_status, $todisable_status,
-			$ordered_status
-		)
-	);
+	$rs = DB::query($sql_query);
 
-	$errors = $rs->recordCount();
+	$errors = 0;
 
-	if ($errors == 0) {
+	if ($rs->rowCount() == 0) {
 		$tpl->assign(
 			array(
 				'TR_MAIL_MESSAGE' => tr('No email account system errors')
@@ -531,12 +387,12 @@ function get_error_mails($sql, $tpl) {
 		);
 
 	} else {
-		while (!$rs->EOF) {
-			$searched_id	= $rs->fields['domain_id'];
-			$mail_acc		= $rs->fields['mail_acc'];
-			$mail_type		= $rs->fields['mail_type'];
-			$mail_id		= $rs->fields['mail_id'];
-			$mail_status	= $rs->fields['status'];
+		while($row = $rs->fetch()){
+			$searched_id	= $row['domain_id'];
+			$mail_acc		= $row['mail_acc'];
+			$mail_type		= $row['mail_type'];
+			$mail_id		= $row['mail_id'];
+			$mail_status	= $row['status'];
 
 			switch ($mail_type) {
 				case 'normal_mail':
@@ -634,13 +490,9 @@ function get_error_mails($sql, $tpl) {
 			$tpl->append(
 				array(
 					'TR_MAIL_NAME'	=> tohtml($mail_acc . ($domain_name == '' ? '@ ' . tr('orphan entry') : $domain_name)),
-					'TR_MAIL_ERROR'	=> tohtml($mail_status),
-					'CHANGE_ID'		=> $mail_id,
-					'CHANGE_TYPE' => 'mail'
+					'TR_MAIL_ERROR'	=> tohtml($mail_status)
 				)
 			);
-
-			$rs->moveNext();
 		}
 	}
 	return $errors;
@@ -655,65 +507,46 @@ function get_error_htaccess($sql, $tpl) {
 
 	$cfg = EasySCP_Registry::get('Config');
 
-	$ok_status = $cfg->ITEM_OK_STATUS;
-	$delete_status = $cfg->ITEM_DELETE_STATUS;
-	$add_status = $cfg->ITEM_ADD_STATUS;
-	$change_status = $cfg->ITEM_CHANGE_STATUS;
-
-	$dmn_query = "
+	$sql_query = "
 		SELECT
-			`id`, `dmn_id`, `status`, 'htaccess' as `type`, `domain_name`
+			`id`, `dmn_id`, h.`status`, 'htaccess' as `type`, `domain_name`
 		FROM
-			`htaccess`
+			`htaccess` h
 		LEFT JOIN
 			`domain`
 		ON
 			`dmn_id` = `domain_id`
 		WHERE
-			`status`
-		NOT IN
-			(?, ?, ?, ?)
+			h.`status` <> '$cfg->ITEM_OK_STATUS'
 		UNION
 		SELECT
-			`id`, `dmn_id`, `status`, 'htaccess_groups' as `type`, `domain_name`
+			`id`, `dmn_id`, hg.`status`, 'htaccess_groups' as `type`, `domain_name`
 		FROM
-			`htaccess_groups`
+			`htaccess_groups` hg
 		LEFT JOIN
 			`domain`
 		ON
 			`dmn_id` = `domain_id`
 		WHERE
-			`status`
-		NOT IN
-			(?, ?, ?, ?)
+			hg.`status` <> '$cfg->ITEM_OK_STATUS'
 		UNION
 		SELECT
-			`id`, `dmn_id`, `status`, 'htaccess_users' as `type`, `domain_name`
+			`id`, `dmn_id`, hu.`status`, 'htaccess_users' as `type`, `domain_name`
 		FROM
-			`htaccess_users`
+			`htaccess_users` hu
 		LEFT JOIN
 			`domain`
 		ON
 			`dmn_id` = `domain_id`
 		WHERE
-			`status`
-		NOT IN
-			(?, ?, ?, ?)
-		;
+			hu.`status` <> '$cfg->ITEM_OK_STATUS'
 	";
 
-	$rs = exec_query(
-		$sql, $dmn_query,
-		array(
-			$ok_status, $delete_status, $add_status, $change_status,
-			$ok_status, $delete_status, $add_status, $change_status,
-			$ok_status, $delete_status, $add_status, $change_status
-		)
-	);
+	$rs = DB::query($sql_query);
 
-	$errors = $rs->recordCount();
+	$errors = 0;
 
-	if ($errors == 0) {
+	if ($rs->rowCount() == 0) {
 		$tpl->assign(
 			array(
 				'TR_HTACCESS_MESSAGE' => tr('No htaccess related system errors')
@@ -721,17 +554,14 @@ function get_error_htaccess($sql, $tpl) {
 		);
 
 	} else {
-		while (!$rs->EOF) {
+		while($row = $rs->fetch()){
 			$tpl->append(
 				array(
-					'TR_HTACCESS_NAME'	=> $rs->fields['domain_name'] == null ? tr('missing domain') : tohtml($rs->fields['domain_name']) ,
-					'TR_HTACCESS_ERROR'	=> tohtml($rs->fields['status']),
-					'CHANGE_ID'			=> $rs->fields['id'],
-					'CHANGE_TYPE'		=> $rs->fields['type']
+					'TR_HTACCESS_TYPE'	=> $row['type'],
+					'TR_HTACCESS_NAME'	=> $row['domain_name'] == null ? tr('missing domain') : tohtml($row['domain_name']),
+					'TR_HTACCESS_ERROR'	=> tohtml($row['status'])
 				)
 			);
-
-			$rs->moveNext();
 		}
 	}
 

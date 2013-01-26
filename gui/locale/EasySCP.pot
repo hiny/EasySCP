@@ -978,31 +978,10 @@ msgstr ""
 msgid "EasySCP debugger"
 msgstr ""
 
-msgid "Domain errors"
-msgstr ""
-
-msgid "Domain alias errors"
-msgstr ""
-
-msgid "Subdomain errors"
-msgstr ""
-
-msgid "Alias subdomain errors"
-msgstr ""
-
-msgid "Mail account errors"
-msgstr ""
-
-msgid ".htaccess related errors"
-msgstr ""
-
 msgid "EasySCP Daemon tools"
 msgstr ""
 
 msgid "Execute requests"
-msgstr ""
-
-msgid "Set status to 'change'"
 msgstr ""
 
 #, php-format
@@ -1037,15 +1016,6 @@ msgid "Language"
 msgstr ""
 
 msgid "Choose your default language"
-msgstr ""
-
-msgid "It is not possible to delete system default's language!"
-msgstr ""
-
-msgid "There are users who use this language!"
-msgstr ""
-
-msgid "Language was removed!"
 msgstr ""
 
 msgid "Reseller list is empty!"
@@ -2242,19 +2212,19 @@ msgstr ""
 msgid "Custom DNS record scheduled for deletion!"
 msgstr ""
 
-msgid "EasySCP - Manage Domain Alias/Add DNS zone's record"
+msgid "EasySCP - Manage Domain Alias/Add DNS zone record"
 msgstr ""
 
-msgid "EasySCP - Manage Domain Alias/Edit DNS zone's record"
+msgid "EasySCP - Manage Domain Alias/Edit DNS zone record"
 msgstr ""
 
-msgid "Add DNS zone's record"
+msgid "Add DNS zone record"
 msgstr ""
 
-msgid "Edit DNS zone's record"
+msgid "Edit DNS zone record"
 msgstr ""
 
-msgid "DNS zone's records"
+msgid "DNS zone records"
 msgstr ""
 
 msgid "Class"
@@ -3324,9 +3294,6 @@ msgstr ""
 msgid "Switch to user interface"
 msgstr ""
 
-msgid "Switch"
-msgstr ""
-
 msgid "Not found user records matching the search criteria!"
 msgstr ""
 
@@ -3454,31 +3421,31 @@ msgstr ""
 msgid "Welcome {USERNAME} to EasySCP!"
 msgstr ""
 
-msgid "\n\nHello {NAME}!\n\nA new EasySCP account has been created for you.\nYour account information:\n\nUser type: {USERTYPE}\nUser name: {USERNAME}\nPassword: {PASSWORD}\n\nRemember to change your password often and the first time you login.\n\nYou can login right now at {BASE_SERVER_VHOST_PREFIX}{BASE_SERVER_VHOST}\n\nUser name: {USERNAME}\nPassword: {PASSWORD}\n\nBest wishes with EasySCP!\nThe EasySCP Team.\n\n"
+msgid "\nHello {NAME}!\n\nA new EasySCP account has been created for you.\nYour account information:\n\nUser type: {USERTYPE}\nUser name: {USERNAME}\nPassword: {PASSWORD}\n\nRemember to change your password often and the first time you login.\n\nYou can login right now at {BASE_SERVER_VHOST_PREFIX}{BASE_SERVER_VHOST}\n\nUser name: {USERNAME}\nPassword: {PASSWORD}\n\nBest wishes with EasySCP!\nThe EasySCP Team.\n\n"
 msgstr ""
 
 msgid "Please activate your new EasySCP password!"
 msgstr ""
 
-msgid "\n\nHello {NAME}!\nUse this link to activate your new EasySCP password:\n\n{LINK}\n\nGood Luck with the EasySCP System\nThe EasySCP Team\n\n"
+msgid "\nHello {NAME}!\nUse this link to activate your new EasySCP password:\n\n{LINK}\n\nGood Luck with the EasySCP System\nThe EasySCP Team\n\n"
 msgstr ""
 
 msgid "Your new EasySCP login!"
 msgstr ""
 
-msgid "\n\nHello {NAME}!\n\nYour user name is: {USERNAME}\nYour password is: {PASSWORD}\n\nYou can login at {BASE_SERVER_VHOST_PREFIX}{BASE_SERVER_VHOST}\n\nBest wishes with EasySCP!\nThe EasySCP Team\n\n"
+msgid "\nHello {NAME}!\n\nYour user name is: {USERNAME}\nYour password is: {PASSWORD}\n\nYou can login at {BASE_SERVER_VHOST_PREFIX}{BASE_SERVER_VHOST}\n\nBest wishes with EasySCP!\nThe EasySCP Team\n\n"
 msgstr ""
 
 msgid "Confirmation for domain order {DOMAIN}!"
 msgstr ""
 
-msgid "\n\nDear {NAME},\nThis is an automatic confirmation for the order of the domain:\n\n{DOMAIN}\n\nYou have to click the following link to continue the domain creation process.\n\n{ACTIVATE_LINK}\n\nThank you for using EasySCP services.\nThe EasySCP Team\n\n"
+msgid "\nDear {NAME},\nThis is an automatic confirmation for the order of the domain:\n\n{DOMAIN}\n\nYou have to click the following link to continue the domain creation process.\n\n{ACTIVATE_LINK}\n\nThank you for using EasySCP services.\nThe EasySCP Team\n\n"
 msgstr ""
 
 msgid "New alias order for {CUSTOMER}!"
 msgstr ""
 
-msgid "\n\nDear {RESELLER},\nYour customer {CUSTOMER} is awaiting for the approval of his new alias:\n\n{ALIAS}\n\nOnce logged in, you can activate his new alias at {BASE_SERVER_VHOST_PREFIX}{BASE_SERVER_VHOST}/reseller/alias.php\n\nThank you for using EasySCP services.\nThe EasySCP Team\n\n"
+msgid "\nDear {RESELLER},\nYour customer {CUSTOMER} is awaiting for the approval of his new alias:\n\n{ALIAS}\n\nOnce logged in, you can activate his new alias at {BASE_SERVER_VHOST_PREFIX}{BASE_SERVER_VHOST}/reseller/alias.php\n\nThank you for using EasySCP services.\nThe EasySCP Team\n\n"
 msgstr ""
 
 msgid "Your message has been sent!"
@@ -4151,9 +4118,6 @@ msgstr ""
 msgid "Awstats"
 msgstr ""
 
-msgid "Domain data has been altered. Please enter again."
-msgstr ""
-
 msgid "EasySCP - User/Add user"
 msgstr ""
 
@@ -4254,4 +4218,15 @@ msgstr ""
 msgid "All existing data will be removed!"
 msgstr ""
 
+# PHP Editor
+msgid "PHP editor"
+msgstr ""
 
+msgid "The subdomain you are trying to remove has aliassubdomains assigned!<br />Remove them first!"
+msgstr ""
+
+msgid "Assigned subdomain"
+msgstr ""
+
+msgid "A new alias subdomain has to be assigned to an existing real subdomain."
+msgstr ""

@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -49,32 +49,7 @@ if (isset($_POST['uaction']) && $_POST['uaction'] === 'save_layout') {
 	$theme_color = $user_layout;
 }
 
-list(
-		$dmn_id,
-		$dmn_name,
-		$dmn_gid,
-		$dmn_uid,
-		$dmn_created_id,
-		$dmn_created,
-		$dmn_expires,
-		$dmn_last_modified,
-		$dmn_mailacc_limit,
-		$dmn_ftpacc_limit,
-		$dmn_traff_limit,
-		$dmn_sqld_limit,
-		$dmn_sqlu_limit,
-		$dmn_status,
-		$dmn_als_limit,
-		$dmn_subd_limit,
-		$dmn_ip_id,
-		$dmn_disk_limit,
-		$dmn_disk_usage,
-		$dmn_php,
-		$dmn_cgi,
-        $dmn_ssl,
-		$backup,
-		$dns
-	) = get_domain_default_props($sql, $_SESSION['user_id']);
+$dmn_props = get_domain_default_props($_SESSION['user_id']);
 
 list(
 		$sub_cnt,
@@ -83,35 +58,35 @@ list(
 		$ftp_acc_cnt,
 		$sqld_acc_cnt,
 		$sqlu_acc_cnt
-	) = get_domain_running_props_cnt($sql, $dmn_id);
+	) = get_domain_running_props_cnt($sql, $dmn_props['domain_id']);
 
 $dtraff_pr = 0;
-$dmn_traff_usege = 0;
-$dmn_traff_limit = $dmn_traff_limit * 1024 * 1024;
+$dmn_traff_usage = 0;
+$dmn_traff_limit = $dmn_props['domain_traffic_limit'] * 1024 * 1024;
 
 list($dtraff_pr, $dmn_traff_usage) = make_traff_usage($_SESSION['user_id']);
 
-$dmn_disk_limit = $dmn_disk_limit * 1024 * 1024;
+$dmn_disk_limit = $dmn_props['domain_disk_limit'] * 1024 * 1024;
 
 gen_traff_usage($tpl, $dmn_traff_usage * 1024 * 1024, $dmn_traff_limit, 400);
 
-gen_disk_usage($tpl, $dmn_disk_usage, $dmn_disk_limit, 400);
+gen_disk_usage($tpl, $dmn_props['domain_disk_usage'], $dmn_disk_limit, 400);
 
 gen_user_messages_label($tpl, $sql, $_SESSION['user_id']);
 
 check_user_permissions(
-						$tpl, $dmn_sqld_limit, $dmn_sqlu_limit, $dmn_php,
-						$dmn_cgi, $dmn_ssl,$backup, $dns, $dmn_subd_limit, $dmn_als_limit,
-						$dmn_mailacc_limit
+	$tpl, $dmn_props['domain_sqld_limit'], $dmn_props['domain_sqlu_limit'], $dmn_props['domain_php'],
+	$dmn_props['domain_cgi'], $dmn_props['domain_ssl'], $dmn_props['allowbackup'], $dmn_props['domain_dns'],
+	$dmn_props['domain_subd_limit'], $dmn_props['domain_alias_limit'], $dmn_props['domain_mailacc_limit']
 );
 
 $account_name = decode_idna($_SESSION['user_logged']);
 
-if ($dmn_expires == 0) {
+if ($dmn_props['domain_expires'] == 0) {
 	$dmn_expires_date = tr('Not Set');
 } else {
 	$date_formt = $cfg->DATE_FORMAT;
-	$dmn_expires_date = "( <strong style=\"text-decoration:underline;\">".date($date_formt, $dmn_expires)."</strong> )";
+	$dmn_expires_date = "( <strong style=\"text-decoration:underline;\">".date($date_formt, $dmn_props['domain_expires'])."</strong> )";
 }
 
 list(
@@ -121,9 +96,9 @@ list(
 	$hours,
 	$minutes,
 	$seconds
-		) = gen_remain_time($dmn_expires);
+		) = gen_remain_time($dmn_props['domain_expires']);
 
-if (time() < $dmn_expires) {
+if (time() < $dmn_props['domain_expires']) {
 	if (($years > 0) && ($month > 0) && ($days <= 14)) {
 		$tpl->assign(
 			array('DMN_EXPIRES' => $years." Years, ".$month." Month, ".$days." Days")
@@ -134,7 +109,7 @@ if (time() < $dmn_expires) {
 									$month." Month, ".$days." Days</span>")
 		);
 	}
-} else if ($dmn_expires != 0) {
+} else if ($dmn_props['domain_expires'] != 0) {
 	$tpl->assign(
 		array('DMN_EXPIRES' => '<span style="color:red">' .
 								tr("This Domain is expired")."</span> ")
@@ -148,17 +123,17 @@ if (time() < $dmn_expires) {
 $tpl->assign(
 	array(
 		'ACCOUNT_NAME'		=> tohtml($account_name),
-		'DOMAIN_IP' 		=> get_user_domain_ip($sql, $dmn_ip_id),
-		'DOMAIN_ALS_URL' 	=> 'http://' . $cfg->APACHE_SUEXEC_USER_PREF . $dmn_uid . '.' . $cfg->BASE_SERVER_VHOST,
-		'MAIN_DOMAIN'		=> tohtml($dmn_name),
+		'DOMAIN_IP' 		=> get_user_domain_ip($sql, $dmn_props['domain_ip_id']),
+		'DOMAIN_ALS_URL' 	=> 'http://' . $cfg->APACHE_SUEXEC_USER_PREF . $dmn_props['domain_uid'] . '.' . $cfg->BASE_SERVER_VHOST,
+		'MAIN_DOMAIN'		=> tohtml($dmn_props['domain_name']),
 		'DMN_EXPIRES_DATE'	=> $dmn_expires_date,
-		'MYSQL_SUPPORT'		=> ($dmn_sqld_limit != -1 && $dmn_sqlu_limit != -1) ? tr('Yes') . ' / MySQL ' . substr($sql->getAttribute(PDO::ATTR_SERVER_VERSION), 0, strpos($sql->getAttribute(PDO::ATTR_SERVER_VERSION), '-')) : tr('No'),
-		'SUBDOMAINS'		=> gen_num_limit_msg($sub_cnt, $dmn_subd_limit),
-		'DOMAIN_ALIASES'	=> gen_num_limit_msg($als_cnt, $dmn_als_limit),
-		'MAIL_ACCOUNTS'		=> gen_num_limit_msg($mail_acc_cnt, $dmn_mailacc_limit),
-		'FTP_ACCOUNTS'		=> gen_num_limit_msg($ftp_acc_cnt, $dmn_ftpacc_limit),
-		'SQL_DATABASES'		=> gen_num_limit_msg($sqld_acc_cnt, $dmn_sqld_limit),
-		'SQL_USERS'			=> gen_num_limit_msg($sqlu_acc_cnt, $dmn_sqlu_limit)
+		'MYSQL_SUPPORT'		=> ($dmn_props['domain_sqld_limit'] != -1 && $dmn_props['domain_sqlu_limit'] != -1) ? tr('Yes') . ' / MySQL ' . substr($sql->getAttribute(PDO::ATTR_SERVER_VERSION), 0, strpos($sql->getAttribute(PDO::ATTR_SERVER_VERSION), '-')) : tr('No'),
+		'SUBDOMAINS'		=> gen_num_limit_msg($sub_cnt, $dmn_props['domain_subd_limit']),
+		'DOMAIN_ALIASES'	=> gen_num_limit_msg($als_cnt, $dmn_props['domain_alias_limit']),
+		'MAIL_ACCOUNTS'		=> gen_num_limit_msg($mail_acc_cnt, $dmn_props['domain_mailacc_limit']),
+		'FTP_ACCOUNTS'		=> gen_num_limit_msg($ftp_acc_cnt, $dmn_props['domain_ftpacc_limit']),
+		'SQL_DATABASES'		=> gen_num_limit_msg($sqld_acc_cnt, $dmn_props['domain_sqld_limit']),
+		'SQL_USERS'			=> gen_num_limit_msg($sqlu_acc_cnt, $dmn_props['domain_sqlu_limit'])
 	)
 );
 
@@ -427,7 +402,7 @@ function make_traff_usage($domain_id) {
 	$fdofmnth = mktime(0, 0, 0, date("m"), 1, date("Y"));
 	$ldofmnth = mktime(1, 0, 0, date("m") + 1, 0, date("Y"));
 	$res = exec_query($sql,
-		"SELECT IFNULL(SUM(`dtraff_web`) + SUM(`dtraff_ftp`) + SUM(`dtraff_mail`) + SUM(`dtraff_pop`), 0) "
+		"SELECT IFNULL(SUM(`dtraff_web_in`) + SUM(`dtraff_web_out`) + SUM(`dtraff_ftp_in`) + SUM(`dtraff_ftp_out`) + SUM(`dtraff_mail`) + SUM(`dtraff_pop`), 0) "
 		. "AS traffic FROM `domain_traffic` " . "WHERE `domain_id` = ? AND `dtraff_time` > ? AND `dtraff_time` < ?",
 		array($domain_id, $fdofmnth, $ldofmnth));
 	$data = $res->fetchRow();

@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -60,11 +60,33 @@ if (isset($_GET['id']) && $_GET['id'] !== '') {
 		user_goto('domains_manage.php');
 	}
 
+	// check for existing aliassubdomains
+	$sql_param = array(
+		':subdomain_id' => $sub_id
+	);
+	$query = "
+		SELECT 
+			COUNT(subdomain_alias_id) AS cnt
+		FROM
+			subdomain_alias
+		WHERE
+			subdomain_id = :subdomain_id
+	";
+	DB::prepare($query);
+	$row = DB::execute($sql_param)->fetch();	
+	if ($row['cnt']>0){
+		set_page_message(
+			tr('The subdomain you are trying to remove has aliassubdomains assigned!<br />Rremove them first!'),
+			'warning'
+		);
+		user_goto('domains_manage.php');		
+	}
+
 	$query = "
 		UPDATE
 			`subdomain`
 		SET
-			`subdomain_status` = 'delete'
+			`status` = 'delete'
 		WHERE
 			`subdomain_id` = ?
 	";
@@ -72,8 +94,13 @@ if (isset($_GET['id']) && $_GET['id'] !== '') {
 	$rs = exec_query($sql, $query, $sub_id);
 
 	update_reseller_c_props(get_reseller_id($dmn_id));
+	
+	if ($_POST['dmn_type'] == 'als') {
+		send_request('110 DOMAIN '. $dmn_id.' alias');
+	} else {
+		send_request('110 DOMAIN '. $dmn_id.' domain');
+	}
 
-	send_request();
 	write_log($_SESSION['user_logged'].": deletes subdomain: ".$sub_name);
 	set_page_message(tr('Subdomain scheduled for deletion!'), 'info');
 	user_goto('domains_manage.php');

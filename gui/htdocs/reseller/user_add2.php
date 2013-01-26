@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -55,6 +55,7 @@ $tpl->assign(
 			'TR_MAX_TRAFFIC'				=> tr('Traffic limit [MB]<br /><em>(0 unlimited)</em>'),
 			'TR_MAX_DISK_USAGE'				=> tr('Disk limit [MB]<br /><em>(0 unlimited)</em>'),
 			'TR_PHP'						=> tr('PHP'),
+			'TR_PHP_EDIT'					=> tr('PHP editor'),
 			'TR_CGI'						=> tr('CGI / Perl'),
 			'TR_SSL'						=> tr('SSL support'),
 			'TR_BACKUP'						=> tr('Backup'),
@@ -65,9 +66,7 @@ $tpl->assign(
 			'TR_DNS'						=> tr('Manual DNS support'),
 			'TR_YES'						=> tr('Yes'),
 			'TR_NO'							=> tr('No'),
-			'TR_NEXT_STEP'					=> tr('Next step'),
-			'TR_APACHE_LOGS'				=> tr('Apache logs'),
-			'TR_AWSTATS'					=> tr('Awstats')
+			'TR_NEXT_STEP'					=> tr('Next step')
 		)
 );
 
@@ -86,9 +85,9 @@ if (!get_pageone_param()) {
 if (isset($_POST['uaction'])
 	&& ("user_add2_nxt" === $_POST['uaction'])
 	&& (!isset($_SESSION['step_one']))) {
-	if (check_user_data($tpl)) {
+	if (check_user_data()) {
 		$_SESSION["step_two_data"] = "$dmn_name;0;";
-		$_SESSION["ch_hpprops"] = "$hp_php;$hp_cgi;$hp_sub;$hp_als;$hp_mail;$hp_ftp;$hp_sql_db;$hp_sql_user;$hp_traff;$hp_disk;$hp_backup;$hp_dns;$hp_ssl";
+		$_SESSION["ch_hpprops"] = "$hp_php;$hp_phpe;$hp_cgi;$hp_sub;$hp_als;$hp_mail;$hp_ftp;$hp_sql_db;$hp_sql_user;$hp_traff;$hp_disk;$hp_backup;$hp_dns;$hp_ssl";
 
 		if (reseller_limits_check($sql, $ehp_error, $_SESSION['user_id'], 0, $_SESSION["ch_hpprops"])) {
 			user_goto('user_add3.php');
@@ -154,7 +153,7 @@ function get_pageone_param() {
  * @param EasySCP_TemplateEngine $tpl
  */
 function get_init_au2_page($tpl) {
-	global $hp_name, $hp_php, $hp_cgi, $hp_ssl;
+	global $hp_name, $hp_php, $hp_phpe, $hp_cgi, $hp_ssl;
 	global $hp_sub, $hp_als, $hp_mail;
 	global $hp_ftp, $hp_sql_db, $hp_sql_user;
 	global $hp_traff, $hp_disk, $hp_backup, $hp_dns;
@@ -175,6 +174,8 @@ function get_init_au2_page($tpl) {
 				'VL_MAX_DISK_USAGE'	=> $hp_disk,
 				'VL_PHPY'			=> ($hp_php === '_yes_') ? $cfg->HTML_CHECKED : '',
 				'VL_PHPN'			=> ($hp_php === '_no_') ? $cfg->HTML_CHECKED : '',
+				'VL_PHPEY'			=> ($hp_phpe === '_yes_') ? $cfg->HTML_CHECKED : '',
+				'VL_PHPEN'			=> ($hp_phpe === '_no_') ? $cfg->HTML_CHECKED : '',
 				'VL_CGIY'			=> ($hp_cgi === '_yes_') ? $cfg->HTML_CHECKED : '',
 				'VL_CGIN'			=> ($hp_cgi === '_no_') ? $cfg->HTML_CHECKED : '',
 				'VL_SSLY'			=> ($hp_ssl === '_yes_') ? $cfg->HTML_CHECKED : '',
@@ -194,7 +195,7 @@ function get_init_au2_page($tpl) {
  * Get data for hosting plan
  */
 function get_hp_data($hpid, $admin_id) {
-	global $hp_name, $hp_php, $hp_cgi, $hp_ssl;
+	global $hp_name, $hp_php, $hp_phpe, $hp_cgi, $hp_ssl;
 	global $hp_sub, $hp_als, $hp_mail;
 	global $hp_ftp, $hp_sql_db, $hp_sql_user;
 	global $hp_traff, $hp_disk, $hp_backup, $hp_dns;
@@ -217,6 +218,7 @@ function get_hp_data($hpid, $admin_id) {
 	} else {
 			$hp_name = 'Custom';
 			$hp_php = '_no_';
+			$hp_phpe = '_no_';
 			$hp_cgi = '_no_';
 			$hp_ssl = '_no_';
 			$hp_sub = '';
@@ -234,14 +236,12 @@ function get_hp_data($hpid, $admin_id) {
 
 /**
  * Check validity of input data
- * @param EasySCP_TemplateEngine $tpl
  */
-function check_user_data($tpl) {
-	global $hp_name, $hp_php, $hp_cgi, $hp_ssl;
+function check_user_data() {
+	global $hp_name, $hp_php, $hp_phpe, $hp_cgi, $hp_ssl;
 	global $hp_sub, $hp_als, $hp_mail;
 	global $hp_ftp, $hp_sql_db, $hp_sql_user;
 	global $hp_traff, $hp_disk, $hp_dmn, $hp_backup, $hp_dns;
-	global $dmn_chp;
 
 	//$sql = EasySCP_Registry::get('Db');
 
@@ -290,6 +290,10 @@ function check_user_data($tpl) {
 
 	if (isset($_POST['php'])) {
 		$hp_php = $_POST['php'];
+	}
+
+	if (isset($_POST['php_edit'])) {
+		$hp_phpe = $_POST['php_edit'];
 	}
 
 	if (isset($_POST['cgi'])) {

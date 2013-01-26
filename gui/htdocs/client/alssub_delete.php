@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -67,13 +67,13 @@ if (isset($_GET['id']) && $_GET['id'] !== '') {
 		UPDATE
 			`subdomain_alias`
 		SET
-			`subdomain_alias_status` = 'delete'
+			`status` = 'delete'
 		WHERE
 			`subdomain_alias_id` = ?
 	";
 
 	$rs = exec_query($sql, $query, $sub_id);
-	send_request();
+	send_request('110 DOMAIN '.$sub_id.' subdomain_alias_id');
 	write_log($_SESSION['user_logged'].": delete alias subdomain: ".$sub_name);
 	set_page_message(tr('Alias subdomain scheduled for deletion!'), 'success');
 	user_goto('domains_manage.php');

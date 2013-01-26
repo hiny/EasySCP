@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -125,7 +125,7 @@ function gen_detaildom_page($tpl, $user_id, $domain_id) {
 	$ipres = exec_query($sql, $query, $data['domain_ip_id']);
 	$ipres->fetchRow();
 	// Get status name
-	$dstatus = $data['domain_status'];
+	$dstatus = $data['status'];
 
 	if ($dstatus == $cfg->ITEM_OK_STATUS
 		|| $dstatus == $cfg->ITEM_DISABLED_STATUS
@@ -135,9 +135,9 @@ function gen_detaildom_page($tpl, $user_id, $domain_id) {
 		|| $dstatus == $cfg->ITEM_CHANGE_STATUS
 		|| $dstatus == $cfg->ITEM_TOENABLE_STATUS
 		|| $dstatus == $cfg->ITEM_TODISABLED_STATUS) {
-		$dstatus = translate_dmn_status($data['domain_status']);
+		$dstatus = translate_dmn_status($data['status']);
 	} else {
-		$dstatus = "<strong><font size=\"3\" color=\"red\">" . $data['domain_status'] . "</font></strong>";
+		$dstatus = "<strong><font size=\"3\" color=\"red\">" . $data['status'] . "</font></strong>";
 	}
 
 	// Traffic diagram

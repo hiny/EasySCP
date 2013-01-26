@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,7 +42,7 @@ $query = "
 	AND
 		`domain_id` = ?
 	AND
-		`alias_status` = ?
+		`status` = ?
 	";
 $rs = exec_query($sql, $query, array($domainAliasId, $domainId, $cfg->ITEM_ORDERED_STATUS));
 

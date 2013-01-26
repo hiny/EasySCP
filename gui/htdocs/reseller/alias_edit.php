@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -258,7 +258,7 @@ function check_fwd_data($tpl, $alias_id) {
 				`domain_aliasses`
 			SET
 				`url_forward` = ?,
-				`alias_status` = ?
+				`status` = ?
 			WHERE
 				`alias_id` = ?
 		";
@@ -268,13 +268,13 @@ function check_fwd_data($tpl, $alias_id) {
 			UPDATE
 				`subdomain_alias`
 			SET
-				`subdomain_alias_status` = ?
+				`status` = ?
 			WHERE
 				`alias_id` = ?
 		";
 		exec_query($sql, $query, array($cfg->ITEM_CHANGE_STATUS, $alias_id));
 
-		send_request();
+		send_request('110 DOMAIN '.$alias_id.' alias');
 
 		// NXW: oh my god... Should be review...
 		/*

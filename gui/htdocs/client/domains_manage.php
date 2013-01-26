@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -142,38 +142,40 @@ function gen_user_sub_list($tpl, $sql, $user_id) {
 
 	$query = "
 		SELECT
-			`subdomain_id`,
-			`subdomain_name`,
-			`subdomain_mount`,
-			`subdomain_status`,
-			`subdomain_url_forward`,
-			`domain_name`
+			s.subdomain_id,
+			s.subdomain_name,
+			s.subdomain_mount,
+			s.status,
+			s.subdomain_url_forward,
+			d.domain_name
 		FROM
-			`subdomain` JOIN `domain`
-		ON
-			`subdomain`.`domain_id` = `domain`.`domain_id`
+			subdomain s,
+			domain d
 		WHERE
-			`subdomain`.`domain_id` = ?
+			s.domain_id = d.domain_id
+		AND
+			s.domain_id = ?
 		ORDER BY
-			`subdomain_name`
-	;";
+			s.subdomain_name;
+	";
 
 	$query2 = "
 		SELECT
-			`subdomain_alias_id`,
-			`subdomain_alias_name`,
-			`subdomain_alias_mount`,
-			`subdomain_alias_url_forward`,
-			`subdomain_alias_status`,
-			`alias_name`
+			s.subdomain_alias_id,
+			s.subdomain_alias_name,
+			s.subdomain_alias_mount,
+			s.subdomain_alias_url_forward,
+			s.status,
+			a.alias_name
 		FROM
-			`subdomain_alias` JOIN `domain_aliasses`
-		ON
-			`subdomain_alias`.`alias_id` = `domain_aliasses`.`alias_id`
+			subdomain_alias s,
+			domain_aliasses a
 		WHERE
-			`domain_id` = ?
+			s.alias_id = a.alias_id
+		AND
+			a.domain_id = ?
 		ORDER BY
-			`subdomain_alias_name`
+			s.subdomain_alias_name
 	;";
 
 	$rs = exec_query($sql, $query, $domain_id);
@@ -188,8 +190,8 @@ function gen_user_sub_list($tpl, $sql, $user_id) {
 	} else {
 		while (!$rs->EOF) {
 
-			list($sub_action, $sub_action_script) = gen_user_sub_action($rs->fields['subdomain_id'], $rs->fields['subdomain_status']);
-			list($sub_forward, $sub_edit_link, $sub_edit) = gen_user_sub_forward($rs->fields['subdomain_id'], $rs->fields['subdomain_status'], $rs->fields['subdomain_url_forward'], 'dmn');
+			list($sub_action, $sub_action_script) = gen_user_sub_action($rs->fields['subdomain_id'], $rs->fields['status']);
+			list($sub_forward, $sub_edit_link, $sub_edit) = gen_user_sub_forward($rs->fields['subdomain_id'], $rs->fields['status'], $rs->fields['subdomain_url_forward'], 'dmn');
 			$sbd_name = decode_idna($rs->fields['subdomain_name']);
 			$dmn_name = decode_idna($rs->fields['domain_name']);
 			$sub_forward = decode_idna($sub_forward);
@@ -199,7 +201,7 @@ function gen_user_sub_list($tpl, $sql, $user_id) {
 					'SUB_ALIAS_NAME'	=> tohtml($dmn_name),
 					'SUB_MOUNT'			=> tohtml($rs->fields['subdomain_mount']),
 					'SUB_FORWARD'		=> $sub_forward,
-					'SUB_STATUS'		=> translate_dmn_status($rs->fields['subdomain_status']),
+					'SUB_STATUS'		=> translate_dmn_status($rs->fields['status']),
 					'SUB_EDIT_LINK'		=> $sub_edit_link,
 					'SUB_EDIT'			=> $sub_edit,
 					'SUB_ACTION'		=> $sub_action,
@@ -209,8 +211,8 @@ function gen_user_sub_list($tpl, $sql, $user_id) {
 			$rs->moveNext();
 		}
 		while (!$rs2->EOF) {
-			list($sub_action, $sub_action_script) = gen_user_alssub_action($rs2->fields['subdomain_alias_id'], $rs2->fields['subdomain_alias_status']);
-			list($sub_forward, $sub_edit_link, $sub_edit) = gen_user_sub_forward($rs2->fields['subdomain_alias_id'], $rs2->fields['subdomain_alias_status'], $rs2->fields['subdomain_alias_url_forward'], 'als');
+			list($sub_action, $sub_action_script) = gen_user_alssub_action($rs2->fields['subdomain_alias_id'], $rs2->fields['status']);
+			list($sub_forward, $sub_edit_link, $sub_edit) = gen_user_sub_forward($rs2->fields['subdomain_alias_id'], $rs2->fields['status'], $rs2->fields['subdomain_alias_url_forward'], 'als');
 			$sbd_name = decode_idna($rs2->fields['subdomain_alias_name']);
 			$sub_forward = decode_idna($sub_forward);
 			$tpl->append(
@@ -219,7 +221,7 @@ function gen_user_sub_list($tpl, $sql, $user_id) {
 					'SUB_ALIAS_NAME'	=> tohtml($rs2->fields['alias_name']),
 					'SUB_MOUNT'			=> tohtml($rs2->fields['subdomain_alias_mount']),
 					'SUB_FORWARD'		=> $sub_forward,
-					'SUB_STATUS'		=> translate_dmn_status($rs2->fields['subdomain_alias_status']),
+					'SUB_STATUS'		=> translate_dmn_status($rs2->fields['status']),
 					'SUB_EDIT_LINK'		=> $sub_edit_link,
 					'SUB_EDIT'			=> $sub_edit,
 					'SUB_ACTION'		=> $sub_action,
@@ -280,7 +282,7 @@ function gen_user_als_list($tpl, $sql, $user_id) {
 		SELECT
 			`alias_id`,
 			`alias_name`,
-			`alias_status`,
+			`status`,
 			`alias_mount`,
 			`alias_ip_id`,
 			`url_forward`
@@ -304,8 +306,8 @@ function gen_user_als_list($tpl, $sql, $user_id) {
 	} else {
 		while (!$rs->EOF) {
 
-			list($als_action, $als_action_script) = gen_user_als_action($rs->fields['alias_id'], $rs->fields['alias_status']);
-			list($als_forward, $alias_edit_link, $als_edit) = gen_user_als_forward($rs->fields['alias_id'], $rs->fields['alias_status'], $rs->fields['url_forward']);
+			list($als_action, $als_action_script) = gen_user_als_action($rs->fields['alias_id'], $rs->fields['status']);
+			list($als_forward, $alias_edit_link, $als_edit) = gen_user_als_forward($rs->fields['alias_id'], $rs->fields['status'], $rs->fields['url_forward']);
 
 			$alias_name = decode_idna($rs->fields['alias_name']);
 			$als_forward = decode_idna($als_forward);
@@ -313,7 +315,7 @@ function gen_user_als_list($tpl, $sql, $user_id) {
 				array(
 					'ALS_NAME'			=> tohtml($alias_name),
 					'ALS_MOUNT'			=> tohtml($rs->fields['alias_mount']),
-					'ALS_STATUS'		=> translate_dmn_status($rs->fields['alias_status']),
+					'ALS_STATUS'		=> translate_dmn_status($rs->fields['status']),
 					'ALS_FORWARD'		=> tohtml($als_forward),
 					'ALS_EDIT_LINK'		=> $alias_edit_link,
 					'ALS_EDIT'			=> $als_edit,

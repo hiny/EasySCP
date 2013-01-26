@@ -1,10 +1,69 @@
 EasySCP 1.2.0 ChangeLog
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+2013-01-26 Markus Szywon
+	- GUI:
+		* Updated: Smarty to version 3.1.13
+
+2013-01-12 Markus Szywon
+	- TOOL:
+		* Fixed: net2ftp does not work in some situations.
+
+2013-01-04 Markus Szywon
+	- GUI:
+		* Fixed: Net_DNS2_Exception when adding A records.
+
+2012-12-26 Markus Szywon
+	- DOCS:
+		* Updated: Debian 7.0 (Wheezy) package file
+
+2012-12-24 Markus Szywon
+	- GUI:
+		* Updated: All language files.
+
+2012-12-21 Markus Szywon
+	- TOOLS:
+		* Updated: phpMyAdmin to version 3.5.5
+
+2012-12-13 Markus Szywon
+	- GUI:
+		* Fixed: Delete message for reseller was empty in some cases.
+
+2012-12-09 Markus Szywon
+	- GUI:
+		* Fixed: FTP dir selection does not work in some situations.
+
+2012-12-06 Markus Szywon
+	- GUI:
+		* Small fix
+
+2012-11-25 Markus Szywon
+	- Setup:
+		* Added: Dovecot Support
+	- System:
+		* Added: Dovecot Support
+		* Removed: Courier Support
+
+2012-11-24 Markus Szywon
+	- GUI:
+		* Updated: jQuery UI to version 1.9.2
+
+2012-11-21 Markus Szywon
+	- GUI:
+		* Fixed: Parse error on orderpanel activation
+		* Fixed: Orders were not deletable
+
+2012-11-20 Markus Szywon
+	- GUI:
+		* Some small fixes
+
 2012-11-18 Markus Szywon
 	- GUI:
 		* Fixed: EasySCP_Exception_Writer
-		* Fixed: Migration won´t work in some cases
+		* Fixed: Migration wonÂ´t work in some cases
+		* Updated: jQuery to version 1.8.3
+		* Updated: jQuery UI to version 1.9.1
+
 	- TOOLS:
 		* Updated: Roundcube to version 0.8.4
 
@@ -18,7 +77,7 @@ EasySCP 1.2.0 ChangeLog
 		* Fix a security vulnerability
 		* Add: Italian Language (thx to theprincy)
 		* Updated: Danish Language (thx to Ryan Skov)
-		* Updated: Dutch Language (thx to Rob Boevéé)
+		* Updated: Dutch Language (thx to Rob BoevÃ©Ã©)
 
 2012-11-12 Markus Szywon
 	- GUI:

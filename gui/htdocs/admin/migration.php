@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,11 +26,13 @@ require '../../include/easyscp-lib.php';
 check_login(__FILE__);
 redirect_to_level_page();
 
+$cfg = EasySCP_Registry::get('Config');
+
 $query = "
 	UPDATE
-		`domain`
+		domain
 	SET
-		`domain_status` = 'toadd'
+		status = '$cfg->ITEM_ADD_STATUS'
 ";
 
 $rs = execute_query($sql, $query);
@@ -38,9 +40,9 @@ print "Domains updated";
 
 $query = "
 	UPDATE
-		`domain_aliasses`
+		domain_aliasses
 	SET
-		`alias_status` = 'toadd'
+		status = '$cfg->ITEM_ADD_STATUS'
 ";
 
 $rs = execute_query($sql, $query);
@@ -48,9 +50,9 @@ print "Domain aliases updated";
 
 $query = "
 	UPDATE
-		`subdomain`
+		subdomain
 	SET
-		`subdomain_status` = 'toadd'
+		status = '$cfg->ITEM_ADD_STATUS'
 ";
 
 $rs = execute_query($sql, $query);
@@ -58,9 +60,9 @@ print "Subdomains updated";
 
 $query = "
 	UPDATE
-		`subdomain_alias`
+		subdomain_alias
 	SET
-		`subdomain_alias_status` = 'toadd'
+		status = '$cfg->ITEM_ADD_STATUS'
 ";
 
 $rs = execute_query($sql, $query);
@@ -68,9 +70,9 @@ print "Subdomains alias updated";
 
 $query = "
 	UPDATE
-		`mail_users`
+		mail_users
 	SET
-		`status` = 'toadd'
+		status = '$cfg->ITEM_ADD_STATUS'
 ";
 
 $rs = execute_query($sql, $query);

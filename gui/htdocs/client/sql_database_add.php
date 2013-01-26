@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -207,13 +207,11 @@ function check_sql_permissions($sql, $user_id) {
 		header("Location: index.php");
 	}
 
-	list($dmn_id,,,,,,,,,,,
-		$dmn_sqld_limit
-	) = get_domain_default_props($sql, $user_id);
+	$dmn_props = get_domain_default_props($user_id);
 
-	list($sqld_acc_cnt) = get_domain_running_sql_acc_cnt($sql, $dmn_id);
+	list($sqld_acc_cnt) = get_domain_running_sql_acc_cnt($sql, $dmn_props['domain_id']);
 
-	if ($dmn_sqld_limit != 0 && $sqld_acc_cnt >= $dmn_sqld_limit) {
+	if ($dmn_props['domain_sqld_limit'] != 0 && $sqld_acc_cnt >= $dmn_props['domain_sqld_limit']) {
 		set_page_message(tr('SQL accounts limit reached!'), 'warning');
 		user_goto('sql_manage.php');
 	}

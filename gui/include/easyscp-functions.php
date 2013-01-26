@@ -34,35 +34,6 @@
  */
 
 /**
- * Checks for lock file
- *
- * @return boolean TRUE if file is unlocked, FALSE otherwise
- */
-function check_for_lock_file() {
-
-	/**
-	 * @var EasySCP_Config_Handler_File $cfg
-	 */
-	$cfg = EasySCP_Registry::get('Config');
-
-	$fh = fopen($cfg->MR_LOCK_FILE, 'r');
-
-	if (!$fh) {
-		return false;
-	}
-
-	while (!flock($fh, LOCK_EX|LOCK_NB)) {
-		usleep(rand(200, 600)*1000);
-		clearstatcache();
-
-		// Send header to keep connection
-		header("Cache-Control: no-store, no-cache, must-revalidate");
-	}
-
-	return true;
-}
-
-/**
  * Reads line from the socket resource
  *
  * @param resource &$socket
@@ -84,31 +55,45 @@ function read_line(&$socket) {
 /**
  * Send request to the daemon
  *
+ * @param string $execute
  * @return string Daemon answer
  * @todo Remove error operator
  */
 function send_request($execute = 'legacy') {
 
-	@$socket = socket_create (AF_INET, SOCK_STREAM, 0);
+	// @$socket = socket_create (AF_INET, SOCK_STREAM, 0);
+	@$socket = socket_create (AF_UNIX, SOCK_STREAM, 0);
 	if ($socket < 0) {
 		$errno = "socket_create() failed.\n";
 		return $errno;
 	}
 
-	@$result = socket_connect ($socket, '127.0.0.1', 9876);
+	// @$result = socket_connect ($socket, '127.0.0.1', 9876);
+	@$result = socket_connect($socket, EasyConfig::$cfg->SOCK_EASYSCPD);
 	if ($result == false) {
 		$errno = "socket_connect() failed.\n";
 		return $errno;
 	}
 
 	// read one line with welcome string
-	$out = read_line($socket);
+	socket_read($socket, 1024, PHP_NORMAL_READ);
+	// $out = read_line($socket);
 
 	// send reg check query
-	$query = $execute . "\r\n";
-	socket_write ($socket, $query, strlen ($query));
+	// $query = $execute . "\r\n";
+	$query = trim($execute) . "\n";
+	socket_write($socket, $query, strlen ($query));
 
-	socket_close ($socket);
+	// read answer from the daemon
+	$out = socket_read($socket, 10240, PHP_NORMAL_READ);
+
+	socket_shutdown($socket, 2);
+	socket_close($socket);
+
+	// sleep(1);
+	usleep(250);
+
+	return trim($out);
 
 	/*
 	$cfg = EasySCP_Registry::get('Config');
@@ -223,7 +208,7 @@ function update_user_props($user_id, $props) {
 
 	list(
 		,$sub_max,,$als_max,,$mail_max,,$ftp_max,,$sql_db_max,,$sql_user_max,
-		$traff_max,$disk_max,$domain_php,$domain_cgi,$domain_ssl,,$domain_dns
+		$traff_max,$disk_max,$domain_php,$domain_php_edit,$domain_cgi,$domain_ssl,,$domain_dns
 	) = explode (';', $props);
 
 	// have to check if PHP and/or CGI and/or IP change
@@ -239,6 +224,8 @@ function update_user_props($user_id, $props) {
 		AND
 			`domain_php` = ?
 		AND
+			`domain_php_edit` = ?
+		AND
 			`domain_cgi` = ?
 		AND
 			`domain_ssl` = ?
@@ -248,7 +235,7 @@ function update_user_props($user_id, $props) {
 	";
 
 	$rs = exec_query(
-		$db, $query, array($user_id, $domain_php, $domain_cgi, $domain_ssl, $domain_dns)
+		$db, $query, array($user_id, $domain_php, $domain_php_edit, $domain_cgi, $domain_ssl, $domain_dns)
 	);
 
 	if ($rs->recordCount() == 0) {
@@ -257,53 +244,61 @@ function update_user_props($user_id, $props) {
 
 		$update_status = $cfg->ITEM_CHANGE_STATUS;
 
-		// check if we have to wait some system update
-		check_for_lock_file();
-		// ... and go update
-
 		// update the domain
-		$query = "
+		$sql_param = array(
+			':domain_last_modified'	=> $domain_last_modified,
+			':domain_mailacc_limit'	=> $mail_max,
+			':domain_ftpacc_limit'	=> $ftp_max,
+			':domain_traffic_limit'	=> $traff_max,
+			':domain_sqld_limit'	=> $sql_db_max,
+			':domain_sqlu_limit'	=> $sql_user_max,
+			':domain_status'		=> $update_status,
+			':domain_alias_limit'	=> $als_max,
+			':domain_subd_limit'	=> $sub_max,
+			':domain_disk_limit'	=> $disk_max,
+			':domain_php'			=> $domain_php,
+			':domain_php_edit'		=> $domain_php_edit,
+			':domain_cgi'			=> $domain_cgi,
+			':domain_ssl'			=> $domain_ssl,
+			':domain_dns'			=> $domain_dns,
+			':domain_id'			=> $user_id,
+		);
+
+		$sql_query = "
 			UPDATE
-				`domain`
+				domain
 			SET
-				`domain_last_modified` = ?,
-				`domain_mailacc_limit` = ?,
-				`domain_ftpacc_limit` = ?,
-				`domain_traffic_limit` = ?,
-				`domain_sqld_limit` = ?,
-				`domain_sqlu_limit` = ?,
-				`domain_status` = ?,
-				`domain_alias_limit` = ?,
-				`domain_subd_limit` = ?,
-				`domain_disk_limit` = ?,
-				`domain_php` = ?,
-				`domain_cgi` = ?,
-				`domain_ssl` = ?,
-				`domain_dns` = ?
+				domain_last_modified = :domain_last_modified,
+				domain_mailacc_limit = :domain_mailacc_limit,
+				domain_ftpacc_limit = :domain_ftpacc_limit,
+				domain_traffic_limit = :domain_traffic_limit,
+				domain_sqld_limit = :domain_sqld_limit,
+				domain_sqlu_limit = :domain_sqlu_limit,
+				status = :domain_status,
+				domain_alias_limit = :domain_alias_limit,
+				domain_subd_limit = :domain_subd_limit,
+				domain_disk_limit = :domain_disk_limit,
+				domain_php = :domain_php,
+				domain_php_edit = :domain_php_edit,
+				domain_cgi = :domain_cgi,
+				domain_ssl = :domain_ssl,
+				domain_dns = :domain_dns
 			WHERE
-				`domain_id` = ?
-			;
+				domain_id = :domain_id;
 		";
 
-		exec_query(
-			$db,
-			$query,
-			array(
-				$domain_last_modified, $mail_max, $ftp_max, $traff_max,
-				$sql_db_max, $sql_user_max, $update_status, $als_max, $sub_max,
-				$disk_max, $domain_php, $domain_cgi, $domain_ssl, $domain_dns, $user_id
-			)
-		);
+		DB::prepare($sql_query);
+		DB::execute($sql_param);
 
 		// let's update all alias domains for this domain
 
 		$query = "
 			UPDATE
-				`domain_aliasses`
+				domain_aliasses
 			SET
-				`alias_status` = ?
+				status = ?
 			WHERE
-				`domain_id` = ?
+				domain_id = ?
 			;
 		";
 
@@ -314,7 +309,7 @@ function update_user_props($user_id, $props) {
 			UPDATE
 				`subdomain`
 			SET
-				`subdomain_status` = ?
+				`status` = ?
 			WHERE
 				`domain_id` = ?
 			;
@@ -327,7 +322,7 @@ function update_user_props($user_id, $props) {
 			UPDATE
 				`subdomain_alias`
 			SET
-				`subdomain_alias_status` = ?
+				`status` = ?
 			WHERE
 				`alias_id` IN (
 					SELECT
@@ -343,7 +338,7 @@ function update_user_props($user_id, $props) {
 		exec_query($db, $query, array($update_status, $user_id));
 
 		// Send request to the EasySCP daemon
-		send_request();
+		send_request('100 CORE checkAll');
 
 	} else {
 
@@ -430,8 +425,9 @@ function array_encode_idna($arr, $asPath = false) {
  */
 function decode_idna($input) {
 
-	if (function_exists('idn_to_unicode')) {
-		return idn_to_utf8($input, IDNA_USE_STD3_RULES);
+	if (function_exists('idn_to_utf8')) {
+		// return idn_to_utf8($input, IDNA_USE_STD3_RULES);
+		return idn_to_utf8($input);
 	} else {
 
 		$IDNA = new Net_IDNA2();

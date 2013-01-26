@@ -28,6 +28,9 @@
 			{if isset($ISACTIVE_SSL_MENU)}
 			<li><a href="domain_manage_ssl.php">{$TR_MENU_MANAGE_SSL}</a></li>
 			{/if}
+			{if isset($ISACTIVE_PHP_EDITOR)}
+				<li><a href="domain_php.php">{$TR_MENU_PHP_EDITOR}</a></li>
+			{/if}
 		</ul>
 	</li>
 {/if}

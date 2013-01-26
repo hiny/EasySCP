@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -131,7 +131,7 @@ function gen_detaildom_page($tpl, $user_id, $domain_id) {
 	$ipres = exec_query($sql, $query, $data['domain_ip_id']);
 	$ipres->fetchRow();
 	// Get staus name
-	$dstatus = translate_dmn_status($data['domain_status']);
+	$dstatus = translate_dmn_status($data['status']);
 
 	// Traffic diagram
 	$fdofmnth = mktime(0, 0, 0, date("m"), 1, date("Y"));

@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This work is licensed under the Creative Commons Attribution-NoDerivs 3.0 Unported License.
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/3.0/.
@@ -179,21 +179,25 @@ function replace_html($string) {
 function update_user_language(){
 
 	$cfg = EasySCP_Registry::get('Config');
-	$sql = EasySCP_Registry::get('Db');
 
-	$user_id = $_SESSION['user_id'];
 	$user_lang = clean_input($_POST['def_language']);
 
-	$query = "
+	$sql_param = array(
+		':lang'		=> $user_lang,
+		':user_id'	=> $_SESSION['user_id']
+	);
+
+	$sql_query = "
 		UPDATE
-			`user_gui_props`
+			user_gui_props
 		SET
-			`lang` = ?
+			lang = :lang
 		WHERE
-			`user_id` = ?
+			user_id = :user_id
 	;";
 
-	exec_query($sql, $query, array($user_lang, $user_id));
+	DB::prepare($sql_query);
+	DB::execute($sql_param);
 
 	unset($_SESSION['user_def_lang']);
 	$_SESSION['user_def_lang'] = $user_lang;

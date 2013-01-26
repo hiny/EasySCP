@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -119,7 +119,7 @@ function generate_page($tpl) {
 			`admin_type` = 'reseller'
 	";
 
-	$query = <<<SQL_QUERY
+	$query = "
 		SELECT
 			`admin_id`, `admin_name`
 		FROM
@@ -129,8 +129,8 @@ function generate_page($tpl) {
 		ORDER BY
 			`admin_name` DESC
 		LIMIT
-			$start_index, $rows_per_page
-SQL_QUERY;
+			$start_index, $rows_per_page;
+	";
 
 	$rs = exec_query($sql, $count_query);
 	$records_count = $rs->fields['cnt'];

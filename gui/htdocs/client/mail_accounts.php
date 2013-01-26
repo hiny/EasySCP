@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -531,13 +531,14 @@ function gen_page_lists($tpl, $sql, $user_id) {
 
 	global $dmn_id;
 
-	list($dmn_id,$dmn_name,,,,,,,$dmn_mailacc_limit
-	) = get_domain_default_props($sql, $user_id);
+	$dmn_props = get_domain_default_props($user_id);
 
-	$dmn_mails = gen_page_dmn_mail_list($tpl, $sql, $dmn_id, $dmn_name);
-	$sub_mails = gen_page_sub_mail_list($tpl, $sql, $dmn_id, $dmn_name);
-	$als_mails = gen_page_als_mail_list($tpl, $sql, $dmn_id, $dmn_name);
-	$alssub_mails = gen_page_als_sub_mail_list($tpl, $sql, $dmn_id, $dmn_name);
+	$dmn_id = $dmn_props['domain_id'];
+
+	$dmn_mails = gen_page_dmn_mail_list($tpl, $sql, $dmn_id, $dmn_props['domain_name']);
+	$sub_mails = gen_page_sub_mail_list($tpl, $sql, $dmn_id, $dmn_props['domain_name']);
+	$als_mails = gen_page_als_mail_list($tpl, $sql, $dmn_id, $dmn_props['domain_name']);
+	$alssub_mails = gen_page_als_sub_mail_list($tpl, $sql, $dmn_id, $dmn_props['domain_name']);
 
 	$total_mails = $dmn_mails + $sub_mails + $als_mails + $alssub_mails;
 
@@ -550,7 +551,7 @@ function gen_page_lists($tpl, $sql, $user_id) {
 				'ALSSUB_TOTAL'			=> $sub_mails,
 				'ALS_TOTAL'				=> $als_mails,
 				'TOTAL_MAIL_ACCOUNTS'	=> $total_mails,
-				'ALLOWED_MAIL_ACCOUNTS'	=> ($dmn_mailacc_limit != 0) ? $dmn_mailacc_limit : tr('unlimited')
+				'ALLOWED_MAIL_ACCOUNTS'	=> ($dmn_props['domain_mailacc_limit'] != 0) ? $dmn_props['domain_mailacc_limit'] : tr('unlimited')
 			)
 		);
 	} else {

@@ -44,53 +44,12 @@ function gen_admin_mainmenu($tpl, $menu_file) {
 	$tpl->assign(
 		array(
 			'TR_MENU_GENERAL_INFORMATION'	=> tr('General information'),
+			'TR_MENU_MANAGE_USERS'			=> tr('Manage users'),
 			'TR_MENU_HOSTING_PLANS'			=> tr('Manage hosting plans'),
 			'TR_MENU_SYSTEM_TOOLS'			=> tr('System tools'),
-			'TR_MENU_MANAGE_USERS'			=> tr('Manage users'),
 			'TR_MENU_STATISTICS'			=> tr('Statistics'),
 			'TR_MENU_SUPPORT_SYSTEM'		=> tr('Support system'),
-			'TR_MENU_SETTINGS'				=> tr('Settings'),
-			'TR_MENU_GENERAL_INFORMATION'	=> tr('General information'),
-			'TR_MENU_HOSTING_PLANS'			=> tr('Manage hosting plans'),
-			'TR_MENU_SYSTEM_TOOLS'			=> tr('System tools'),
-			'TR_MENU_MANAGE_USERS'			=> tr('Manage users'),
-			'TR_MENU_STATISTICS'			=> tr('Statistics'),
-			'TR_MENU_SUPPORT_SYSTEM'		=> tr('Support system'),
-			'TR_MENU_SETTINGS'				=> tr('Settings'),
-			'TR_MENU_CHANGE_PASSWORD'		=> tr('Change password'),
-			'TR_MENU_CHANGE_PERSONAL_DATA'	=> tr('Change personal data'),
-			'TR_MENU_ADD_ADMIN'				=> tr('Add admin'),
-			'TR_MENU_ADD_RESELLER'			=> tr('Add reseller'),
-			'TR_MENU_RESELLER_ASIGNMENT'	=> tr('Reseller assignment'),
-			'TR_MENU_USER_ASIGNMENT'		=> tr('User assignment'),
-			'TR_MENU_EMAIL_SETUP'			=> tr('Email setup'),
-			'TR_MENU_CIRCULAR'				=> tr('Email marketing'),
-			'TR_MENU_ADD_HOSTING'			=> tr('Add hosting plan'),
-			'TR_MENU_RESELLER_STATISTICS'	=> tr('Reseller statistics'),
-			'TR_MENU_SERVER_STATISTICS'		=> tr('Server statistics'),
-			'TR_MENU_ADMIN_LOG'				=> tr('Admin log'),
-			'TR_MENU_MANAGE_IPS'			=> tr('Manage IPs'),
-			'TR_MENU_SYSTEM_INFO'			=> tr('System info'),
-			'TR_MENU_I18N'					=> tr('Internationalisation'),
-			'TR_MENU_LANGUAGE'				=> tr('Language'),
-			'TR_MENU_LOGOUT'				=> tr('Logout'),
-			'TR_MENU_QUESTIONS_AND_COMMENTS'=> tr('Support system'),
-			'TR_MENU_SERVER_TRAFFIC_SETTINGS'=> tr('Server traffic settings'),
-			'TR_MENU_SERVER_STATUS'			=> tr('Server status'),
-			'TR_MENU_EasySCP_UPDATE'		=> tr('EasySCP updates'),
-			'TR_MENU_EasySCP_DEBUGGER'		=> tr('EasySCP debugger'),
-			'TR_CUSTOM_MENUS'				=> tr('Custom menus'),
-			'TR_MENU_OVERVIEW'				=> tr('Overview'),
-			'TR_MENU_MANAGE_SESSIONS'		=> tr('User sessions'),
-			'TR_MENU_LOSTPW_EMAIL'			=> tr('Lostpw email setup'),
-			'TR_MAINTENANCEMODE'			=> tr('Maintenance mode'),
-			'TR_GENERAL_SETTINGS'			=> tr('General settings'),
-			'TR_SERVERPORTS'				=> tr('Server ports'),
-			'TR_MANAGE_SSL'					=> tr('Manage SSL certificate'),
-			'TR_OPEN_TICKETS'				=> tr('Open tickets'),
-			'TR_CLOSED_TICKETS'				=> tr('Closed tickets'),
-			'PMA_PATH'						=> $cfg->PMA_PATH,
-			'TR_PHPMYADMIN'					=> tr('phpMyAdmin')
+			'TR_MENU_SETTINGS'				=> tr('Settings')
 		)
 	);
 
@@ -158,45 +117,44 @@ function gen_admin_menu($tpl, $menu_file) {
 
 	$tpl->assign(
 		array(
-			'TR_MENU_GENERAL_INFORMATION'	=> tr('General information'),
+			'TR_MENU_OVERVIEW'				=> tr('Overview'),
 			'TR_MENU_CHANGE_PASSWORD'		=> tr('Change password'),
 			'TR_MENU_CHANGE_PERSONAL_DATA'	=> tr('Change personal data'),
-			'TR_MENU_MANAGE_USERS'			=> tr('Manage users'),
+			'TR_MENU_LANGUAGE'				=> tr('Language'),
+			'TR_MENU_SERVER_STATUS'			=> tr('Server status'),
+			'TR_MENU_ADMIN_LOG'				=> tr('Admin log'),
+
 			'TR_MENU_ADD_ADMIN'				=> tr('Add admin'),
 			'TR_MENU_ADD_RESELLER'			=> tr('Add reseller'),
 			'TR_MENU_RESELLER_ASIGNMENT'	=> tr('Reseller assignment'),
 			'TR_MENU_USER_ASIGNMENT'		=> tr('User assignment'),
 			'TR_MENU_EMAIL_SETUP'			=> tr('Email setup'),
 			'TR_MENU_CIRCULAR'				=> tr('Email marketing'),
-			'TR_MENU_HOSTING_PLANS'			=> tr('Manage hosting plans'),
+			'TR_MENU_MANAGE_SESSIONS'		=> tr('User sessions'),
+
 			'TR_MENU_ADD_HOSTING'			=> tr('Add hosting plan'),
-			'TR_MENU_ROOTKIT_LOG'			=> tr('Rootkit Log'),
-			'TR_MENU_RESELLER_STATISTICS'	=> tr('Reseller statistics'),
-			'TR_MENU_SERVER_STATISTICS'		=> tr('Server statistics'),
-			'TR_MENU_ADMIN_LOG'				=> tr('Admin log'),
-			'TR_MENU_MANAGE_IPS'			=> tr('Manage IPs'),
-			'TR_MENU_SUPPORT_SYSTEM'		=> tr('Support system'),
-			'TR_MENU_SYSTEM_INFO'			=> tr('System info'),
-			'TR_MENU_I18N'					=> tr('Internationalisation'),
-			'TR_MENU_LANGUAGE'				=> tr('Language'),
-			'TR_MENU_LOGOUT'				=> tr('Logout'),
-			'TR_MENU_QUESTIONS_AND_COMMENTS'=> tr('Support system'),
-			'TR_MENU_STATISTICS'			=> tr('Statistics'),
-			'TR_MENU_SYSTEM_TOOLS'			=> tr('System tools'),
-			'TR_MENU_SERVER_TRAFFIC_SETTINGS'=> tr('Server traffic settings'),
-			'TR_MENU_SERVER_STATUS'			=> tr('Server status'),
+
+			'TR_MAINTENANCEMODE'			=> tr('Maintenance mode'),
+			'TR_MANAGE_SSL'					=> tr('Manage SSL certificate'),
 			'TR_MENU_EasySCP_UPDATE'		=> tr('EasySCP updates'),
 			'TR_MENU_EasySCP_DEBUGGER'		=> tr('EasySCP debugger'),
-			'TR_CUSTOM_MENUS'				=> tr('Custom menus'),
-			'TR_MENU_OVERVIEW'				=> tr('Overview'),
-			'TR_MENU_MANAGE_SESSIONS'		=> tr('User sessions'),
-			'TR_MENU_LOSTPW_EMAIL'			=> tr('Lostpw email setup'),
-			'TR_MAINTENANCEMODE'			=> tr('Maintenance mode'),
-			'TR_MENU_SETTINGS'				=> tr('Settings'),
-			'TR_GENERAL_SETTINGS'			=> tr('General settings'),
-			'TR_SERVERPORTS'				=> tr('Server ports'),
+			'TR_MENU_ROOTKIT_LOG'			=> tr('Rootkit Log'),
+
+			'TR_MENU_RESELLER_STATISTICS'	=> tr('Reseller statistics'),
 			'TR_MENU_IP_USAGE'				=> tr('IP Usage'),
-			'TR_MANAGE_SSL'					=> tr('Manage SSL certificate'),
+
+			'TR_OPEN_TICKETS'				=> tr('Open tickets'),
+			'TR_CLOSED_TICKETS'				=> tr('Closed tickets'),
+
+			'TR_GENERAL_SETTINGS'			=> tr('General settings'),
+			'TR_CUSTOM_MENUS'				=> tr('Custom menus'),
+			'TR_MENU_MANAGE_IPS'			=> tr('Manage IPs'),
+			'TR_MENU_SERVER_TRAFFIC_SETTINGS'=> tr('Server traffic settings'),
+
+			'TR_MENU_LOSTPW_EMAIL'			=> tr('Lostpw email setup'),
+			'TR_SERVERPORTS'				=> tr('Server ports'),
+
+			'TR_MENU_LOGOUT'				=> tr('Logout'),
 			'VERSION'						=> $cfg->Version,
 			'BUILDDATE'						=> $cfg->BuildDate,
 			'CODENAME'						=> $cfg->CodeName
@@ -218,9 +176,9 @@ function get_sql_user_count($sql) {
 
 	$query = "
 		SELECT DISTINCT
-			`sqlu_name`
+			sqlu_name
 		FROM
-			`sql_user`
+			sql_user
 		;
 	";
 
@@ -290,18 +248,18 @@ function gen_admin_list($tpl, $sql) {
 
 	$query = "
 		SELECT
-			t1.`admin_id`,
-			t1.`admin_name`,
-			t1.`domain_created`,
-			IFNULL(t2.`admin_name`, '') AS `created_by`
+			t1.admin_id,
+			t1.admin_name,
+			t1.domain_created,
+			IFNULL(t2.admin_name, '') AS created_by
 		FROM
-			`admin` AS `t1`
+			admin AS t1
 		LEFT JOIN
-			`admin` AS `t2` ON `t1`.`created_by` = t2.`admin_id`
+			admin AS t2 ON t1.created_by = t2.admin_id
 		WHERE
-			`t1`.`admin_type` = 'admin'
+			t1.admin_type = 'admin'
 		ORDER BY
-			`t1`.`admin_name`
+			t1.admin_name
 		ASC
 		;
 	";
@@ -405,8 +363,7 @@ function gen_reseller_list($tpl, $sql) {
 			array(
 				'TR_RSL_USERNAME' => tr('Username'),
 				'TR_RSL_CREATED_BY' => tr('Created by'),
-				'TR_RSL_OPTIONS' => tr('Options'),
-				'GO_TO_USER_INTERFACE' => tr('Switch')
+				'TR_RSL_OPTIONS' => tr('Options')
 			)
 		);
 
@@ -549,12 +506,6 @@ function gen_user_list($tpl, $sql) {
 			);
 		}
 
-		$tpl->assign(
-			array(
-				'TR_MESSAGE_CHANGE_STATUS'	=> '',
-				'TR_MESSAGE_DELETE'			=> ''
-			)
-		);
 	} else {
 		$prev_si = $start_index - $rows_per_page;
 
@@ -590,12 +541,7 @@ function gen_user_list($tpl, $sql) {
 				'TR_USER_STATUS' => tr('Status'),
 				'TR_DETAILS' => tr('Details'),
 				'TR_EDIT_DOMAIN' => tr('Edit domain'),
-				'TR_EDIT_USR' => tr('Edit user'),
-				'GO_TO_USER_INTERFACE' => tr('Switch'),
-				'TR_MESSAGE_CHANGE_STATUS' =>
-						tr('Are you sure you want to change the status of domain account?', true),
-				'TR_MESSAGE_DELETE' =>
-						tr('Are you sure you want to delete %s?', true, '%s')
+				'TR_EDIT_USR' => tr('Edit user')
 			)
 		);
 
@@ -636,20 +582,20 @@ function gen_user_list($tpl, $sql) {
 				)
 			);
 
-			if($rs->fields['domain_status'] == $cfg->ITEM_OK_STATUS) {
+			if($rs->fields['status'] == $cfg->ITEM_OK_STATUS) {
 				$status_icon = 'ok';
 				$status_url = 'domain_status_change.php?domain_id=' .
 					$rs->fields['domain_id'];
-			} elseif($rs->fields['domain_status'] == $cfg->ITEM_DISABLED_STATUS) {
+			} elseif($rs->fields['status'] == $cfg->ITEM_DISABLED_STATUS) {
 				$status_icon = 'disabled';
 				$status_url = 'domain_status_change.php?domain_id=' .
 					$rs->fields['domain_id'];
-			} elseif($rs->fields['domain_status'] == $cfg->ITEM_ADD_STATUS
-				|| $rs->fields['domain_status'] == $cfg->ITEM_RESTORE_STATUS
-				|| $rs->fields['domain_status'] == $cfg->ITEM_CHANGE_STATUS
-				|| $rs->fields['domain_status'] == $cfg->ITEM_TOENABLE_STATUS
-				|| $rs->fields['domain_status'] == $cfg->ITEM_TODISABLED_STATUS
-				|| $rs->fields['domain_status'] == $cfg->ITEM_DELETE_STATUS) {
+			} elseif($rs->fields['status'] == $cfg->ITEM_ADD_STATUS
+				|| $rs->fields['status'] == $cfg->ITEM_RESTORE_STATUS
+				|| $rs->fields['status'] == $cfg->ITEM_CHANGE_STATUS
+				|| $rs->fields['status'] == $cfg->ITEM_TOENABLE_STATUS
+				|| $rs->fields['status'] == $cfg->ITEM_TODISABLED_STATUS
+				|| $rs->fields['status'] == $cfg->ITEM_DELETE_STATUS) {
 
 				$status_icon = 'reload';
 				$status_url = '#';
@@ -722,7 +668,8 @@ function get_admin_manage_users($tpl, $sql) {
 			'TR_MESSAGE_DELETE'	=> tr('Are you sure you want to delete %s?', true, '%s'),
 			'TR_EDIT'			=> tr('Edit'),
 			'TR_DELETE'			=> tr('Delete'),
-			'TR_CHANGE_USER_INTERFACE' => tr('Switch to user interface')
+			'TR_CHANGE_USER_INTERFACE' => tr('Switch to user interface'),
+			'TR_MESSAGE_CHANGE_STATUS' => tr('Are you sure you want to change the status of domain account?', true)
 		)
 	);
 
@@ -1186,12 +1133,14 @@ function generate_user_traffic($user_id) {
 
 		$query = "
 			SELECT
-				IFNULL(SUM(`dtraff_web`), 0) AS web,
-				IFNULL(SUM(`dtraff_ftp`), 0) AS ftp,
+				IFNULL(SUM(`dtraff_web_in`), 0) + IFNULL(SUM(`dtraff_web_out`), 0) AS web,
+				IFNULL(SUM(`dtraff_ftp_in`), 0) + IFNULL(SUM(`dtraff_ftp_out`), 0) AS ftp,
 				IFNULL(SUM(`dtraff_mail`), 0) AS smtp,
 				IFNULL(SUM(`dtraff_pop`), 0) AS pop,
-				IFNULL(SUM(`dtraff_web`), 0) +
-				IFNULL(SUM(`dtraff_ftp`), 0) +
+				IFNULL(SUM(`dtraff_web_in`), 0) +
+				IFNULL(SUM(`dtraff_web_out`), 0) +
+				IFNULL(SUM(`dtraff_ftp_in`), 0) +
+				IFNULL(SUM(`dtraff_ftp_out`), 0) +
 				IFNULL(SUM(`dtraff_mail`), 0) +
 				IFNULL(SUM(`dtraff_pop`), 0) AS total
 			FROM
@@ -1578,8 +1527,6 @@ function gen_logged_from($tpl) {
 			)
 		);
 
-	} else {
-		$tpl->assign('LOGGED_FROM', '');
 	}
 }
 
@@ -1671,11 +1618,11 @@ function change_domain_status($sql, $domain_id, $domain_name, $action,
 
 	$query = "
 		UPDATE
-			`domain`
+			domain
 		SET
-			`domain_status` = ?
+			status = ?
 		WHERE
-			`domain_id` = ?
+			domain_id = ?
 		;
 	";
 
@@ -1739,7 +1686,7 @@ function gen_admin_domain_query(&$search_query, &$count_query, $start_index,
 		if($search_status == 'all') {
 			$add_query = '';
 		} else {
-			$add_query = " WHERE `domain_status` = '$search_status';
+			$add_query = " WHERE `status` = '$search_status';
 			";
 		}
 
@@ -1800,7 +1747,7 @@ function gen_admin_domain_query(&$search_query, &$count_query, $start_index,
 		if($search_status != 'all') {
 			$add_query = sprintf(
 				$add_query,
-				" AND t2.`domain_status` = '$search_status'"
+				" AND t2.`status` = '$search_status'"
 			);
 
 			$count_query = "
@@ -2044,6 +1991,7 @@ function delete_domain($domain_id, $goto, $breseller = false) {
 	";
 
 	exec_query($sql, $query, array($cfg->ITEM_DELETE_STATUS, $domain_id));
+	send_request('130 MAIL '.$domain_id);
 
 	// Delete all protected areas related data (areas, groups and users)
 	$query = "
@@ -2091,7 +2039,7 @@ function delete_domain($domain_id, $goto, $breseller = false) {
 			UPDATE
 				`subdomain_alias`
 			SET
-				`subdomain_alias_status` = ?
+				`status` = ?
 			WHERE
 				`alias_id` IN (
 		";
@@ -2122,11 +2070,11 @@ function delete_domain($domain_id, $goto, $breseller = false) {
 	// Domain aliases:
 	$query = "
 		UPDATE
-			`domain_aliasses`
+			domain_aliasses
 		SET
-			`alias_status` =  ?
+			status =  ?
 		WHERE
-			`domain_id` = ?
+			domain_id = ?
 		;
 	";
 
@@ -2143,50 +2091,12 @@ function delete_domain($domain_id, $goto, $breseller = false) {
 
 	exec_query($sql, $query, $domain_id);
 
-	// Delete domain DNS entries
-	
-	$sql_param = array(
-		"domain_id"	=>	$domain_id,
-	);
-	
-	$sql_query = "
-					SELECT
-						`id`
-					FROM
-						`powerdns`.`domains`
-					WHERE
-						`easyscp_domain_id` = :domain_id";
-	DB::prepare($sql_query);
-	$row = DB::execute($sql_param, true);
-	
-	$sql_param = array(
-		"domain_id"	=>	$row['id'],
-	);
-	
-	$sql_query = "
-			DELETE FROM
-				`powerdns`.`records`
-			WHERE
-				`domain_id` = :domain_id
-	";
-	
-	DB::prepare($sql_query);
-	DB::execute($sql_param);
-	
-	$sql_query = "
-			DELETE FROM
-				`powerdns`.`domains`
-			WHERE
-				`id` = :domain_id";
-	DB::prepare($sql_query);
-	DB::execute($sql_param);
-
 	// Set domain deletion status
 	$query = "
 		UPDATE
 			`domain`
 		SET
-			`domain_status` = 'delete'
+			`status` = 'delete'
 		WHERE
 		`domain_id` = ?
 		;
@@ -2199,7 +2109,7 @@ function delete_domain($domain_id, $goto, $breseller = false) {
 		UPDATE
 			`subdomain`
 		SET
-			`subdomain_status` = ?
+			`status` = ?
 		WHERE
 			`domain_id` = ?
 		;
@@ -2208,7 +2118,7 @@ function delete_domain($domain_id, $goto, $breseller = false) {
 	exec_query($sql, $query, array($cfg->ITEM_DELETE_STATUS, $domain_id));
 
 	// --- Activate daemon ---
-	send_request();
+	send_request('110 DOMAIN '.$domain_id .' domain');
 
 	// Delete FTP users:
 	$query = "

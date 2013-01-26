@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -443,20 +443,23 @@ function convertOldData() {
  *
  */
 function finishMigration() {
-	$sql = EasySCP_Registry::get('Db');
+	$cfg = EasySCP_Registry::get('Config');
 
-	$query = "
-		UPDATE `domain` SET `domain_status` = 'toadd';
-		UPDATE `subdomain` SET `subdomain_status` = 'toadd';
-		UPDATE `domain_aliasses` SET `alias_status` = 'toadd';
-		UPDATE `subdomain_alias` SET `subdomain_alias_status` = 'toadd';
-		UPDATE `mail_users` SET `status` = 'toadd';
-		UPDATE `htaccess_users` SET `status` = 'toadd';
-		UPDATE `htaccess_groups` SET `status` = 'toadd';
-		UPDATE `htaccess` SET `status` = 'toadd';
+	DB::setDatabase();
+
+	$sql_query = "
+		UPDATE domain SET status = '$cfg->ITEM_ADD_STATUS';
+		UPDATE domain_aliasses SET status = '$cfg->ITEM_ADD_STATUS';
+		UPDATE mail_users SET status = '$cfg->ITEM_ADD_STATUS';
+		UPDATE htaccess SET status = '$cfg->ITEM_ADD_STATUS';
+		UPDATE htaccess_groups SET status = '$cfg->ITEM_ADD_STATUS';
+		UPDATE htaccess_users SET status = '$cfg->ITEM_ADD_STATUS';
+		UPDATE subdomain SET status = '$cfg->ITEM_ADD_STATUS';
+		UPDATE subdomain_alias SET status = '$cfg->ITEM_ADD_STATUS';
+		UPDATE user_gui_props SET lang = '', layout = '';
 	";
 
-	exec_query($sql, $query);
+	DB::query($sql_query)->closeCursor();
 
 	send_request();
 }

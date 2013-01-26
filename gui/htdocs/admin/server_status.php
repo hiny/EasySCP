@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,7 +30,7 @@ $cfg = EasySCP_Registry::get('Config');
 $tpl = EasySCP_TemplateEngine::getInstance();
 $template = 'admin/server_status.tpl';
 
-getServerStatus($tpl, $sql);
+getServerStatus();
 
 // static page messages
 $tpl->assign(
@@ -145,61 +145,92 @@ class status {
 }
 
 /**
- * @param EasySCP_TemplateEngine $tpl
- * @param EasySCP_Database $sql
  */
-function getServerStatus($tpl, $sql) {
+function getServerStatus() {
 
 	$cfg = EasySCP_Registry::get('Config');
-
-	$query = "
-		SELECT
-			*
-		FROM
-			`config`
-		WHERE
-			`name` LIKE 'PORT_%'
-		ORDER BY
-			`name` ASC
-	";
-
-	$rs = exec_query($sql, $query);
+	$tpl = EasySCP_TemplateEngine::getInstance();
 
 	$easyscp_status = new status;
 
-	$easyscp_status->addService('localhost', 9876, 'EasySCP Daemon', 'tcp');
+	$sql_query = "
+	    SELECT
+			*
+		FROM
+			config
+		WHERE
+			name LIKE 'PORT_%'
+		ORDER BY
+			name ASC
+	";
 
 	// Dynamic added Ports
-	while (!$rs->EOF) {
-		$value = (count(explode(";", $rs->fields['value'])) < 6)
-			? $rs->fields['value'].';'
-			: $rs->fields['value'];
+	foreach (DB::query($sql_query) as $row) {
+		$value = (count(explode(";", $row['value'])) < 6)
+			? $row['value'].';'
+			: $row['value'];
 		list($port, $protocol, $name, $status, , $ip) = explode(";", $value);
 		if ($status) {
 			$easyscp_status->addService(($ip == '127.0.0.1' ? 'localhost' : (empty($ip) ? $cfg->BASE_SERVER_IP : $ip)), (int)$port, $name, $protocol);
 		}
-
-		$rs->moveNext();
-	} // end while
+	}
 
 	$easyscp_status->checkStatus(5);
 	$data = $easyscp_status->getStatus();
 	$up = tr('UP');
 	$down = tr('DOWN');
 
+	// $easyscp_status->addService('localhost', 9875, 'EasySCP Controller', 'tcp');
+	if (file_exists(EasyConfig::$cfg->SOCK_EASYSCPC)){
+		$img = $up;
+		$class = "content up";
+	} else {
+		$img = $down;
+		$class = "content down";
+	}
+
+	$tpl->append(
+		array(
+			'HOST'		=> 'localhost',
+			'PORT'		=> '0',
+			'SERVICE'	=> 'EasySCP Controller',
+			'STATUS'	=> $img,
+			'CLASS'		=> $class
+		)
+	);
+
+	// $easyscp_status->addService('localhost', 9876, 'EasySCP Daemon', 'tcp');
+	if (file_exists(EasyConfig::$cfg->SOCK_EASYSCPD)){
+		$img = $up;
+		$class = "content up";
+	} else {
+		$img = $down;
+		$class = "content down";
+	}
+
+	$tpl->append(
+		array(
+			'HOST'		=> 'localhost',
+			'PORT'		=> '0',
+			'SERVICE'	=> 'EasySCP Daemon',
+			'STATUS'	=> $img,
+			'CLASS'		=> $class
+		)
+	);
+
 	for ($i = 0, $cnt_data = count($data); $i < $cnt_data; $i++) {
 		if ($data[$i]['status']) {
 			$img = $up;
 			$class = "content up";
 		} else {
-			$img = '<strong>' . $down . '</strong>';
+			$img = $down;
 			$class = "content down";
 		}
 
 		if ($data[$i]['port'] == 23) { // 23 = telnet
 			if ($data[$i]['status']) {
 				$class = 'content2 down';
-				$img = '<strong>' . $up . '</strong>';
+				$img = $up;
 			} else {
 				$class = 'content2 up';
 				$img = $down;

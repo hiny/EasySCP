@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -106,8 +106,8 @@ function gen_editalias_page($tpl, $edit_id) {
 	$sql = EasySCP_Registry::get('Db');
 
 	// Get data from sql
-	list($domain_id) = get_domain_default_props($sql, $_SESSION['user_id']);
-	$res = exec_query($sql, "SELECT * FROM `domain_aliasses` WHERE `alias_id` = ? AND `domain_id` = ?", array($edit_id, $domain_id));
+	$dmn_props = get_domain_default_props($_SESSION['user_id']);
+	$res = exec_query($sql, "SELECT * FROM `domain_aliasses` WHERE `alias_id` = ? AND `domain_id` = ?", array($edit_id, $dmn_props['domain_id']));
 
 	if ($res->recordCount() <= 0) {
 		$_SESSION['aledit'] = '_no_';
@@ -160,11 +160,11 @@ function gen_editalias_page($tpl, $edit_id) {
 	// Fill in the fields
 	$tpl->assign(
 		array(
-			'ALIAS_NAME' => tohtml(decode_idna($data['alias_name'])),
-			'DOMAIN_IP' => $ip_data,
-			'FORWARD' => tohtml($url_forward),
-			'MOUNT_POINT' => tohtml($data['alias_mount']),
-			'ID' => $edit_id
+			'ALIAS_NAME'	=> tohtml(decode_idna($data['alias_name'])),
+			'DOMAIN_IP'		=> $ip_data,
+			'FORWARD'		=> tohtml($url_forward),
+			'MOUNT_POINT'	=> tohtml($data['alias_mount']),
+			'ID'			=> $edit_id
 		)
 	);
 } // End of gen_editalias_page()
@@ -231,7 +231,7 @@ function check_fwd_data($tpl, $alias_id) {
 				`domain_aliasses`
 			SET
 				`url_forward` = ?,
-				`alias_status` = ?
+				`status` = ?
 			WHERE
 				`alias_id` = ?
 		";
@@ -241,13 +241,13 @@ function check_fwd_data($tpl, $alias_id) {
 			UPDATE
 				`subdomain_alias`
 			SET
-				`subdomain_alias_status` = ?
+				`status` = ?
 			WHERE
 				`alias_id` = ?
 		";
 		exec_query($sql, $query, array($cfg->ITEM_CHANGE_STATUS, $alias_id));
 
-		send_request();
+		send_request('110 DOMAIN '.$alias_id.' alias');
 
 		$admin_login = $_SESSION['user_logged'];
 

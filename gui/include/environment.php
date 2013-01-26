@@ -77,17 +77,17 @@ $config->SHOW_COMPRESSION_SIZE = true;
 $config->SESSION_TIMEOUT = 30;
 
 // Item states
-$config->ITEM_ADD_STATUS = 'toadd';
-$config->ITEM_OK_STATUS = 'ok';
+$config->ITEM_ADD_STATUS = 'add';
 $config->ITEM_CHANGE_STATUS = 'change';
 $config->ITEM_DELETE_STATUS = 'delete';
 $config->ITEM_DISABLED_STATUS = 'disabled';
-$config->ITEM_RESTORE_STATUS = 'restore';
-$config->ITEM_TOENABLE_STATUS = 'toenable';
-$config->ITEM_TODISABLED_STATUS = 'todisable';
-$config->ITEM_ORDERED_STATUS = 'ordered';
 $config->ITEM_DNSCHANGE_STATUS = 'dnschange';
+$config->ITEM_OK_STATUS = 'ok';
+$config->ITEM_ORDERED_STATUS = 'ordered';
 $config->ITEM_PROTECTED_STATUS = 'protected';
+$config->ITEM_RESTORE_STATUS = 'restore';
+$config->ITEM_TODISABLED_STATUS = 'disable';
+$config->ITEM_TOENABLE_STATUS = 'enable';
 
 // SQL variables
 $config->MAX_SQL_DATABASE_LENGTH = 64;

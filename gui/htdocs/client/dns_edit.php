@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -51,12 +51,12 @@ if (isset($_POST['uaction']) && ($_POST['uaction'] === 'modify')) {
 		not_allowed();
 	}
 	// Save data to db
-	if (check_fwd_data($tpl, $editid)) {
+	if (check_fwd_data($editid)) {
 		$_SESSION['dnsedit'] = "_yes_";
 		user_goto('dns_overview.php');
 	}
 } elseif (isset($_POST['uaction']) && ($_POST['uaction'] === 'add')) {
-	if (check_fwd_data($tpl, true)) {
+	if (check_fwd_data(true)) {
 		$_SESSION['dnsedit'] = "_yes_";
 		user_goto('dns_overview.php');
 	}
@@ -81,7 +81,7 @@ $tpl->assign(
 		'TR_PAGE_TITLE'			=> ($add_mode)
 			? tr("EasySCP - Manage Domain Alias/Add DNS zone's record")
 			: tr("EasySCP - Manage Domain Alias/Edit DNS zone's record"),
-		'ACTION_MODE'			=> ($add_mode) ? 'dns_add.php' : 'dns_edit.php?edit_id={ID}',
+		'ACTION_MODE'			=> ($add_mode) ? 'dns_add.php' : 'dns_edit.php?edit_id='.$editid,
 		'TR_MODIFY'				=> tr('Modify'),
 		'TR_CANCEL'				=> tr('Cancel'),
 		'TR_ADD'				=> tr('Add'),
@@ -104,7 +104,7 @@ $tpl->assign(
 		'TR_DNS_CNAME'			=> tr('Canonical name'),
 		'TR_DNS_PLAIN'			=> tr('Plain record data'),
 		'TR_MANAGE_DOMAIN_DNS'	=> tr("DNS zone's records"),
-		'TR_DNS_NS'				=> tr('Hostname of Nameserver'),
+		'TR_DNS_NS'				=> tr('Hostname of Nameserver')
 	)
 );
 
@@ -153,7 +153,8 @@ function decode_zone_data($data) {
 	$srv_TTL = $srv_prio = $srv_weight = $srv_host = $srv_port = $ns = '';
 
 	if (is_array($data)) {
-		$name = $data['domain_dns'];
+		//$name = $data['domain_dns'];
+		$name = $data['name'];
 		switch ($data['type']) {
 			case 'A':
 				$address = $data['content'];
@@ -210,11 +211,9 @@ function gen_editdns_page($tpl, $edit_id) {
 	global $sql, $DNS_allowed_types, $add_mode;
 	$cfg = EasySCP_Registry::get('Config');
 
-	list(
-		$dmn_id, ,,,,,,,,,,,,,,,,,,,,,$dmn_dns
-	) = get_domain_default_props($sql, $_SESSION['user_id']);
+	$dmn_props = get_domain_default_props($_SESSION['user_id']);
 
-	if ($dmn_dns != 'yes') {
+	if ($dmn_props['domain_dns'] != 'yes') {
 		not_allowed();
 	}
 
@@ -237,10 +236,10 @@ function gen_editdns_page($tpl, $edit_id) {
 				`domain_aliasses`
 			WHERE
 				`domain_aliasses`.`domain_id` = :domain_id
-			AND `alias_status` <> :state
+			AND `status` <> :state
 		";
 
-		$res = exec_query($sql, $query, array('domain_id' => $dmn_id, 'state' => $cfg->ITEM_ORDERED_STATUS));
+		$res = exec_query($sql, $query, array('domain_id' => $dmn_props['domain_id'], 'state' => $cfg->ITEM_ORDERED_STATUS));
 		$sel = '';
 		while ($row = $res->fetchRow()) {
 			$sel.= '<option value="' . $row['alias_id'] . '">' .
@@ -255,17 +254,16 @@ function gen_editdns_page($tpl, $edit_id) {
 
 	} else {
 		$sql_query = "
-					SELECT
-						`r`.*,
-						`d`.`name` AS `domain_dns`
-					FROM
-						`powerdns`.`records` `r`
-					INNER JOIN
-						`powerdns`.`domains` `d`
-					ON
-						(`d`.`id`=`r`.`domain_id`)
-					WHERE
-						`r`.`id` = :record_id
+			SELECT
+				d.name AS domain_dns,
+				r.*
+			FROM
+				powerdns.domains d,
+				powerdns.records r
+			WHERE
+				r.id = :record_id
+			AND
+				d.id = r.domain_id
 		";
 		
 		$sql_param = array(
@@ -329,14 +327,16 @@ function tryPost($id, $data) {
 }
 
 function validate_NS($record, &$err = null) {
-	if (!preg_match('~([^a-z,A-Z,0-9\.])~u', $record['dns_ns'], $e)) {
-		$err .= sprintf(tr('Use of disallowed char("%s") in NS'), $e[1]);
-		return false;
-	}
 	if (empty($record['dns_ns'])) {
 		$err .= tr('Name must be filled.');
 		return false;
 	}
+
+	if (preg_match('~([^a-z,^A-Z,^0-9,^\.])~u', $record['dns_ns'], $e)) {
+		$err .= sprintf(tr('Use of disallowed char("%s") in NS'), $record['dns_ns']);
+		return false;
+	}
+
 	return true;
 }
 
@@ -445,15 +445,27 @@ function check_CNAME_conflict($domain, &$err) {
 			'use_tcp'       => true
 		)
 	);
-	// $resolver->setServers = array('localhost');
-	$res = $resolver->query($domain, 'CNAME');
 
+	try {
+		$res = $resolver->query($domain, 'CNAME');
+	} catch(Net_DNS2_Exception $e) {
+		// array_push($errors, $e->getMessage());
+		return true;
+	}
+
+	if (isset($res->authority[0])){
+		$err .= tr('conflict with CNAME record');
+		return false;
+	}
+	/*
 	if ($res === false) {
 		return true;
 	}
 
 	$err .= tr('conflict with CNAME record');
-	return false;
+	// return false;
+	*/
+	return true;
 }
 
 function validate_NAME($domain, &$err) {
@@ -472,14 +484,12 @@ function validate_NAME($domain, &$err) {
 
 /**
  * @throws EasySCP_Exception_Database
- * @param EasySCP_TemplateEngine $tpl
  * @param int $edit_id
  * @return bool
  */
-function check_fwd_data($tpl, $edit_id) {
+function check_fwd_data($edit_id) {
 
 	global $sql;
-	$cfg = EasySCP_Registry::get('Config');
 
 	$add_mode = $edit_id === true;
 
@@ -490,7 +500,7 @@ function check_fwd_data($tpl, $edit_id) {
 	$_text = '';
 	$_type = $_POST['type'];
 
-	list($dmn_id) = get_domain_default_props($sql, $_SESSION['user_id']);
+	$dmn_props = get_domain_default_props($_SESSION['user_id']);
 	if ($add_mode) {
 		$query = "
 			SELECT
@@ -515,7 +525,7 @@ function check_fwd_data($tpl, $edit_id) {
 			WHERE
 				IFNULL(`tbl`.`alias_id`, 0) = ?
 		";
-		$res = exec_query($sql, $query, array($dmn_id, $dmn_id, $_POST['alias_id']));
+		$res = exec_query($sql, $query, array($dmn_props['domain_id'], $dmn_props['domain_id'], $_POST['alias_id']));
 		if ($res->recordCount() <= 0) {
 			not_allowed();
 		}
@@ -527,18 +537,17 @@ function check_fwd_data($tpl, $edit_id) {
 		
 		$sql_query = "
 				SELECT
-					`d`.`easyscp_domain_id`,
-					`d`.`easyscp_domain_alias_id`,
-					`d`.`name`,
-					`d`.`domain_id`
+					d.id,
+					d.easyscp_domain_id,
+					d.easyscp_domain_alias_id,
+					d.name
 				FROM
-					`powerdns`.`domains` `d`
-				INNER JOIN
-					`powerdns`.`records` `r`
-				ON
-					(`r`.`domain_id`=`d`.`id`)
+					powerdns.domains d,
+					powerdns.records r
 				WHERE
-					`r`.`id` = :record_id
+					r.id = :record_id
+				AND
+					r.domain_id = d.id;
 		";
 		
 		$sql_param = array(
@@ -546,7 +555,7 @@ function check_fwd_data($tpl, $edit_id) {
 		);
 		
 		DB::prepare($sql_query);
-		$stmt = DB::execute($sql_param, false);
+		$stmt = DB::execute($sql_param);
 		if ($stmt->rowCount() <= 0) {
 			not_allowed();
 		}
@@ -554,7 +563,7 @@ function check_fwd_data($tpl, $edit_id) {
 		$record_domain = $data['name'];
 		$alias_id = $data['easyscp_domain_alias_id'];
 		$_dns = $data['name'];
-		$domain_id = $data['domain_id'];
+		$domain_id = $data['id'];
 	}
 
 	if (!validate_NAME(array('name' => $_POST['dns_name'], 'domain' => $record_domain), $err)) {
@@ -562,30 +571,37 @@ function check_fwd_data($tpl, $edit_id) {
 	}
 	switch ($_POST['type']) {
 		case 'CNAME':
-			if (!validate_CNAME($_POST, $err))
+			if (!validate_CNAME($_POST, $err)) {
 				$ed_error = sprintf(tr('Cannot validate %s record. Reason \'%s\'.'), $_POST['type'], $err);
+			}
 			$_text = $_POST['dns_cname'];
 			$_dns = $_POST['dns_name'];
 			break;
 		case 'A':
-			if (!validate_A($_POST, $err))
+			if (!validate_A($_POST, $err)) {
 				$ed_error = sprintf(tr('Cannot validate %s record. Reason \'%s\'.'), $_POST['type'], $err);
-			if (!check_CNAME_conflict($_POST['dns_name'].'.'.$record_domain, $err))
+			}
+			if (!check_CNAME_conflict($_POST['dns_name'].'.'.$record_domain, $err)){
 				$ed_error = sprintf(tr('Cannot validate %s record. Reason \'%s\'.'), $_POST['type'], $err);
+			}
 			$_text = $_POST['dns_A_address'];
 			$_dns = $_POST['dns_name'];
+			$_ttl = '7200';
 			break;
 		case 'AAAA':
-			if (!validate_AAAA($_POST, $err))
+			if (!validate_AAAA($_POST, $err)) {
 				$ed_error = sprintf(tr('Cannot validate %s record. Reason \'%s\'.'), $_POST['type'], $err);
-			if (!check_CNAME_conflict($_POST['dns_name'].'.'.$record_domain, $err))
+			}
+			if (!check_CNAME_conflict($_POST['dns_name'].'.'.$record_domain, $err)) {
 				$ed_error = sprintf(tr('Cannot validate %s record. Reason \'%s\'.'), $_POST['type'], $err);
+			}
 			$_text = $_POST['dns_AAAA_address'];
 			$_dns = $_POST['dns_name'];
 			break;
 		case 'SRV':
-			if (!validate_SRV($_POST, $err, $_dns, $_text))
+			if (!validate_SRV($_POST, $err, $_dns, $_text)) {
 				$ed_error = sprintf(tr('Cannot validate %s record. Reason \'%s\'.'), $_POST['type'], $err);
+			}
 			break;
 		case 'MX':
 			$_dns = '';
@@ -601,6 +617,10 @@ function check_fwd_data($tpl, $edit_id) {
 				$ed_error = sprintf(tr('Cannot validate %s record. Reason \'%s\'.'), $_POST['type'], $err);
 			}
 			$_text = $_POST['dns_ns'];
+			$_ttl = '28800';
+			break;
+		case 'SOA':
+			$_ttl = '3600';
 			break;
 		default :
 			$ed_error = sprintf(tr('Unknown zone type %s!'), $_POST['type']);
@@ -609,8 +629,7 @@ function check_fwd_data($tpl, $edit_id) {
 	if ($ed_error === '_off_') {
 
 		if ($add_mode) {
-				
-				
+
 			if ($alias_id > 0) {
 				$sql_query = "
 					SELECT
@@ -626,8 +645,7 @@ function check_fwd_data($tpl, $edit_id) {
 				
 				DB::prepare($sql_query);
 				$data = DB::execute($sql_param, true);
-			}
-			else {
+			} else {
 				$sql_query = "
 					SELECT
 						`id`
@@ -637,7 +655,7 @@ function check_fwd_data($tpl, $edit_id) {
 						`easyscp_domain_id` = :domain_id
 				";
 				$sql_param = array(
-					'domain_id' => $dmn_id,
+					'domain_id' => $dmn_props['domain_id'],
 				);
 				
 				DB::prepare($sql_query);
@@ -650,13 +668,14 @@ function check_fwd_data($tpl, $edit_id) {
 					VALUES
 				(:domain_id, :name, :type, :content, :ttl, :prio)
 			";
-			
+
+
 			$sql_param = array(
 				'domain_id' => $data['id'],
 				'name'	=> $_dns,
 				'type' => $_type,
 				'content' => $_text,
-				'ttl' => 38400,
+				'ttl' => $_ttl,
 				'prio' => $_dns_srv_prio,
 			);
 			
@@ -684,7 +703,7 @@ function check_fwd_data($tpl, $edit_id) {
 				'name'	=> $_dns,
 				'type' => $_type,
 				'content' => $_text,
-				'ttl' => 38400,
+				'ttl' => $_ttl,
 				'prio' => $_dns_srv_prio,
 				'record_id' => $edit_id,
 			);

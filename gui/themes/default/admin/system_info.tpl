@@ -105,7 +105,7 @@
 					<td>{$MOUNT[i]}</td>
 					<td>{$TYPE[i]}</td>
 					<td>{$PARTITION[i]}</td>
-					<td>{$PERCENT[i]} %</td>
+					<td>{$PERCENT[i]}</td>
 					<td>{$FREE[i]}</td>
 					<td>{$USED[i]}</td>
 					<td>{$SIZE[i]}</td>

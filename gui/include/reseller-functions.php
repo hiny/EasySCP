@@ -59,31 +59,11 @@ function gen_reseller_mainmenu($tpl, $menu_file) {
 	$tpl->assign(
 		array(
 			'TR_MENU_GENERAL_INFORMATION'	=> tr('General information'),
-			'TR_MENU_CHANGE_PASSWORD'		=> tr('Change password'),
-			'TR_MENU_CHANGE_PERSONAL_DATA'	=> tr('Change personal data'),
-			'TR_MENU_HOSTING_PLANS'			=> tr('Manage hosting plans'),
-			'TR_MENU_ADD_HOSTING'			=> tr('Add hosting plan'),
 			'TR_MENU_MANAGE_USERS'			=> tr('Manage users'),
-			'TR_MENU_ADD_USER'				=> tr('Add user'),
-			'TR_MENU_E_MAIL_SETUP'			=> tr('Email setup'),
-			'TR_MENU_CIRCULAR'				=> tr('Email marketing'),
-			'TR_MENU_MANAGE_DOMAINS'		=> tr('Manage domains'),
-			'TR_MENU_DOMAIN_ALIAS'			=> tr('Domain alias'),
-			'TR_MENU_SUBDOMAINS'			=> tr('Subdomains'),
-			'TR_MENU_DOMAIN_STATISTICS'		=> tr('Domain statistics'),
-			'TR_MENU_SUPPORT_SYSTEM'		=> tr('Support system'),
-			'TR_OPEN_TICKETS'				=> tr('Open tickets'),
-			'TR_CLOSED_TICKETS'				=> tr('Closed tickets'),
-			'TR_MENU_NEW_TICKET'			=> tr('New ticket'),
-			'TR_MENU_LOGOUT'				=> tr('Logout'),
-			'TR_MENU_OVERVIEW'				=> tr('Overview'),
-			'TR_MENU_LANGUAGE'				=> tr('Language'),
+			'TR_MENU_HOSTING_PLANS'			=> tr('Manage hosting plans'),
 			'TR_MENU_ORDERS'				=> tr('Manage Orders'),
-			'TR_MENU_ORDER_SETTINGS'		=> tr('Order settings'),
-			'TR_MENU_ORDER_EMAIL'			=> tr('Order email setup'),
-			'TR_MENU_LOSTPW_EMAIL'			=> tr('Lostpw email setup'),
-			'PMA_PATH'						=> $cfg->PMA_PATH,
-			'TR_PHPMYADMIN'					=> tr('PhpMyAdmin')
+			'TR_MENU_DOMAIN_STATISTICS'		=> tr('Domain statistics'),
+			'TR_MENU_SUPPORT_SYSTEM'		=> tr('Support system')
 		)
 	);
 
@@ -162,33 +142,29 @@ function gen_reseller_menu($tpl, $menu_file) {
 
 	$tpl->assign(
 		array(
-			'TR_MENU_GENERAL_INFORMATION'	=> tr('General information'),
+			'TR_MENU_OVERVIEW'				=> tr('Overview'),
 			'TR_MENU_CHANGE_PASSWORD'		=> tr('Change password'),
 			'TR_MENU_CHANGE_PERSONAL_DATA'	=> tr('Change personal data'),
-			'TR_MENU_HOSTING_PLANS'			=> tr('Manage hosting plans'),
-			'TR_MENU_ADD_HOSTING'			=> tr('Add hosting plan'),
-			'TR_MENU_MANAGE_USERS'			=> tr('Manage users'),
+			'TR_MENU_LANGUAGE'				=> tr('Language'),
+
 			'TR_MENU_ADD_USER'				=> tr('Add user'),
-			'TR_MENU_E_MAIL_SETUP'			=> tr('Email setup'),
-			'TR_MENU_CIRCULAR'				=> tr('Email marketing'),
-			'TR_MENU_MANAGE_DOMAINS'		=> tr('Manage domains'),
 			'TR_MENU_DOMAIN_ALIAS'			=> tr('Domain alias'),
-			'TR_MENU_SUBDOMAINS'			=> tr('Subdomains'),
-			'TR_MENU_DOMAIN_STATISTICS'		=> tr('Domain statistics'),
-			'TR_MENU_SUPPORT_SYSTEM'		=> tr('Support system'),
+			'TR_MENU_E_MAIL_SETUP'			=> tr('Email setup'),
+			'TR_MENU_LOSTPW_EMAIL'			=> tr('Lostpw email setup'),
+			'TR_MENU_CIRCULAR'				=> tr('Email marketing'),
+
+			'TR_MENU_ADD_HOSTING'			=> tr('Add hosting plan'),
+
+			'TR_MENU_ORDER_SETTINGS'		=> tr('Order settings'),
+			'TR_MENU_ORDER_EMAIL'			=> tr('Order email setup'),
+
+			'TR_MENU_IP_USAGE'				=> tr('IP Usage'),
+
 			'TR_OPEN_TICKETS'				=> tr('Open tickets'),
 			'TR_CLOSED_TICKETS'				=> tr('Closed tickets'),
 			'TR_MENU_NEW_TICKET'			=> tr('New ticket'),
+
 			'TR_MENU_LOGOUT'				=> tr('Logout'),
-			'TR_MENU_OVERVIEW'				=> tr('Overview'),
-			'TR_MENU_LANGUAGE'				=> tr('Language'),
-			//'ALIAS_MENU' => (!check_reseller_permissions($_SESSION['user_id'], 'alias'))
-			//	? '' : $tpl->parse('ALIAS_MENU', '.alias_menu'),
-			'TR_MENU_ORDERS'				=> tr('Manage Orders'),
-			'TR_MENU_ORDER_SETTINGS'		=> tr('Order settings'),
-			'TR_MENU_ORDER_EMAIL'			=> tr('Order email setup'),
-			'TR_MENU_LOSTPW_EMAIL'			=> tr('Lostpw email setup'),
-			'TR_MENU_IP_USAGE'				=> tr('IP Usage'),
 			'VERSION'						=> $cfg->Version,
 			'BUILDDATE'						=> $cfg->BuildDate,
 			'CODENAME'						=> $cfg->CodeName
@@ -686,9 +662,6 @@ function check_ruser_data($tpl, $noPass) {
 	if (isset($_POST['userstreet2']))
 		$street_two = $_POST['userstreet2'];
 
-	if (isset($_POST['useremail']))
-		$mail = $_POST['useremail'];
-
 	if (isset($_POST['userphone']))
 		$phone = $_POST['userphone'];
 
@@ -930,7 +903,7 @@ function gen_manage_domain_query(&$search_query, &$count_query,
 			$add_query = "
 					`domain_created_id` = '$reseller_id'
 				AND
-					`domain_status` = '$search_status'
+					`status` = '$search_status'
 			";
 		}
 
@@ -973,7 +946,7 @@ function gen_manage_domain_query(&$search_query, &$count_query,
 		}
 
 		if ($search_status != 'all') {
-			$add_query = sprintf($add_query, " AND t1.`created_by` = '$reseller_id' AND t2.`domain_status` = '$search_status'");
+			$add_query = sprintf($add_query, " AND t1.`created_by` = '$reseller_id' AND t2.`status` = '$search_status'");
 			$count_query = "
 				SELECT
 					COUNT(`admin_id`) AS cnt
@@ -1237,7 +1210,7 @@ function reseller_limits_check($sql, &$err_msg, $reseller_id, $hpid, $newprops =
 		$props = $newprops;
 	}
 
-	list(, , $sub_new,
+	list(, , , $sub_new,
 		$als_new, $mail_new, $ftp_new,
 		$sql_db_new, $sql_user_new,
 		$traff_new, $disk_new) = explode(";", $props);
@@ -1631,19 +1604,6 @@ function client_mail_add_default_accounts($dmn_id, $user_email, $dmn_part,
 			)
 		);
 
-		$sql_param = array(
-			':domain'=> $dmn_part
-		);
-		$sql_query = "
-			INSERT INTO
-					`mail`.`domains`
-						(`domain`)
-			VALUES
-				(:domain)
-		";
-		DB::prepare($sql_query);
-		DB::execute($sql_param);
-
 	}
 
 } // end client_mail_add_default_accounts
@@ -1678,7 +1638,7 @@ function recalc_reseller_c_props($reseller_id) {
 		WHERE
 			`domain_created_id` = ?
 		AND
-			`domain_status` != ?;
+			`status` != ?;
 	";
 	$res = exec_query($sql, $query, array($reseller_id, $delstatus));
 
@@ -1724,30 +1684,28 @@ function recalc_reseller_c_props($reseller_id) {
  * @return void
  */
 function update_reseller_c_props($reseller_id) {
-	global $sql;
+	$sql_param = recalc_reseller_c_props($reseller_id);
+	$sql_param[] = $reseller_id;
 
-	$query = "
+	$sql_query = "
 		UPDATE
-			`reseller_props`
+			reseller_props
 		SET
-			`current_dmn_cnt` = ?,
-			`current_sub_cnt` = ?,
-			`current_als_cnt` = ?,
-			`current_mail_cnt` = ?,
-			`current_ftp_cnt` = ?,
-			`current_sql_db_cnt` = ?,
-			`current_sql_user_cnt` = ?,
-			`current_disk_amnt` = ?,
-			`current_traff_amnt` = ?
+			current_dmn_cnt = ?,
+			current_sub_cnt = ?,
+			current_als_cnt = ?,
+			current_mail_cnt = ?,
+			current_ftp_cnt = ?,
+			current_sql_db_cnt = ?,
+			current_sql_user_cnt = ?,
+			current_disk_amnt = ?,
+			current_traff_amnt = ?
 		WHERE
-			`reseller_id` = ?;
+			reseller_id = ?;
 	";
 
-
-	$props = recalc_reseller_c_props($reseller_id);
-	$props[] = $reseller_id;
-
-	exec_query($sql, $query, $props);
+	DB::prepare($sql_query);
+	DB::execute($sql_param)->closeCursor();
 }
 
 /**

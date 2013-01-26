@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -53,6 +53,7 @@ $tpl->assign(
 		'TR_SELECT'			=> tr('Select'),
 		'TR_DNS_ADD'		=> tr('Add DNS record'),
 		'D_USER_DOMAINS'	=> get_user_domains($_SESSION['user_id']),
+		'TR_MESSAGE_DELETE'	=> tr('Are you sure you want to delete %s?')
 	)
 );
 

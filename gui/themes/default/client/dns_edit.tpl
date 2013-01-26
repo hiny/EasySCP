@@ -2,12 +2,6 @@
 <body>
 	<script type="text/javascript">
 	/* <![CDATA[ */
-		function action_delete(url, subject) {
-			if (!confirm(sprintf("{$TR_MESSAGE_DELETE}", subject)))
-				return false;
-			location = url;
-		}
-
 		{literal}
 		function in_array(needle, haystack) {
 			var n = haystack.length;
@@ -20,7 +14,7 @@
 		function dns_show_rows(arr_show) {
 			var arr_possible = new Array('name', 'ip_address', 'ip_address_v6',
 				'srv_name', 'srv_protocol', 'srv_ttl', 'srv_prio',
-				'srv_weight', 'srv_host', 'srv_port', 'cname');
+				'srv_weight', 'srv_host', 'srv_port', 'cname', 'ns');
 			var n = arr_possible.length;
 			var trname;
 			for (var i = 0; i < n; i++) {
@@ -50,6 +44,8 @@
 				dns_show_rows(new Array('name', 'cname'));
 			} else if (value == 'MX') {
 				dns_show_rows(new Array('srv_prio', 'srv_host'));
+			} else if (value == 'NS') {
+				dns_show_rows(new Array('ns'));
 			}
 		}
 
@@ -162,6 +158,10 @@
 				<tr id="tr_dns_cname">
 					<td>{$TR_DNS_CNAME}</td>
 					<td><input type="text" name="dns_cname" value="{$DNS_CNAME}" />.</td>
+				</tr>
+				<tr id="tr_dns_ns">
+					<td>{$TR_DNS_NS}</td>
+					<td><input type="text" name="dns_ns" value="{$DNS_NS_HOSTNAME}" />.</td>
 				</tr>
 			</table>
 			<div class="buttons">

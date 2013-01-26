@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -53,7 +53,7 @@ if (!is_numeric($domain_id) || !is_numeric($month) || !is_numeric($year)) {
 
 gen_select_lists($tpl, $month, $year);
 
-generate_page($tpl, $domain_id);
+generate_page($tpl, $month, $year, $domain_id);
 
 // static page messages
 $tpl->assign(
@@ -89,42 +89,50 @@ $tpl->display($template);
 unset_messages();
 
 function get_domain_trafic($from, $to, $domain_id) {
+
 	$sql = EasySCP_Registry::get('Db');
+
 	$query = "
 		SELECT
-			IFNULL(SUM(`dtraff_web`), 0) AS web_dr,
-			IFNULL(SUM(`dtraff_ftp`), 0) AS ftp_dr,
+			IFNULL(SUM(`dtraff_web_in`), 0) AS web_dr_in,
+			IFNULL(SUM(`dtraff_web_out`), 0) AS web_dr_out,
+			IFNULL(SUM(`dtraff_ftp_in`), 0) AS ftp_dr_in,
+			IFNULL(SUM(`dtraff_ftp_out`), 0) AS ftp_dr_out,
 			IFNULL(SUM(`dtraff_mail`), 0) AS mail_dr,
 			IFNULL(SUM(`dtraff_pop`), 0) AS pop_dr
 		FROM
 			`domain_traffic`
 		WHERE
-			`domain_id` = ? AND `dtraff_time` >= ? AND `dtraff_time` <= ?
+			`domain_id` = ?
+		AND
+			`dtraff_time` >= ?
+		AND
+			`dtraff_time` <= ?
 	";
 
 	$rs = exec_query($sql, $query, array($domain_id, $from, $to));
 
 	if ($rs->recordCount() == 0) {
-		return array(0, 0, 0, 0);
+		return array(0, 0, 0, 0, 0, 0);
 	} else {
 		return array(
-			$rs->fields['web_dr'],
-			$rs->fields['ftp_dr'],
+			$rs->fields['web_dr_in'],
+			$rs->fields['web_dr_out'],
+			$rs->fields['ftp_dr_in'],
+			$rs->fields['ftp_dr_out'],
 			$rs->fields['pop_dr'],
-			$rs->fields['mail_dr'],
+			$rs->fields['mail_dr']
 		);
 	}
 }
 
 /**
  * @param EasySCP_TemplateEngine $tpl
+ * @param int $month
+ * @param int $year
  * @param int $domain_id
  */
-function generate_page($tpl, $domain_id) {
-
-
-	global $month, $year, $web_trf, $ftp_trf, $smtp_trf, $pop_trf,
-	$sum_web, $sum_ftp, $sum_mail, $sum_pop;
+function generate_page($tpl, $month, $year, $domain_id) {
 
 	$cfg = EasySCP_Registry::get('Config');
 	$sql = EasySCP_Registry::get('Db');
@@ -136,14 +144,10 @@ function generate_page($tpl, $domain_id) {
 		$curday = date('j', $tmp);
 	}
 
-	$all[0] = 0;
-	$all[1] = 0;
-	$all[2] = 0;
-	$all[3] = 0;
-	$all[4] = 0;
-	$all[5] = 0;
-	$all[6] = 0;
-	$all[7] = 0;
+	$sum_web = 0;
+	$sum_ftp = 0;
+	$sum_mail= 0;
+	$sum_pop = 0;
 
 	for ($i = 1; $i <= $curday; $i++) {
 		$ftm = mktime(0, 0, 0, $month, $i, $year);
@@ -152,11 +156,15 @@ function generate_page($tpl, $domain_id) {
 
 		$query = "
 			SELECT
-				`dtraff_web`, `dtraff_ftp`, `dtraff_mail`, `dtraff_pop`, `dtraff_time`
+				`dtraff_web_in`, `dtraff_web_out`, `dtraff_ftp_in`, `dtraff_ftp_out`, `dtraff_mail`, `dtraff_pop`, `dtraff_time`
 			FROM
 				`domain_traffic`
 			WHERE
-				`domain_id` = ? AND `dtraff_time` >= ? AND `dtraff_time` <= ?
+				`domain_id` = ?
+			AND
+				`dtraff_time` >= ?
+			AND
+				`dtraff_time` <= ?
 		";
 
 		exec_query($sql, $query, array($domain_id, $ftm, $ltm));

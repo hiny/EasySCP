@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,14 +38,20 @@ check_permissions($tpl);
 
 $sql = EasySCP_Registry::get('Db');
 
-$values = get_domain_default_props($sql, $_SESSION['user_id'], true);
-$dmn_user_name = $values['domain_name'];
+$dmn_props = get_domain_default_props($_SESSION['user_id'], true);
 
-if (isset($_POST['uaction']) && ($_POST['uaction'] === 'apply')) {
-    update_ssl_data($sql, $dmn_user_name);
+if (isset($_SESSION['ssl_configuration_updated']) && $_SESSION['ssl_configuration_updated'] == "_yes_") {
+	unset($_POST);
+	unset($_SESSION['ssl_configuration_updated']);
 }
 
-switch ($values['ssl_status']) {
+if (isset($_POST['uaction']) && ($_POST['uaction'] === 'apply')) {
+    update_ssl_data($dmn_props['domain_id']);
+} else {
+
+}
+
+switch ($dmn_props['ssl_status']) {
     case 0:
         $tpl->assign('SSL_SELECTED_DISABLED', $html_selected);
         $tpl->assign('SSL_SELECTED_SSLONLY', '');
@@ -75,9 +81,9 @@ $tpl->assign(
             'TR_SSL_STATUS_SSLONLY'     => tr('SSL enabled'),
             'TR_SSL_STATUS_BOTH'        => tr('both'),
             'TR_MESSAGE'                => tr('Message'),
-            'SSL_KEY'                   => $values['ssl_key'],
-            'SSL_CERTIFICATE'           => $values['ssl_cert'],
-            'SSL_STATUS'                => $values['ssl_status']
+            'SSL_KEY'                   => $dmn_props['ssl_key'],
+            'SSL_CERTIFICATE'           => $dmn_props['ssl_cert'],
+            'SSL_STATUS'                => $dmn_props['ssl_status']
         )
 );
 
@@ -94,35 +100,45 @@ $tpl->display($template);
 
 unset_messages();
 
-function update_ssl_data($sql, $domain_name){
+function update_ssl_data($domain_id){
 	if ((isset($_POST['ssl_key'])) &&
 		 isset($_POST['ssl_cert']) &&
 		 isset($_POST['ssl_status'])) {
 
-		$cert = clean_input($_POST['ssl_cert']);
-		$key = clean_input($_POST['ssl_key']);
-		$domainid = get_user_domain_id($sql, $_SESSION['user_id']);
-		$query = "
-		UPDATE `domain` set 
-                       `ssl_cert`   = '$cert',
-                       `ssl_key`    = '$key',
-                       `ssl_status` = ${_POST['ssl_status']},
-					   `domain_status` = 'change'
-                WHERE  `domain_id`	= $domainid
-		;";
+		$sql_param = array(
+			"ssl_cert"	=> clean_input($_POST['ssl_cert']),
+			"ssl_key"	=> clean_input($_POST['ssl_key']),
+			"ssl_status"=> $_POST['ssl_status'],
+			"domain_id"	=> $domain_id
 
-		$rs = exec_query($sql, $query);
+		);
+
+		$sql_query = "
+			UPDATE
+				domain
+			SET
+				ssl_cert	= :ssl_cert,
+				ssl_key		= :ssl_key,
+				ssl_status	= :ssl_status,
+				status		= 'change'
+			WHERE
+				(ssl_cert <> :ssl_cert OR ssl_key <> :ssl_key OR ssl_status <> :ssl_status)
+			AND
+				domain_id	= :domain_id;
+		";
+
+		DB::prepare($sql_query);
+		$rs = DB::execute($sql_param);
+
+		if ($rs->rowCount() == 0) {
+			set_page_message(tr("SSL configuration unchanged"), 'info');
+		} else {
+			$_SESSION['ssl_configuration_updated'] = "_yes_";
+			set_page_message(tr('SSL configuration updated!'), 'success');
+			send_request('110 DOMAIN '.$domain_id.' domain');
+		}
 	}
-	// get number of updates 
-	$update_count = $rs->recordCount();
 
-	if ($update_count==0){
-		set_page_message(tr("SSL configuration unchanged"), 'info');
-	}elseif ($update_count > 0) {
-		set_page_message(tr('SSL configuration updated!'), 'success');
-		send_request("110 DOMAIN $domain_name");
-	}
-
-    user_goto('domain_manage_ssl.php');
+	user_goto('domain_manage_ssl.php');
 }
 ?>

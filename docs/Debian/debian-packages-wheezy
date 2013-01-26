@@ -6,13 +6,9 @@ awstats
 bash
 bzip2
 chkrootkit
-courier-authlib-mysql
-courier-base
-courier-imap
-courier-imap-ssl
-courier-maildrop
-courier-pop
-courier-pop-ssl
+dovecot-common
+dovecot-imapd
+dovecot-pop3d
 dnsutils
 gamin
 gzip
@@ -26,6 +22,7 @@ locales-all
 lsb-release
 lzma
 make
+mc
 mysql-client
 mysql-server
 pdns-server
@@ -36,6 +33,7 @@ php5-adodb
 php5-cgi
 php5-cli
 php5-gd
+php5-idn
 php5-mcrypt
 php5-mysql
 policyd-weight

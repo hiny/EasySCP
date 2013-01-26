@@ -246,7 +246,6 @@ function get_order_email($admin_id) {
 
 	if (!$data['message']) {
 		$data['message'] = tr('
-
 Dear {NAME},
 This is an automatic confirmation for the order of the domain:
 
@@ -280,7 +279,6 @@ function get_alias_order_email($admin_id) {
 
 	if (!$data['message']) {
 		$data['message'] = tr('
-
 Dear {RESELLER},
 Your customer {CUSTOMER} is awaiting for the approval of his new alias:
 

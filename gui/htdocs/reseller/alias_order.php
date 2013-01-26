@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -61,7 +61,7 @@ if (isset($_GET['action']) && $_GET['action'] === "delete") {
 	}
 	$alias_name = $rs->fields['alias_name'];
 
-	$query = "UPDATE `domain_aliasses` SET `alias_status` = 'toadd' WHERE `alias_id` = ?";
+	$query = "UPDATE `domain_aliasses` SET `status` = '$cfg->ITEM_ADD_STATUS' WHERE `alias_id` = ?";
 	$rs = exec_query($sql, $query, $act_id);
 
 	$domain_id = who_owns_this($act_id, 'als_id', true);
@@ -79,7 +79,8 @@ if (isset($_GET['action']) && $_GET['action'] === "delete") {
 	$query = "UPDATE `mail_users` SET `status` = ? WHERE `sub_id` = ? AND `domain_id` = ? AND `status` = ? AND `mail_type` LIKE 'alias%'";
 	$rs = exec_query($sql, $query, array($cfg->ITEM_ADD_STATUS, $act_id, $domain_id, $cfg->ITEM_ORDERED_STATUS));
 
-	send_request();
+	send_request('110 DOMAIN '.$act_id.' alias');
+	send_request('130 MAIL '.$domain_id);
 
 	$admin_login = $_SESSION['user_logged'];
 

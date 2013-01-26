@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -247,17 +247,17 @@ function generate_users_list($tpl, $admin_id) {
 		}
 
 		while (!$rs->EOF) {
-			if ($rs->fields['domain_status'] == $cfg->ITEM_OK_STATUS) {
+			if ($rs->fields['status'] == $cfg->ITEM_OK_STATUS) {
 				$status_icon = "ok";
-			} else if ($rs->fields['domain_status'] == $cfg->ITEM_DISABLED_STATUS) {
+			} else if ($rs->fields['status'] == $cfg->ITEM_DISABLED_STATUS) {
 				$status_icon = "disabled";
 			} else if (
-					$rs->fields['domain_status'] == $cfg->ITEM_ADD_STATUS ||
-					$rs->fields['domain_status'] == $cfg->ITEM_CHANGE_STATUS ||
-					$rs->fields['domain_status'] == $cfg->ITEM_TOENABLE_STATUS ||
-					$rs->fields['domain_status'] == $cfg->ITEM_RESTORE_STATUS ||
-					$rs->fields['domain_status'] == $cfg->ITEM_TODISABLED_STATUS ||
-					$rs->fields['domain_status'] == $cfg->ITEM_DELETE_STATUS
+					$rs->fields['status'] == $cfg->ITEM_ADD_STATUS ||
+					$rs->fields['status'] == $cfg->ITEM_CHANGE_STATUS ||
+					$rs->fields['status'] == $cfg->ITEM_TOENABLE_STATUS ||
+					$rs->fields['status'] == $cfg->ITEM_RESTORE_STATUS ||
+					$rs->fields['status'] == $cfg->ITEM_TODISABLED_STATUS ||
+					$rs->fields['status'] == $cfg->ITEM_DELETE_STATUS
 				){
 				$status_icon = "reload";
 			} else {
@@ -322,7 +322,7 @@ function check_externel_events($tpl) {
 			unset($_SESSION["user_add3_added"]);
 		}
 	} else if (isset($_SESSION["edit"])) {
-		if ('_yes_' === $_SESSION["edit"]) {
+		if ($_SESSION["edit"] === '_yes_') {
 			set_page_message(tr('User data updated sucessfully!'), 'success');
 		} else {
 			set_page_message(tr('User data not updated sucessfully!'), 'error');

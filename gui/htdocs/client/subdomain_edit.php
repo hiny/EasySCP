@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -118,7 +118,10 @@ unset_messages();
  */
 function gen_editsubdomain_page($tpl, $sql, $edit_id, $dmn_type) {
 	// Get data from sql
-	list($domain_id, $domain_name) = get_domain_default_props($sql, $_SESSION['user_id']);
+	$dmn_props = get_domain_default_props($_SESSION['user_id']);
+
+	$domain_id = $dmn_props['domain_id'];
+	$domain_name = $dmn_props['domain_name'];
 
 	if ($dmn_type === 'dmn') {
 		$query = '
@@ -271,7 +274,7 @@ function check_fwd_data($tpl, $sql, $subdomain_id, $dmn_type) {
 					`subdomain`
 				SET
 					`subdomain_url_forward` = ?,
-					`subdomain_status` = ?
+					`status` = ?
 				 WHERE
 					`subdomain_id` = ?
 			';
@@ -281,7 +284,7 @@ function check_fwd_data($tpl, $sql, $subdomain_id, $dmn_type) {
 					`subdomain_alias`
 				SET
 					`subdomain_alias_url_forward` = ?,
-					`subdomain_alias_status` = ?
+					`status` = ?
 				WHERE
 					`subdomain_alias_id` = ?
 			';
@@ -289,7 +292,11 @@ function check_fwd_data($tpl, $sql, $subdomain_id, $dmn_type) {
 
 		exec_query($sql, $query, array($forward_url, EasySCP_Registry::get('Config')->ITEM_CHANGE_STATUS, $subdomain_id));
 
-		send_request();
+		if ($_POST['dmn_type'] == 'als') {
+			send_request('110 DOMAIN '. $subdomain_id.' subdomain_alias_id');
+		} else {
+			send_request('110 DOMAIN '. $subdomain_id.' subdomain_id');
+		}
 
 		$admin_login = $_SESSION['user_logged'];
 		write_log("$admin_login: change domain alias forward: " . $subdomain_id);

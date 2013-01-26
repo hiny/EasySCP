@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -95,13 +95,11 @@ unset_messages();
  * @return void
  */
 function check_sql_permissions($tpl, $sql, $user_id, $db_id, $sqluser_available) {
-	list($dmn_id,,,,,,,,,,,,
-		$dmn_sqlu_limit
-	) = get_domain_default_props($sql, $user_id);
+	$dmn_props = get_domain_default_props($user_id);
 
-	list(,$sqlu_acc_cnt) = get_domain_running_sql_acc_cnt($sql, $dmn_id);
+	list(,$sqlu_acc_cnt) = get_domain_running_sql_acc_cnt($sql, $dmn_props['domain_id']);
 
-	if ($dmn_sqlu_limit != 0 && $sqlu_acc_cnt >= $dmn_sqlu_limit) {
+	if ($dmn_props['domain_sqlu_limit'] != 0 && $sqlu_acc_cnt >= $dmn_props['domain_sqlu_limit']) {
 		if (!$sqluser_available) {
 			set_page_message(tr('SQL users limit reached!'), 'warning');
 			user_goto('sql_manage.php');

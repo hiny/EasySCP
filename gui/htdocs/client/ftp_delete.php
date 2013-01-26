@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -106,8 +106,8 @@ if (isset($_GET['id']) && $_GET['id'] !== '') {
 
 	$rs = exec_query($sql, $query, $ftp_id);
 
-	$domain_props = get_domain_default_props($sql, $_SESSION['user_id']);
-	update_reseller_c_props($domain_props[4]);
+	$domain_props = get_domain_default_props($_SESSION['user_id']);
+	update_reseller_c_props($domain_props['domain_created_id']);
 
 	write_log($_SESSION['user_logged'].": deletes FTP account: ".$ftp_name);
 	set_page_message(tr('FTP account deleted successfully!'), 'success');

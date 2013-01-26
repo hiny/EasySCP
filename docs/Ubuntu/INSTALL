@@ -1,5 +1,5 @@
 # EasySCP a Virtual Hosting Control Panel
-# Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+# Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
 #
 # This work is licensed under the Creative Commons Attribution-NoDerivs 3.0 Unported License.
 # To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/3.0/.
@@ -81,6 +81,7 @@ provides graphic user interfaces for the administrators, resellers and users.
         be the server's domain. If you've set debian up correctly on install your
         domain should be already shown. Select 'no' to force sync updates.)
 	(if you get to the proftpd screen, select 'standalone')
+	(if you get to the 'Configuraing dns-mysql-backend' screen select 'no' to the database configuration)
 	(if you get to the rootkithunter screen, select two time 'yes')
 
 4. (optional) Check the easyscp.conf and adapt it to your requirements.

@@ -86,6 +86,15 @@
 						</td>
 					</tr>
 					<tr>
+						<td>{$TR_PHP_EDIT}</td>
+						<td>
+							<select name="domain_php_edit" id="domain_php_edit">
+								<option value="_yes_" {$PHP_EDIT_YES}>{$TR_YES}</option>
+								<option value="_no_" {$PHP_EDIT_NO}>{$TR_NO}</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
 						<td>{$TR_CGI_SUPP}</td>
 						<td>
 							<select name="domain_cgi" id="domain_cgi">

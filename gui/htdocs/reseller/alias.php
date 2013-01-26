@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -324,7 +324,7 @@ function generate_als_list($tpl, $reseller_id, &$als_err) {
 		$als_mount_point = ($rs->fields['alias_mount'] != '')
 			? $rs->fields['alias_mount']
 			: '/';
-		$als_status = $rs->fields['alias_status'];
+		$als_status = $rs->fields['status'];
 		$als_ip_id = $rs->fields['alias_ip_id'];
 		$als_fwd = $rs->fields['url_forward'];
 		$show_als_fwd = ($als_fwd == 'no') ? "-" : $als_fwd;

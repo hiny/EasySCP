@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -80,13 +80,13 @@ $res = exec_query($sql, "SELECT `alias_name` FROM `domain_aliasses` WHERE `alias
 $dat = $res->fetchRow();
 
 // TODO Use prepared statements
-exec_query($sql, "UPDATE `subdomain_alias` SET `subdomain_alias_status` = '" . $cfg->ITEM_DELETE_STATUS . "' WHERE `alias_id` = ?", $del_id);
+exec_query($sql, "UPDATE `subdomain_alias` SET `status` = '" . $cfg->ITEM_DELETE_STATUS . "' WHERE `alias_id` = ?", $del_id);
 // TODO Use prepared statements
-exec_query($sql, "UPDATE `domain_aliasses` SET `alias_status` = '" . $cfg->ITEM_DELETE_STATUS . "' WHERE `alias_id` = ?", $del_id);
+exec_query($sql, "UPDATE `domain_aliasses` SET `status` = '" . $cfg->ITEM_DELETE_STATUS . "' WHERE `alias_id` = ?", $del_id);
 
 update_reseller_c_props($reseller_id);
 
-send_request();
+send_request('110 DOMAIN '.$del_id.' alias');
 $admin_login = $_SESSION['user_logged'];
 write_log("$admin_login: deletes domain alias: " . $dat['alias_name']);
 

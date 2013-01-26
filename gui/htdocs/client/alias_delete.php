@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -124,7 +124,7 @@ if (isset($_GET['id']) && $_GET['id'] !== '') {
 		UPDATE
 			`domain_aliasses`
 		SET
-			`alias_status` = 'delete'
+			`status` = 'delete'
 		WHERE
 			`alias_id` = ?
 	";
@@ -133,7 +133,7 @@ if (isset($_GET['id']) && $_GET['id'] !== '') {
 
 	update_reseller_c_props(get_reseller_id($dmn_id));
 
-	send_request();
+	send_request('110 DOMAIN '.$als_id.' alias');
 	write_log($_SESSION['user_logged'].": delete alias ".$alias_name."!");
 	set_page_message(tr('Alias scheduled for deletion!'), 'success');
 	user_goto('domains_manage.php');

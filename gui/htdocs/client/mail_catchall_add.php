@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -85,13 +85,13 @@ function gen_dynamic_page_data($tpl, $sql, $id) {
 	global $domain_id;
 	$cfg = EasySCP_Registry::get('Config');
 
-	list($dmn_id,,,,,,,,$dmn_mailacc_limit) = get_domain_default_props($sql, $_SESSION['user_id']);
+	$dmn_props = get_domain_default_props($_SESSION['user_id']);
 
-	$domain_id = $dmn_id;
+	$domain_id = $dmn_props['domain_id'];
 
-	list($mail_acc_cnt) = get_domain_running_mail_acc_cnt($sql, $dmn_id);
+	list($mail_acc_cnt) = get_domain_running_mail_acc_cnt($sql, $dmn_props['domain_id']);
 
-	if ($dmn_mailacc_limit != 0 && $mail_acc_cnt >= $dmn_mailacc_limit) {
+	if ($dmn_props['domain_mailacc_limit'] != 0 && $mail_acc_cnt >= $dmn_props['domain_mailacc_limit']) {
 		set_page_message(tr('Mail accounts limit reached!'), 'warning');
 		user_goto('mail_catchall.php');
 	}

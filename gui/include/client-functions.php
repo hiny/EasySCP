@@ -33,80 +33,50 @@
  * Easy Server Control Panel. All Rights Reserved.
  */
 
-function get_domain_default_props($sql, $domain_admin_id, $returnWKeys = false) {
+function get_domain_default_props($domain_admin_id) {
 
-	// /!\ Note to dev:
-	// Please, when you adds new field here, you must
-	// report it in all scripts that calls this function.
+	$sql_param = array(
+		':domain_admin_id' => $domain_admin_id
+	);
 
-	$query = "
+	$sql_query = "
 		SELECT
-			`domain_id`,
-			`domain_name`,
-			`domain_gid`,
-			`domain_uid`,
-			`domain_created_id`,
-			`domain_created`,
-			`domain_expires`,
-			`domain_last_modified`,
-			`domain_mailacc_limit`,
-			`domain_ftpacc_limit`,
-			`domain_traffic_limit`,
-			`domain_sqld_limit`,
-			`domain_sqlu_limit`,
-			`domain_status`,
-			`domain_alias_limit`,
-			`domain_subd_limit`,
-			`domain_ip_id`,
-			`domain_disk_limit`,
-			`domain_disk_usage`,
-			`domain_php`,
-			`domain_cgi`,
-			`allowbackup`,
-			`domain_dns`,
-			`domain_ssl`,
-			`ssl_key`,
-			`ssl_cert`,
-			`ssl_status`
+			domain_id,
+			domain_name,
+			domain_gid,
+			domain_uid,
+			domain_created_id,
+			domain_created,
+			domain_expires,
+			domain_last_modified,
+			domain_mailacc_limit,
+			domain_ftpacc_limit,
+			domain_traffic_limit,
+			domain_sqld_limit,
+			domain_sqlu_limit,
+			status,
+			domain_alias_limit,
+			domain_subd_limit,
+			domain_ip_id,
+			domain_disk_limit,
+			domain_disk_usage,
+			domain_php,
+			domain_php_edit,
+			domain_cgi,
+			allowbackup,
+			domain_dns,
+			domain_ssl,
+			ssl_key,
+			ssl_cert,
+			ssl_status
 		FROM
-			`domain`
+			domain
 		WHERE
-			`domain_admin_id` = ?
-		;
+			domain_admin_id = :domain_admin_id;
 	";
 
-	$rs = exec_query($sql, $query, $domain_admin_id);
-
-	if (!$returnWKeys) {
-		return array(
-			$rs->fields['domain_id'],
-			$rs->fields['domain_name'],
-			$rs->fields['domain_gid'],
-			$rs->fields['domain_uid'],
-			$rs->fields['domain_created_id'],
-			$rs->fields['domain_created'],
-			$rs->fields['domain_expires'],
-			$rs->fields['domain_last_modified'],
-			$rs->fields['domain_mailacc_limit'],
-			$rs->fields['domain_ftpacc_limit'],
-			$rs->fields['domain_traffic_limit'],
-			$rs->fields['domain_sqld_limit'],
-			$rs->fields['domain_sqlu_limit'],
-			$rs->fields['domain_status'],
-			$rs->fields['domain_alias_limit'],
-			$rs->fields['domain_subd_limit'],
-			$rs->fields['domain_ip_id'],
-			$rs->fields['domain_disk_limit'],
-			$rs->fields['domain_disk_usage'],
-			$rs->fields['domain_php'],
-			$rs->fields['domain_cgi'],
-			$rs->fields['allowbackup'],
-			$rs->fields['domain_dns'],
-			$rs->fields['domain_ssl']
-		);
-	} else {
-		return $rs->fields;
-	}
+	DB::prepare($sql_query);
+	return DB::execute($sql_param, true);
 }
 
 function get_domain_running_sub_cnt($sql, $domain_id) {
@@ -162,8 +132,6 @@ function get_domain_running_als_cnt($sql, $domain_id) {
 }
 
 function get_domain_running_mail_acc_cnt($sql, $domain_id) {
-
-	$cfg = EasySCP_Registry::get('Config');
 
 	$query = "
 		SELECT
@@ -420,38 +388,13 @@ function gen_client_mainmenu($tpl, $menu_file) {
 	$tpl->assign(
 		array(
 			'TR_MENU_GENERAL_INFORMATION'	=> tr('General information'),
-			'TR_MENU_CHANGE_PASSWORD'		=> tr('Change password'),
-			'TR_MENU_CHANGE_PERSONAL_DATA'	=> tr('Change personal data'),
 			'TR_MENU_MANAGE_DOMAINS'		=> tr('Manage domains'),
-			'TR_MENU_ADD_SUBDOMAIN'			=> tr('Add subdomain'),
-			'TR_MENU_MANAGE_USERS'			=> tr('Email and FTP accounts'),
-			'TR_MENU_ADD_MAIL_USER'			=> tr('Add mail user'),
-			'TR_MENU_ADD_FTP_USER'			=> tr('Add FTP user'),
-			'TR_MENU_MANAGE_SQL'			=> tr('Manage SQL'),
-			'TR_MENU_ERROR_PAGES'			=> tr('Error pages'),
-			'TR_MENU_ADD_SQL_DATABASE'		=> tr('Add SQL database'),
-			'TR_MENU_DOMAIN_STATISTICS'		=> tr('Domain statistics'),
-			'TR_MENU_DAILY_BACKUP'			=> tr('Daily backup'),
-			'TR_MENU_QUESTIONS_AND_COMMENTS'=> tr('Support system'),
-			'TR_MENU_NEW_TICKET'			=> tr('New ticket'),
-			'TR_MENU_LOGOUT'				=> tr('Logout'),
-			'TR_PHPMYADMIN'					=> tr('phpMyAdmin'),
-			'TR_WEBMAIL'					=> tr('Webmail'),
-			'TR_FILEMANAGER'				=> tr('Filemanager'),
-			'TR_MENU_WEBTOOLS'				=> tr('Webtools'),
-			'TR_HTACCESS'					=> tr('Protected areas'),
-			'TR_AWSTATS'					=> tr('Web statistics'),
-			'TR_HTACCESS_USER'				=> tr('Group/User management'),
-			'TR_MENU_OVERVIEW'				=> tr('Overview'),
 			'TR_MENU_EMAIL_ACCOUNTS'		=> tr('Email Accounts'),
 			'TR_MENU_FTP_ACCOUNTS'			=> tr('FTP Accounts'),
-			'TR_MENU_LANGUAGE'				=> tr('Language'),
-			'TR_MENU_CATCH_ALL_MAIL'		=> tr('Catch all'),
-			'TR_MENU_ADD_ALIAS'				=> tr('Add alias'),
-			'TR_MENU_UPDATE_HP'				=> tr('Update Hosting Package'),
-			'TR_MENU_ADD_DNS'				=> tr("Add DNS zone's record"),
-			'TR_MENU_MANAGE_SSL'			=> tr('Manage SSL certificate'),
-			'TR_MENU_MANAGE_DNS'			=> tr('Manage DNS'),
+			'TR_MENU_MANAGE_SQL'			=> tr('Manage SQL'),
+			'TR_MENU_WEBTOOLS'				=> tr('Webtools'),
+			'TR_MENU_DOMAIN_STATISTICS'		=> tr('Domain statistics'),
+			'TR_MENU_QUESTIONS_AND_COMMENTS'=> tr('Support system')
 		)
 	);
 
@@ -499,35 +442,27 @@ function gen_client_mainmenu($tpl, $menu_file) {
 		} // end while
 	} // end else
 
-	list(,,,,,,,,
-		$dmn_mailacc_limit,
-		$dmn_ftpacc_limit,,
-		$dmn_sqld_limit,,,
-		$dmn_als_limit,
-		$dmn_subd_limit,,,,,,,
-		$domain_dns,
-		$domain_ssl
-	) = get_domain_default_props($sql, $_SESSION['user_id']);
+	$dmn_props = get_domain_default_props($_SESSION['user_id']);
 
-	if ($dmn_mailacc_limit != -1){
+	if ($dmn_props['domain_mailacc_limit'] != -1){
 		$tpl->assign('ISACTIVE_EMAIL', true);
 	}
 
-	if ($dmn_als_limit != -1 || $dmn_subd_limit != -1 || $domain_dns == 'yes'){
+	if ($dmn_props['domain_alias_limit'] != -1 || $dmn_props['domain_subd_limit'] != -1 || $dmn_props['domain_dns'] == 'yes'){
 		$tpl->assign('ISACTIVE_DOMAIN', true);
 	}
 
-	if ($dmn_ftpacc_limit != -1){
+	if ($dmn_props['domain_ftpacc_limit'] != -1){
 		$tpl->assign('ISACTIVE_FTP', true);
 	}
 
-	if ($dmn_sqld_limit != -1){
+	if ($dmn_props['domain_sqld_limit'] != -1){
 		$tpl->assign('ISACTIVE_SQL', true);
 	}
 
-        if ($domain_ssl=='yes'){
-                $tpl->assign('ISACTIVE_SSL',true);
-        }
+	if ($dmn_props['domain_ssl'] == 'yes'){
+		$tpl->assign('ISACTIVE_SSL',true);
+	}
         
 	$query = "
 		SELECT
@@ -545,10 +480,6 @@ function gen_client_mainmenu($tpl, $menu_file) {
 		$tpl->assign('ISACTIVE_SUPPORT', true);
 	}
 
-	if ($cfg->AWSTATS_ACTIVE == 'yes') {
-		$tpl->assign('AWSTATS_PATH', 'http://' . $_SESSION['user_logged'] . '/stats/');
-	}
-
 	$tpl->assign('MAIN_MENU', $menu_file);
 }
 
@@ -564,41 +495,41 @@ function gen_client_menu($tpl, $menu_file) {
 
 	$tpl->assign(
 		array(
-			'TR_MENU_GENERAL_INFORMATION'	=> tr('General information'),
+			'TR_MENU_OVERVIEW'				=> tr('Overview'),
 			'TR_MENU_CHANGE_PASSWORD'		=> tr('Change password'),
 			'TR_MENU_CHANGE_PERSONAL_DATA'	=> tr('Change personal data'),
-			'TR_MENU_MANAGE_DOMAINS'		=> tr('Manage domains'),
+			'TR_MENU_LANGUAGE'				=> tr('Language'),
+			'TR_MENU_UPDATE_HP'				=> tr('Update Hosting Package'),
+
 			'TR_MENU_ADD_SUBDOMAIN'			=> tr('Add subdomain'),
-			'TR_MENU_MANAGE_USERS'			=> tr('Email and FTP accounts'),
+			'TR_MENU_ADD_ALIAS'				=> tr('Add alias'),
+			'TR_MENU_MANAGE_DNS'			=> tr('Manage DNS'),
+			'TR_MENU_MANAGE_SSL'			=> tr('Manage SSL certificate'),
+			'TR_MENU_PHP_EDITOR'			=> tr('PHP editor'),
+
 			'TR_MENU_ADD_MAIL_USER'			=> tr('Add mail user'),
+			'TR_MENU_CATCH_ALL_MAIL'		=> tr('Catch all'),
+			'WEBMAIL_PATH'					=> $cfg->WEBMAIL_PATH,
+			'TR_WEBMAIL'					=> tr('Webmail'),
+
 			'TR_MENU_ADD_FTP_USER'			=> tr('Add FTP user'),
-			'TR_MENU_MANAGE_SQL'			=> tr('Manage SQL'),
-			'TR_MENU_ERROR_PAGES'			=> tr('Error pages'),
+			'FILEMANAGER_PATH'				=> $cfg->FILEMANAGER_PATH,
+			'TR_FILEMANAGER'				=> tr('Filemanager'),
+
 			'TR_MENU_ADD_SQL_DATABASE'		=> tr('Add SQL database'),
-			'TR_MENU_DOMAIN_STATISTICS'		=> tr('Domain statistics'),
+			'PMA_PATH'						=> $cfg->PMA_PATH,
+			'TR_PHPMYADMIN'					=> tr('phpMyAdmin'),
+
+			'TR_HTACCESS'					=> tr('Protected areas'),
+			'TR_HTACCESS_USER'				=> tr('Group/User management'),
+			'TR_MENU_ERROR_PAGES'			=> tr('Error pages'),
 			'TR_MENU_DAILY_BACKUP'			=> tr('Daily backup'),
-			'TR_MENU_QUESTIONS_AND_COMMENTS'=> tr('Support system'),
+
 			'TR_OPEN_TICKETS'				=> tr('Open tickets'),
 			'TR_CLOSED_TICKETS'				=> tr('Closed tickets'),
 			'TR_MENU_NEW_TICKET'			=> tr('New ticket'),
+
 			'TR_MENU_LOGOUT'				=> tr('Logout'),
-			'TR_PHPMYADMIN'					=> tr('phpMyAdmin'),
-			'TR_WEBMAIL'					=> tr('Webmail'),
-			'TR_FILEMANAGER'				=> tr('Filemanager'),
-			'TR_MENU_WEBTOOLS'				=> tr('Webtools'),
-			'TR_HTACCESS'					=> tr('Protected areas'),
-			'TR_AWSTATS'					=> tr('Web statistics'),
-			'TR_HTACCESS_USER'				=> tr('Group/User management'),
-			'TR_MENU_OVERVIEW'				=> tr('Overview'),
-			'TR_MENU_EMAIL_ACCOUNTS'		=> tr('Email Accounts'),
-			'TR_MENU_FTP_ACCOUNTS'			=> tr('FTP Accounts'),
-			'TR_MENU_LANGUAGE'				=> tr('Language'),
-			'TR_MENU_CATCH_ALL_MAIL'		=> tr('Catch all'),
-			'TR_MENU_ADD_ALIAS'				=> tr('Add alias'),
-			'TR_MENU_UPDATE_HP'				=> tr('Update Hosting Package'),
-			'WEBMAIL_PATH'					=> $cfg->WEBMAIL_PATH,
-			'PMA_PATH'						=> $cfg->PMA_PATH,
-			'FILEMANAGER_PATH'				=> $cfg->FILEMANAGER_PATH,
 			'VERSION'						=> $cfg->Version,
 			'BUILDDATE'						=> $cfg->BuildDate,
 			'CODENAME'						=> $cfg->CodeName
@@ -621,62 +552,62 @@ function gen_client_menu($tpl, $menu_file) {
 		$tpl->assign('SUPPORT_SYSTEM', true);
 	}
 
-	list($dmn_id,,,,,,,,
-		$dmn_mailacc_limit,
-		$dmn_ftpacc_limit,,
-		$dmn_sqld_limit,,,
-		$dmn_als_limit,
-		$dmn_subd_limit,,,,,,
-		$allowbackup,
-		$dmn_dns,
-		$dmn_ssl
-	) = get_domain_default_props($sql, $_SESSION['user_id']);
+	$dmn_props = get_domain_default_props($_SESSION['user_id']);
 
-	if ($dmn_als_limit != -1 || $dmn_subd_limit != -1 || $dmn_dns == 'yes'){
+	if ($dmn_props['domain_alias_limit'] != -1 || $dmn_props['domain_subd_limit'] != -1 || $dmn_props['domain_dns'] == 'yes'){
 		$tpl->assign('ISACTIVE_DOMAIN', true);
 	}
 
-	if ($dmn_ftpacc_limit != -1){
+	if ($dmn_props['domain_ftpacc_limit'] != -1){
 		$tpl->assign('ISACTIVE_FTP', true);
 	}
 
-	if ($dmn_sqld_limit != -1){
+	if ($dmn_props['domain_sqld_limit'] != -1){
 		$tpl->assign('ISACTIVE_SQL', true);
 	}
 
-	if ($dmn_mailacc_limit != -1){
+	if ($dmn_props['domain_mailacc_limit'] != -1){
 		$tpl->assign('ISACTIVE_EMAIL', true);
 	}
 
-	if ($dmn_subd_limit != -1){
-		$sub_cnt = get_domain_running_sub_cnt($sql, $dmn_id);
-		if ($dmn_subd_limit == 0 || $sub_cnt < $dmn_subd_limit) {
+	if ($dmn_props['domain_subd_limit'] != -1){
+		$sub_cnt = get_domain_running_sub_cnt($sql, $dmn_props['domain_id']);
+		if ($dmn_props['domain_subd_limit'] == 0 || $sub_cnt < $dmn_props['domain_subd_limit']) {
 			$tpl->assign('ISACTIVE_SUBDOMAIN_MENU', true);
 		}
 
 	}
 
-	if ($dmn_als_limit != -1){
-		$als_cnt = get_domain_running_als_cnt($sql, $dmn_id);
-		if ($dmn_als_limit == 0 || $als_cnt < $dmn_als_limit) {
+	if ($dmn_props['domain_alias_limit'] != -1){
+		$als_cnt = get_domain_running_als_cnt($sql, $dmn_props['domain_id']);
+		if ($dmn_props['domain_alias_limit'] == 0 || $als_cnt < $dmn_props['domain_alias_limit']) {
 			$tpl->assign('ISACTIVE_ALIAS_MENU', true);
 		}
 	}
 
-	if ($allowbackup == 'yes'){
+	if ($dmn_props['allowbackup'] == 'yes'){
 		$tpl->assign('ISACTIVE_BACKUP', true);
 	}
 
-	if ($dmn_dns == 'yes'){
+	if ($dmn_props['domain_dns'] == 'yes'){
 		$tpl->assign('ISACTIVE_DNS_MENU', true);
 	}
 
-        if ($dmn_ssl == 'yes'){
+	if ($dmn_props['domain_ssl'] == 'yes'){
 		$tpl->assign('ISACTIVE_SSL_MENU', true);
 	}
 
+	if ($dmn_props['domain_php_edit'] == 'yes'){
+		$tpl->assign('ISACTIVE_PHP_EDITOR', true);
+	}
+
 	if ($cfg->AWSTATS_ACTIVE == 'yes') {
-		$tpl->assign('AWSTATS_PATH', 'http://' . $_SESSION['user_logged'] . '/stats/');
+		$tpl->assign(
+			array(
+				'AWSTATS_PATH'	=> 'http://' . $_SESSION['user_logged'] . '/stats/',
+				'TR_AWSTATS'	=> tr('Web statistics')
+			)
+		);
 	}
 
 	// Hide 'Update Hosting Package'-Button, if there are none
@@ -1121,6 +1052,8 @@ function get_user_domains($user_id) {
  * @return array $dns_records
  */
 function get_dns_zone($alias=0, $domain_id) {
+
+	$cfg = EasySCP_Registry::get('Config');
 			
 	$sql_param = array(
 		"domain_id"	=>	$domain_id,
@@ -1136,7 +1069,7 @@ function get_dns_zone($alias=0, $domain_id) {
 				`r`.`content` AS `domain_text`,
 				`r`.`type` AS `domain_type`,
 				`r`.`prio`,
-				`d`.`domain_status` AS 'domain_status',
+				`d`.`status`,
 				`ns`.`easyscp_domain_id`
 			FROM
 				`powerdns`.`domains` `ns`
@@ -1168,7 +1101,7 @@ function get_dns_zone($alias=0, $domain_id) {
 				`r`.`content` AS `domain_text`,
 				`r`.`type` AS `domain_type`,
 				`r`.`prio`,
-				`da`.`alias_status` AS 'domain_status',
+				`da`.`status`,
 				`ns`.`easyscp_domain_alias_id`
 			FROM
 				`powerdns`.`domains` `ns`
@@ -1200,11 +1133,11 @@ function get_dns_zone($alias=0, $domain_id) {
 			
 		list($dns_action_delete, $dns_action_script_delete) = gen_user_dns_action(
 			'Delete', $row['domain_dns_id'],
-			($row['protected'] == 0) ? $row['domain_status'] : $cfg->ITEM_PROTECTED_STATUS
+			($row['protected'] == 0) ? $row['status'] : $cfg->ITEM_PROTECTED_STATUS
 		);
 			list($dns_action_edit, $dns_action_script_edit) = gen_user_dns_action(
 			'Edit', $row['domain_dns_id'],
-			($row['protected'] == 0) ? $row['domain_status'] :$cfg->ITEM_PROTECTED_STATUS
+			($row['protected'] == 0) ? $row['status'] :$cfg->ITEM_PROTECTED_STATUS
 		);
 	
 		$domain_name = decode_idna($row['domain_name']);

@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,7 +34,7 @@ $template = 'admin/tools_config_ssl.tpl';
 $html_selected = $cfg->HTML_SELECTED;
 
 if (isset($_POST['uaction']) && $_POST['uaction'] == 'apply') {
-    $values = update_ssl_data();
+    update_ssl_data();
 }
 
 switch ($cfg->SSL_STATUS) {
@@ -78,7 +78,7 @@ gen_admin_menu($tpl, 'admin/menu_system_tools.tpl');
 
 gen_page_message($tpl);
 
-if ($cfg->DUMP_GUI_DEBUG) {
+if (EasyConfig::$cfg->DUMP_GUI_DEBUG) {
     dump_gui_debug($tpl);
 }
 
@@ -87,7 +87,6 @@ $tpl->display($template);
 unset_messages();
 
 function update_ssl_data() {
-
 	// Get a reference to the Config object
 	$cfg = EasySCP_Registry::get('Config');
 
@@ -98,27 +97,38 @@ function update_ssl_data() {
     $sslkey=clean_input($_POST['ssl_key']);
     $sslcert=clean_input($_POST['ssl_cert']);
     $sslstatus=clean_input($_POST['ssl_status']);
-    // update the ssl related values
-	$db_cfg->SSL_KEY = $sslkey;
-	$db_cfg->SSL_CERT = $sslcert;
-	$db_cfg->SSL_STATUS = $sslstatus;
 
-	$cfg->replaceWith($db_cfg);
+	if(openssl_x509_check_private_key($sslcert, $sslkey)){
+		// update the ssl related values
+		$db_cfg->SSL_KEY = $sslkey;
+		$db_cfg->SSL_CERT = $sslcert;
+		$db_cfg->SSL_STATUS = $sslstatus;
 
-    write_log(
-            get_session('user_logged') . ": Updated SSL configuration!"
-    );
+		$cfg->replaceWith($db_cfg);
 
-    // get number of updates 
-    $update_count = $db_cfg->countQueries('update');
+		write_log(
+				get_session('user_logged') . ": Updated SSL configuration!"
+		);
 
-    if ($update_count == 0) {
-        set_page_message(tr("SSL configuration unchanged"), 'info');
-    } elseif ($update_count > 0) {
-        set_page_message(tr('SSL configuration updated!'), 'success');
-    }
+		// get number of updates 
+		$update_count = $db_cfg->countQueries('update');
 
-    user_goto('tools_config_ssl.php');
+		if ($update_count == 0) {
+			set_page_message(tr("SSL configuration unchanged"), 'info');
+		} elseif ($update_count > 0) {
+			set_page_message(tr('SSL configuration updated!'), 'success');
+		}
+	} else {
+		set_page_message(tr("SSL key/cert don't match"), 'Warning');
+
+		write_log(
+            get_session('user_logged') . ": Update of SSL configuration failed!"
+	    );
+	}
+
+	send_request('110 DOMAIN 00 master');
+	
+	user_goto('tools_config_ssl.php');
 }
 
 ?>

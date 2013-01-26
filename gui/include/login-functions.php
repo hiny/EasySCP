@@ -225,18 +225,18 @@ function is_userdomain_ok($username) {
 
 	$query = "
 		SELECT
-			`domain_status`
+			status
 		FROM
-			`domain`
+			domain
 		WHERE
-			`domain_admin_id` = ?
+			domain_admin_id = ?
 	;";
 
 	$res = exec_query($sql, $query, $udata['admin_id']);
 
 	$row = $res->fetchRow();
 
-	return ($row['domain_status'] == $cfg->ITEM_OK_STATUS);
+	return ($row['status'] == $cfg->ITEM_OK_STATUS);
 }
 
 /**

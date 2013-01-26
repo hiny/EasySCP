@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySCP a Virtual Hosting Control Panel
- * Copyright (C) 2010-2012 by Easy Server Control Panel - http://www.easyscp.net
+ * Copyright (C) 2010-2013 by Easy Server Control Panel - http://www.easyscp.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -76,6 +76,7 @@ $tpl->assign(
 		'TR_SUBDOMAIN_DATA'					=> tr('Subdomain data'),
 		'TR_SUBDOMAIN_NAME'					=> tr('Subdomain name'),
 		'TR_DIR_TREE_SUBDOMAIN_MOUNT_POINT'	=> tr('Directory tree mount point'),
+		'TR_SUBDOMAIN_ASSIGNMENT'			=> tr('Assigned subdomain'),
 		'TR_FORWARD'						=> tr('Forward to URL'),
 		'TR_ADD'							=> tr('Add'),
 		'TR_DMN_HELP'						=> tr("You do not need 'www.' EasySCP will add it on its own."),
@@ -85,7 +86,8 @@ $tpl->assign(
 		'TR_PREFIX_HTTP'					=> 'http://',
 		'TR_PREFIX_HTTPS'					=> 'https://',
 		'TR_PREFIX_FTP'						=> 'ftp://',
-		'TR_MNT_POINT_HELP'					=>	tr('Path is relativ to your root directory. The mount point will contain a subfolder named htdocs.'),
+		'TR_MNT_POINT_HELP'					=> tr('Path is relativ to your root directory. The mount point will contain a subfolder named htdocs.'),
+		'TR_SUBDMN_ASSIGN_HELP'				=> tr('A new alias subdomain has to be assigned to an existing real subdomain.'),
 	)
 );
 
@@ -123,11 +125,12 @@ function gen_page_msg($tpl, $error_txt) {
 function check_subdomain_permissions($user_id) {
 	$sql = EasySCP_Registry::get('Db');
 
-	$props = get_domain_default_props($sql, $user_id, true);
+	//TODO: check proper handling for alias subdomain
+	$dmn_props = get_domain_default_props($user_id);
 
-	$dmn_id = $props['domain_id'];
-	$dmn_name = $props['domain_name'];
-	$dmn_subd_limit = $props['domain_subd_limit'];
+	$dmn_id = $dmn_props['domain_id'];
+	$dmn_name = $dmn_props['domain_name'];
+	$dmn_subd_limit = $dmn_props['domain_subd_limit'];
 
 	$sub_cnt = get_domain_running_sub_cnt($sql, $dmn_id);
 
@@ -182,7 +185,8 @@ function gen_user_add_subdomain_data($tpl, $user_id) {
 		)
 	);
 	gen_dmn_als_list($tpl, $rs->fields['domain_id'], 'no');
-
+	gen_subdmn_list($tpl, $rs->fields['domain_id'], 'no');
+	
 	if (isset($_POST['uaction']) && $_POST['uaction'] === 'add_subd') {
 		if($_POST['status'] == 1) {
 			$forward_prefix = clean_input($_POST['forward_prefix']);
@@ -261,13 +265,21 @@ function gen_dmn_als_list($tpl, $dmn_id, $post_check) {
 		WHERE
 			`domain_id` = ?
 		AND
-			`alias_status` = ?
+			`status` = ?
 		ORDER BY
 			`alias_name`
 	;";
 
 	$rs = exec_query($sql, $query, array($dmn_id, $ok_status));
 	if ($rs->recordCount() == 0) {
+//		$tpl->assign(
+//			array(
+//				'ALS_ID' => '0',
+//				'ALS_SELECTED' => $cfg->HTML_SELECTED,
+//				'ALS_NAME' => tr('Empty list')
+//			)
+//		);
+//		$tpl->assign('TO_ALIAS_DOMAIN', '');
 		$_SESSION['alias_count'] = "no";
 	} else {
 		$first_passed = false;
@@ -280,11 +292,65 @@ function gen_dmn_als_list($tpl, $dmn_id, $post_check) {
 			}
 
 			$alias_name = decode_idna($rs->fields['alias_name']);
-			$tpl->assign(
+			$tpl->append(
 				array(
-					'ALS_ID' => $rs->fields['alias_id'],
-					'ALS_SELECTED' => $als_selected,
-					'ALS_NAME' => tohtml($alias_name)
+					'ALS_ID'		=> $rs->fields['alias_id'],
+					'ALS_SELECTED'	=> $als_selected,
+					'ALS_NAME'		=> tohtml($alias_name)
+				)
+			);
+			$rs->moveNext();
+
+			if (!$first_passed) {
+				$first_passed = true;
+			}
+		}
+	}
+}
+
+/**
+ *
+ * @param EasySCP_TemplateEngine $tpl
+ * @param int $dmn_id
+ * @param string $post_check
+ */
+function gen_subdmn_list($tpl, $dmn_id, $post_check) {
+
+	$cfg = EasySCP_Registry::get('Config');
+	$sql = EasySCP_Registry::get('Db');
+
+	$ok_status = $cfg->ITEM_OK_STATUS;
+
+	$query = "
+		SELECT
+			`subdomain_id`, `subdomain_name`
+		FROM
+			`subdomain`
+		WHERE
+			`domain_id` = ?
+		AND
+			`status` = ?
+		ORDER BY
+			`subdomain_name`
+	;";
+
+	$rs = exec_query($sql, $query, array($dmn_id, $ok_status));
+	if ($rs->recordCount() != 0) {
+		$first_passed = false;
+		while (!$rs->EOF) {
+			if ($post_check === 'yes') {
+				$subdmn_id = (!isset($_POST['subdmn_id'])) ? '' : $_POST['subdmn_id'];
+				$subdmn_selected = ($subdmn_id == $rs->fields['subdomain_id']) ? $cfg->HTML_SELECTED : '';
+			} else {
+				$subdmn_selected = (!$first_passed) ? $cfg->HTML_SELECTED : '';
+			}
+
+			$subdomain_name = decode_idna($rs->fields['subdomain_name']);
+			$tpl->append(
+				array(
+					'SUBDMN_ID'			=> $rs->fields['subdomain_id'],
+					'SUBDMN_SELECTED'	=> $subdmn_selected,
+					'SUBDMN_NAME'		=> tohtml($subdomain_name)
 				)
 			);
 			$rs->moveNext();
@@ -379,7 +445,7 @@ function subdmn_exists($user_id, $domain_id, $sub_name) {
  * @param <type> $sub_mnt_pt
  * @param <type> $forward
  */
-function subdomain_schedule($user_id, $domain_id, $sub_name, $sub_mnt_pt, $forward) {
+function subdomain_schedule($user_id, $domain_id, $sub_name, $sub_mnt_pt, $forward, $sub_id=null) {
 
 	$cfg = EasySCP_Registry::get('Config');
 	$sql = EasySCP_Registry::get('Db');
@@ -389,15 +455,16 @@ function subdomain_schedule($user_id, $domain_id, $sub_name, $sub_mnt_pt, $forwa
 	if ($_POST['dmn_type'] == 'als') {
 		$query = "
 			INSERT INTO
-				`subdomain_alias`
-					(`alias_id`,
-					`subdomain_alias_name`,
-					`subdomain_alias_mount`,
-					`subdomain_alias_url_forward`,
-					`subdomain_alias_status`)
+				subdomain_alias
+					(alias_id,
+					subdomain_alias_name,
+					subdomain_alias_mount,
+					subdomain_alias_url_forward,
+					status,subdomain_id)
 			VALUES
-				(?, ?, ?, ?, ?)
+				(?, ?, ?, ?, ?, ?)
 		;";
+		exec_query($sql, $query, array($domain_id, $sub_name, $sub_mnt_pt, $forward, $status_add, $sub_id));
 	} else {
 		$query = "
 			INSERT INTO
@@ -406,23 +473,26 @@ function subdomain_schedule($user_id, $domain_id, $sub_name, $sub_mnt_pt, $forwa
 					`subdomain_name`,
 					`subdomain_mount`,
 					`subdomain_url_forward`,
-					`subdomain_status`)
+					`status`)
 			VALUES
 				(?, ?, ?, ?, ?)
 		;";
+		exec_query($sql, $query, array($domain_id, $sub_name, $sub_mnt_pt, $forward, $status_add));
 	}
-
-	exec_query($sql, $query, array($domain_id, $sub_name, $sub_mnt_pt, $forward, $status_add));
 
 	update_reseller_c_props(get_reseller_id($domain_id));
 
-	$sql->insertId();
+//	$subdomain_id = $sql->insertId();
 
 	// We do not need to create the default mail addresses, subdomains are
 	// related to their domains.
 
 	write_log($_SESSION['user_logged'] . ": adds new subdomain: " . $sub_name);
-	send_request();
+	if ($_POST['dmn_type'] == 'als') {
+		send_request('110 DOMAIN '. $domain_id.' alias');
+	} else {
+		send_request('110 DOMAIN '. $domain_id.' domain');
+	}
 }
 
 /**
@@ -435,8 +505,9 @@ function subdomain_schedule($user_id, $domain_id, $sub_name, $sub_mnt_pt, $forwa
 function check_subdomain_data(&$err_sub, $user_id, $dmn_name) {
 	global $validation_err_msg;
 
+	$cfg = EasySCP_Registry::get('Config');
 	$sql = EasySCP_Registry::get('Db');
-	$vfs = new EasySCP_VirtualFileSystem($dmn_name, $sql);
+//	$vfs = new EasySCP_VirtualFileSystem($dmn_name, $sql);
 
 	$dmn_id = $domain_id = get_user_domain_id($sql, $user_id);
 
@@ -472,25 +543,43 @@ function check_subdomain_data(&$err_sub, $user_id, $dmn_name) {
 				return;
 			}
 
-			$query_alias = "
+//			$query_alias = "
+//				SELECT
+//					`alias_mount`
+//				FROM
+//					`domain_aliasses`
+//				WHERE
+//					`alias_id` = ?
+//			;";
+//
+//			$rs = exec_query($sql, $query_alias, $_POST['als_id']);
+//
+//			$als_mnt = $rs->fields['alias_mount'];
+
+			$query_dmn = "
 				SELECT
-					`alias_mount`
-				FROM
-					`domain_aliasses`
+					domain_name
+				FROM 
+					domain_aliasses,
+					domain
 				WHERE
-					`alias_id` = ?
-			;";
-
-			$rs = exec_query($sql, $query_alias, $_POST['als_id']);
-
-			$als_mnt = $rs->fields['alias_mount'];
-
+					domain_aliasses.domain_id = domain.domain_id
+				AND
+					alias_id = ?
+			";
+			
+			$dmn_rs = exec_query($sql, $query_dmn, $_POST['als_id']);
+			
+			$master_dmn_name = $dmn_rs->fields['domain_name'];
 			if ($sub_mnt_pt[0] != '/')
 				$sub_mnt_pt = '/'.$sub_mnt_pt;
 
-			$sub_mnt_pt = $als_mnt.$sub_mnt_pt;
+//			$sub_mnt_pt = $als_mnt.$sub_mnt_pt;
 			$sub_mnt_pt = str_replace('//', '/', $sub_mnt_pt);
 			$domain_id = $_POST['als_id'];
+			$sub_mnt_path = $cfg->APACHE_WWW_DIR . '/' .$master_dmn_name . $sub_mnt_pt;
+		} else {
+			$sub_mnt_path = $cfg->APACHE_WWW_DIR . '/' . $dmn_name . $sub_mnt_pt;
 		}
 
 		// First check if input string is a valid domain names
@@ -504,11 +593,13 @@ function check_subdomain_data(&$err_sub, $user_id, $dmn_name) {
 
 		if (subdmn_exists($user_id, $domain_id, $sub_name)) {
 			$err_sub = tr('Subdomain already exists or is not allowed!');
-		} elseif (mount_point_exists($dmn_id, array_encode_idna($sub_mnt_pt, true))) {
+		} elseif ($_POST['dmn_type']!='als' && mount_point_exists($dmn_id, array_encode_idna($sub_mnt_pt, true))) {
 			$err_sub = tr('Mount point already in use!');
-		} elseif ($vfs->exists($sub_mnt_pt)) {
+		} elseif ($_POST['dmn_type']!='als' && send_request('160 SYSTEM ' . array_encode_idna($sub_mnt_path, true) .' direxists')) {
 			$err_sub = tr("Can't use an existing folder as mount point!");
-		} elseif (!validates_mpoint($sub_mnt_pt)) {
+//		}elseif ($vfs->exists($sub_mnt_pt)) {
+//			$err_sub = tr("Can't use an existing folder as mount point!");
+		} elseif ($_POST['dmn_type']!='als' && !validates_mpoint($sub_mnt_pt)) {
 			$err_sub = tr('Incorrect mount point syntax!');
 		} elseif ($_POST['status'] == 1) {
 			$surl = @parse_url($forward_prefix.decode_idna($forward));
@@ -554,7 +645,8 @@ function check_subdomain_data(&$err_sub, $user_id, $dmn_name) {
 		if ('_off_' !== $err_sub) {
 			return;
 		}
-		subdomain_schedule($user_id, $domain_id, $sub_name, $sub_mnt_pt, $forward);
+		$subdomain_id=$_POST['subdmn_id'];
+		subdomain_schedule($user_id, $domain_id, $sub_name, $sub_mnt_pt, $forward,$subdomain_id);
 		set_page_message(tr('Subdomain scheduled for addition!'), 'success');
 		user_goto('domains_manage.php');
 	}

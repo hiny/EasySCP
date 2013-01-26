@@ -61,12 +61,14 @@
 				<tr>
 					<td>
 						<span class="icon i_mail_icon">{$MAIL_ACC[i]}</span>
+						<!--
 						{if isset($AUTO_RESPOND_DISABLE[i])}
 						<div style="display: {$AUTO_RESPOND_VIS[i]};font-size: smaller;">
 							<br />
 					  		{$TR_AUTORESPOND}: [ <a href="{$AUTO_RESPOND_DISABLE_SCRIPT[i]}">{$AUTO_RESPOND_DISABLE[i]}</a> <a href="{$AUTO_RESPOND_EDIT_SCRIPT[i]}">{$AUTO_RESPOND_EDIT[i]}</a> ]
 						  </div>
 					  {/if}
+					  -->
 					</td>
 					<td>{$MAIL_TYPE[i]}</td>
 					<td>{$MAIL_STATUS[i]}</td>
