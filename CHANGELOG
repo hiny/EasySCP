@@ -6,6 +6,14 @@ EasySCP 1.1.10 ChangeLog
 		* Updated: Smarty to version 3.1.13
 		* Updated: jQuery to version 1.9.0
 
+2013-01-12 Markus Szywon
+	- TOOL:
+		* Fixed: net2ftp does not work in some situations.
+
+2013-01-04 Markus Szywon
+	- GUI:
+		* Fixed: Net_DNS2_Exception when adding A records.
+
 2012-12-26 Markus Szywon
 	- DOCS:
 		* Updated: Debian 7.0 (Wheezy) package file

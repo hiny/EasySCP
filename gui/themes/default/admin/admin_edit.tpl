@@ -51,6 +51,10 @@
 				<legend>{$TR_ADDITIONAL_DATA}</legend>
 				<table>
 					<tr>
+						<td>{$TR_CUSTOMER_ID}</td>
+						<td><input type="text" name="useruid" id="useruid" value="{$CUSTOMER_ID}"/></td>
+					</tr>
+					<tr>
 						<td><label for="fname">{$TR_FIRST_NAME}</label></td>
 						<td><input type="text" name="fname" id="fname" value="{$FIRST_NAME}"/></td>
 					</tr>

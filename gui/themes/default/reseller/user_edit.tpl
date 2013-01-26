@@ -31,10 +31,10 @@
 				<table>
 					<tr>
 						<td>{$TR_USERNAME}</td>
-						<td>{$VL_USERNAME}</td>
+						<td>{$USERNAME}</td>
 					</tr>
 					<tr>
-						<td>{$TR_PASSWORD}</td>
+						<td><label for="pass">{$TR_PASSWORD}</label></td>
 						<td>
 							<input type="password" name="userpassword" id="userpassword" value="{$VAL_PASSWORD}"/>
 							<input type="submit" name="genpass" value=" {$TR_PASSWORD_GENERATE} " />

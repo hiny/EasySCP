@@ -219,7 +219,7 @@ function gen_edituser_page($tpl) {
 	// Fill in the fields
 	$tpl->assign(
 		array(
-			'VL_USERNAME' => tohtml(decode_idna($dmn_user_name)),
+			'USERNAME' => tohtml(decode_idna($dmn_user_name)),
 			'VL_MAIL' => empty($user_email) ? '' : tohtml($user_email),
 			'VL_USR_ID' => empty($customer_id) ? '' : tohtml($customer_id),
 			'VL_USR_NAME' => empty($first_name) ? '' : tohtml($first_name),
@@ -271,7 +271,7 @@ function update_data_in_db($hpid) {
 	$street_one	= clean_input($street_one);
 	$street_two	= clean_input($street_two);
 
-	if (empty($inpass)) {
+	if (empty($_POST['pass'])) {
 		// Save without password
 		$query = "
 			UPDATE
@@ -316,7 +316,7 @@ function update_data_in_db($hpid) {
 		);
 	} else {
 		// Change password
-		if (!chk_password($_POST['userpassword'])) {
+		if (!chk_password($_POST['pass'])) {
 			if (isset($cfg->PASSWD_STRONG)){
 				set_page_message(
 					sprintf(
@@ -336,14 +336,13 @@ function update_data_in_db($hpid) {
 			user_goto('user_edit.php?edit_id=' . $hpid);
 		}
 
-		if ($_POST['userpassword'] != $_POST['userpassword_repeat']) {
+		if ($_POST['pass'] != $_POST['pass_repeat']) {
 			set_page_message(tr('Entered passwords do not match!'), 'warning');
 
 			user_goto('user_edit.php?edit_id=' . $hpid);
 		}
-		$pure_user_pass = $inpass;
 
-		$inpass = crypt_user_pass($inpass);
+		$inpass = crypt_user_pass($_POST['pass']);
 
 		$query = "
 			UPDATE
@@ -412,7 +411,7 @@ function update_data_in_db($hpid) {
 		send_add_user_auto_msg(
 			$reseller_id,
 			$dmn_user_name,
-			$pure_user_pass,
+			clean_input($_POST['pass']),
 			$user_email,
 			$first_name,
 			$last_name,

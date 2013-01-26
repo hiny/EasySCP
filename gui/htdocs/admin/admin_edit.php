@@ -46,19 +46,20 @@ $query = "
 	SELECT
 		`admin_name`,
 		`admin_type`,
+		`customer_id`,
 		`fname`,
 		`lname`,
+		`gender`,
 		`firm`,
 		`zip`,
 		`city`,
 		`state`,
 		`country`,
+		`email`,
 		`phone`,
 		`fax`,
 		`street1`,
-		`street2`,
-		`email`,
-		`gender`
+		`street2`
 	FROM
 		`admin`
 	WHERE
@@ -94,6 +95,7 @@ $tpl->assign(
 		'TR_PASSWORD_REPEAT'			=> tr('Repeat password'),
 		'TR_EMAIL'						=> tr('Email'),
 		'TR_ADDITIONAL_DATA'			=> tr('Additional data'),
+		'TR_CUSTOMER_ID'				=> tr('Customer ID'),
 		'TR_FIRST_NAME'					=> tr('First name'),
 		'TR_LAST_NAME'					=> tr('Last name'),
 		'TR_COMPANY'					=> tr('Company'),
@@ -113,6 +115,7 @@ $tpl->assign(
 		'TR_UPDATE'						=> tr('Update'),
 		'TR_SEND_DATA'					=> tr('Send new login data'),
 		'TR_PASSWORD_GENERATE'			=> tr('Generate password'),
+		'CUSTOMER_ID'					=> empty($rs->fields['customer_id']) ? '' : tohtml($rs->fields['customer_id']),
 		'FIRST_NAME'					=> empty($rs->fields['fname']) ? '' : tohtml($rs->fields['fname']),
 		'LAST_NAME'						=> empty($rs->fields['lname']) ? '' : tohtml($rs->fields['lname']),
 		'FIRM'							=> empty($rs->fields['firm']) ? '' : tohtml($rs->fields['firm']),
@@ -239,8 +242,6 @@ function update_data($sql) {
 					user_goto('admin_edit.php?edit_id=' . $edit_id);
 				}
 
-				$upass = crypt_user_pass($_POST['pass']);
-
 				$query = "
 					UPDATE
 						`admin`
@@ -263,7 +264,8 @@ function update_data($sql) {
 						`admin_id` = ?
 				";
 
-				exec_query($sql, $query, array($upass,
+				exec_query($sql, $query, array(
+					crypt_user_pass($_POST['pass']),
 						$fname,
 						$lname,
 						$firm,
@@ -315,14 +317,16 @@ function update_data($sql) {
 					$admin_type = tr('Domain account');
 				}
 
-				send_add_user_auto_msg ($user_id,
+				send_add_user_auto_msg(
+					$user_id,
 					$edit_username,
 					clean_input($_POST['pass']),
 					clean_input($_POST['email']),
 					clean_input($_POST['fname']),
 					clean_input($_POST['lname']),
 					tr($admin_type),
-					$gender);
+					$gender
+				);
 			}
 
 			$_SESSION['user_updated'] = 1;

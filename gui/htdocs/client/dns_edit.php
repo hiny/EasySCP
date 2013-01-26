@@ -79,7 +79,7 @@ $tpl->assign(
 		'TR_PAGE_TITLE'			=> ($add_mode)
 			? tr("EasySCP - Manage Domain Alias/Add DNS zone's record")
 			: tr("EasySCP - Manage Domain Alias/Edit DNS zone's record"),
-		'ACTION_MODE'			=> ($add_mode) ? 'dns_add.php' : 'dns_edit.php?edit_id={ID}',
+		'ACTION_MODE'			=> ($add_mode) ? 'dns_add.php' : 'dns_edit.php?edit_id='.$editid,
 		'TR_MODIFY'				=> tr('Modify'),
 		'TR_CANCEL'				=> tr('Cancel'),
 		'TR_ADD'				=> tr('Add'),
@@ -102,7 +102,7 @@ $tpl->assign(
 		'TR_DNS_CNAME'			=> tr('Canonical name'),
 		'TR_DNS_PLAIN'			=> tr('Plain record data'),
 		'TR_MANAGE_DOMAIN_DNS'	=> tr("DNS zone's records"),
-		'TR_DNS_NS'				=> tr('Hostname of Nameserver'),
+		'TR_DNS_NS'				=> tr('Hostname of Nameserver')
 	)
 );
 
@@ -329,14 +329,16 @@ function tryPost($id, $data) {
 }
 
 function validate_NS($record, &$err = null) {
-	if (!preg_match('~([^a-z,A-Z,0-9\.])~u', $record['dns_ns'], $e)) {
-		$err .= sprintf(tr('Use of disallowed char("%s") in NS'), $e[1]);
-		return false;
-	}
 	if (empty($record['dns_ns'])) {
 		$err .= tr('Name must be filled.');
 		return false;
 	}
+
+	if (preg_match('~([^a-z,^A-Z,^0-9,^\.])~u', $record['dns_ns'], $e)) {
+		$err .= sprintf(tr('Use of disallowed char("%s") in NS'), $record['dns_ns']);
+		return false;
+	}
+
 	return true;
 }
 
@@ -450,8 +452,13 @@ function check_CNAME_conflict($domain, &$err) {
 			'use_tcp'       => true
 		)
 	);
-	// $resolver->setServers = array('localhost');
-	$res = $resolver->query($domain, 'CNAME');
+
+	try {
+		$res = $resolver->query($domain, 'CNAME');
+	} catch(Net_DNS2_Exception $e) {
+		// array_push($errors, $e->getMessage());
+		return true;
+	}
 
 	if ($res === false) {
 		return true;
@@ -557,30 +564,36 @@ function check_fwd_data($tpl, $edit_id) {
 	}
 	switch ($_POST['type']) {
 		case 'CNAME':
-			if (!validate_CNAME($_POST, $err))
+			if (!validate_CNAME($_POST, $err)) {
 				$ed_error = sprintf(tr('Cannot validate %s record. Reason \'%s\'.'), $_POST['type'], $err);
+			}
 			$_text = $_POST['dns_cname'];
 			$_dns = $_POST['dns_name'];
 			break;
 		case 'A':
-			if (!validate_A($_POST, $err))
+			if (!validate_A($_POST, $err)) {
 				$ed_error = sprintf(tr('Cannot validate %s record. Reason \'%s\'.'), $_POST['type'], $err);
-			if (!check_CNAME_conflict($_POST['dns_name'].'.'.$record_domain, $err))
+			}
+			if (!check_CNAME_conflict($_POST['dns_name'].'.'.$record_domain, $err)){
 				$ed_error = sprintf(tr('Cannot validate %s record. Reason \'%s\'.'), $_POST['type'], $err);
+			}
 			$_text = $_POST['dns_A_address'];
 			$_dns = $_POST['dns_name'];
 			break;
 		case 'AAAA':
-			if (!validate_AAAA($_POST, $err))
+			if (!validate_AAAA($_POST, $err)) {
 				$ed_error = sprintf(tr('Cannot validate %s record. Reason \'%s\'.'), $_POST['type'], $err);
-			if (!check_CNAME_conflict($_POST['dns_name'].'.'.$record_domain, $err))
+			}
+			if (!check_CNAME_conflict($_POST['dns_name'].'.'.$record_domain, $err)) {
 				$ed_error = sprintf(tr('Cannot validate %s record. Reason \'%s\'.'), $_POST['type'], $err);
+			}
 			$_text = $_POST['dns_AAAA_address'];
 			$_dns = $_POST['dns_name'];
 			break;
 		case 'SRV':
-			if (!validate_SRV($_POST, $err, $_dns, $_text))
+			if (!validate_SRV($_POST, $err, $_dns, $_text)) {
 				$ed_error = sprintf(tr('Cannot validate %s record. Reason \'%s\'.'), $_POST['type'], $err);
+			}
 			break;
 		case 'MX':
 			$_dns = '';

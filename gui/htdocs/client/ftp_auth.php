@@ -102,15 +102,15 @@ function net2ftpAuth($userId) {
 	if($credentials) {
 		$data = http_build_query(
 			array(
-				'username' => $credentials[0],
-				'password' => stripcslashes($credentials[1]),
-                                'ftpserver' => 'localhost',
-                                'ftpserverport' => '21',
-                                'directory' => '',
-                                'language' => 'en',
-                                'ftpmode' => 'automatic',
-                                'state' => 'browse',
-                                'state2' => 'main'
+				'username'		=> $credentials[0],
+				'password'		=> stripcslashes($credentials[1]),
+				'ftpserver'		=> '127.0.0.1',
+				'ftpserverport'	=> '21',
+				'directory'		=> '',
+				'language'		=> 'en',
+				'ftpmode'		=> 'automatic',
+				'state'			=> 'browse',
+				'state2'		=> 'main'
 			)
 		);
 	} else {
@@ -151,11 +151,11 @@ function net2ftpAuth($userId) {
 	// Gets the headers from PhpMyAdmin
 	$headers = get_headers($net2ftpUri, true);
 
-        // Absolute minimum I could get a listing with.
-        $url = $net2ftpUri.'?ftpserver=localhost&username='.urlencode($userId).'&state=browse&state2=main';
+	// Absolute minimum I could get a listing with.
+	$url = $net2ftpUri.'?ftpserver=127.0.0.1&username='.urlencode($userId).'&state=browse&state2=main';
 
-        _net2ftpCreateCookies($headers['Set-Cookie']);
-        header("Location: {$url}");
+	_net2ftpCreateCookies($headers['Set-Cookie']);
+	header("Location: {$url}");
 
 	return true;
 }
