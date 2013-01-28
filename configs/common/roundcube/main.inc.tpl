@@ -358,7 +358,7 @@ $rcmail_config['identities_level'] = 0;
 $rcmail_config['client_mimetypes'] = null;  # null == default
 
 // mime magic database
-$rcmail_config['mime_magic'] = '/usr/share/misc/magic';
+$rcmail_config['mime_magic'] = null;
 
 // path to imagemagick identify binary
 $rcmail_config['im_identify_path'] = null;
@@ -377,7 +377,7 @@ $rcmail_config['email_dns_check'] = false;
 // ----------------------------------
 
 // List of active plugins (in plugins/ directory)
-$rcmail_config['plugins'] = array();
+$rcmail_config['plugins'] = array('managesieve');
 
 // ----------------------------------
 // USER INTERFACE
@@ -419,26 +419,26 @@ $rcmail_config['date_long'] = 'Y-m-d H:i';
 // store draft message is this mailbox
 // leave blank if draft messages should not be stored
 // NOTE: Use folder names with namespace prefix (INBOX. on Courier-IMAP)
-$rcmail_config['drafts_mbox'] = 'INBOX.Drafts';
+$rcmail_config['drafts_mbox'] = 'Drafts';
 
 // store spam messages in this mailbox
 // NOTE: Use folder names with namespace prefix (INBOX. on Courier-IMAP)
-$rcmail_config['junk_mbox'] = 'INBOX.Junk';
+$rcmail_config['junk_mbox'] = 'Junk';
 
 // store sent message is this mailbox
 // leave blank if sent messages should not be stored
 // NOTE: Use folder names with namespace prefix (INBOX. on Courier-IMAP)
-$rcmail_config['sent_mbox'] = 'INBOX.Sent';
+$rcmail_config['sent_mbox'] = 'Sent';
 
 // move messages to this folder when deleting them
 // leave blank if they should be deleted directly
 // NOTE: Use folder names with namespace prefix (INBOX. on Courier-IMAP)
-$rcmail_config['trash_mbox'] = 'INBOX.Trash';
+$rcmail_config['trash_mbox'] = 'Trash';
 
 // display these folders separately in the mailbox list.
 // these folders will also be displayed with localized names
 // NOTE: Use folder names with namespace prefix (INBOX. on Courier-IMAP)
-$rcmail_config['default_folders'] = array('INBOX', 'INBOX.Drafts', 'INBOX.Sent', 'INBOX.Junk', 'INBOX.Trash');
+$rcmail_config['default_folders'] = array('INBOX', 'Drafts', 'Sent', 'Junk', 'Trash');
 
 // automatically create the above listed default folders on first login
 $rcmail_config['create_default_folders'] = true;
