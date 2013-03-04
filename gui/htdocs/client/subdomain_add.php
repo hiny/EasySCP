@@ -280,7 +280,7 @@ function gen_dmn_als_list($tpl, $dmn_id, $post_check) {
 			}
 
 			$alias_name = decode_idna($rs->fields['alias_name']);
-			$tpl->assign(
+			$tpl->append(
 				array(
 					'ALS_ID' => $rs->fields['alias_id'],
 					'ALS_SELECTED' => $als_selected,

@@ -1,6 +1,10 @@
 EasySCP 1.1.11 ChangeLog
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+2013-03-04 Markus Szywon
+	- GUI:
+		* Fix: Error when add subdomain to an alias
+
 2013-02-23 Markus Szywon
 	- GUI:
 		* Fix: White page after RoundCube update

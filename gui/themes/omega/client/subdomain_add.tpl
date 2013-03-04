@@ -65,7 +65,9 @@
 						{if isset($ALS_NAME)}
 						<input type="radio" name="dmn_type" value="als" {$SUB_ALS_CHECKED} />
 							<select name="als_id">
-								<option value="{$ALS_ID}" {$ALS_SELECTED}>.{$ALS_NAME}</option>
+								{section name=i loop=$ALS_NAME}
+								<option value="{$ALS_ID[i]}" {$ALS_SELECTED[i]}>.{$ALS_NAME[i]}</option>
+								{/section}
 							</select>
 						{/if}
 					</td>
