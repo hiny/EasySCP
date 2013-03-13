@@ -490,7 +490,7 @@ function check_user_data($sql, $reseller_id, $user_id) {
 	if (empty($ed_error)) {
 		$query = "
 			SELECT
-				COUNT(su.`sqlu_id`) AS cnt
+				COUNT(distinct su.sqlu_name) AS cnt
 			FROM
 				`sql_user` AS su,
 				`sql_database` AS sd
