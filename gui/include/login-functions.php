@@ -1060,6 +1060,8 @@ function unset_user_login_data() {
 
 		exec_query($sql, $query, array($sess_id, $admin_name));
 	}
+
+	$_SESSION = array();
 }
 
 /**

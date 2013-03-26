@@ -1,0 +1,13 @@
+EasySCP 1.1.11 ChangeLog
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+2013-02-23 Markus Szywon
+	- GUI:
+		* Fix: White page after RoundCube update
+		* Updated: jQuery UI to version 1.10.1
+	- TOOLS:
+		* Updated: phpMyAdmin to version 3.5.7
+
+2013-02-13 Markus Szywon
+	- GUI:
+		* Updated: jQuery to version 1.9.1

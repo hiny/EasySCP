@@ -612,7 +612,7 @@ function check_ruser_data($tpl, $noPass) {
 	global $user_email, $customer_id, $first_name;
 	global $last_name, $firm, $zip, $gender;
 	global $city, $state, $country, $street_one;
-	global $street_two, $mail, $phone;
+	global $street_two, $phone;
 	global $fax, $inpass, $domain_ip;
 
 	$cfg = EasySCP_Registry::get('Config');

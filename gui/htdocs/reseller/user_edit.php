@@ -219,7 +219,7 @@ function gen_edituser_page($tpl) {
 	// Fill in the fields
 	$tpl->assign(
 		array(
-			'USERNAME' => tohtml(decode_idna($dmn_user_name)),
+			'VL_USERNAME' => tohtml(decode_idna($dmn_user_name)),
 			'VL_MAIL' => empty($user_email) ? '' : tohtml($user_email),
 			'VL_USR_ID' => empty($customer_id) ? '' : tohtml($customer_id),
 			'VL_USR_NAME' => empty($first_name) ? '' : tohtml($first_name),
@@ -251,7 +251,7 @@ function update_data_in_db($hpid) {
 
 	global $dmn_user_name, $user_email, $customer_id, $first_name, $last_name,
 		$firm, $zip, $gender, $city, $state, $country, $street_one, $street_two,
-		$mail, $phone, $fax, $inpass, $admin_login;
+		$phone, $fax, $inpass, $admin_login;
 
 	$sql = EasySCP_Registry::get('Db');
 	$cfg = EasySCP_Registry::get('Config');
@@ -304,7 +304,7 @@ function update_data_in_db($hpid) {
 			$city,
 			$state,
 			$country,
-			$mail,
+			$user_email,
 			$phone,
 			$fax,
 			$street_one,
