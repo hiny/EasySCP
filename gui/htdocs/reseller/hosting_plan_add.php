@@ -126,6 +126,7 @@ $tpl->display($template);
  * @param EasySCP_TemplateEngine $tpl
  */
 function gen_empty_ahp_page($tpl) {
+
 	$cfg = EasySCP_Registry::get('Config');
 
 	$tpl->assign(
@@ -143,6 +144,7 @@ function gen_empty_ahp_page($tpl) {
 			'HP_VALUE'				=> '',
 			'HP_PAYMENT'			=> '',
 			'HP_DESCRIPTION_VALUE'	=> '',
+			'HP_DISK_VALUE'			=> '',
 			'TR_PHP_YES'			=> '',
 			'TR_PHP_NO'				=> $cfg->HTML_CHECKED,
 			'TR_CGI_YES'			=> '',
@@ -153,7 +155,6 @@ function gen_empty_ahp_page($tpl) {
 			'VL_BACKUPN'			=> $cfg->HTML_CHECKED,
 			'TR_DNS_YES'			=> '',
 			'TR_DNS_NO'				=> $cfg->HTML_CHECKED,
-			'HP_DISK_VALUE'			=> '',
 			'TR_STATUS_YES'			=> $cfg->HTML_CHECKED,
 			'TR_STATUS_NO'			=> '',
 			'HP_TOS_VALUE'			=> ''
@@ -166,6 +167,7 @@ function gen_empty_ahp_page($tpl) {
  * @param EasySCP_TemplateEngine $tpl
  */
 function gen_data_ahp_page($tpl) {
+
 	global $hp_name, $description, $hp_php, $hp_cgi;
 	global $hp_sub, $hp_als, $hp_mail;
 	global $hp_ftp, $hp_sql_db, $hp_sql_user;
@@ -213,13 +215,14 @@ function gen_data_ahp_page($tpl) {
 		)
 	);
 
-} // end of gen_data_ahp_page()
+} // End of gen_data_ahp_page()
 
 /**
  * Check correction of input data
  * @param EasySCP_TemplateEngine $tpl
  */
 function check_data_correction($tpl) {
+
 	global $hp_name, $description, $hp_php, $hp_cgi;
 	global $hp_sub, $hp_als, $hp_mail;
 	global $hp_ftp, $hp_sql_db, $hp_sql_user;
@@ -282,6 +285,7 @@ function check_data_correction($tpl) {
 	if (!is_numeric($price)) {
 		$ahp_error[] = tr('Price must be a number!');
 	}
+
 	if (!is_numeric($setup_fee)) {
 		$ahp_error[] = tr('Setup fee must be a number!');
 	}
@@ -356,6 +360,7 @@ function check_data_correction($tpl) {
  * @param int $admin_id
  */
 function save_data_to_db($tpl, $admin_id) {
+
 	global $hp_name, $description, $hp_php, $hp_cgi;
 	global $hp_sub, $hp_als, $hp_mail;
 	global $hp_ftp, $hp_sql_db, $hp_sql_user;

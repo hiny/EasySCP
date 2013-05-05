@@ -30,8 +30,7 @@ $cfg = EasySCP_Registry::get('Config');
 $tpl = EasySCP_TemplateEngine::getInstance();
 $template = 'reseller/domain_edit.tpl';
 
-if (isset($cfg->HOSTING_PLANS_LEVEL)
-	&& $cfg->HOSTING_PLANS_LEVEL === 'admin') {
+if (isset($cfg->HOSTING_PLANS_LEVEL) && $cfg->HOSTING_PLANS_LEVEL === 'admin') {
 	user_goto('users.php?psi=last');
 }
 
@@ -166,8 +165,14 @@ function load_user_data($user_id, $domain_id) {
 		user_goto('users.php?psi=last');
 	}
 
-	list(,$sub,,$als,,$mail,,$ftp,,$sql_db,,$sql_user,$traff,$disk) =
-		generate_user_props($domain_id);
+	list(, $sub,
+		, $als,
+		, $mail,
+		, $ftp,
+		, $sql_db,
+		, $sql_user,
+		$traff, $disk
+	) = generate_user_props($domain_id);
 
 	load_additional_data($user_id, $domain_id);
 } // End of load_user_data()
@@ -176,12 +181,13 @@ function load_user_data($user_id, $domain_id) {
  * Load additional data
  */
 function load_additional_data($user_id, $domain_id) {
+
 	global $domain_name, $domain_expires, $domain_ip, $php_sup;
 	global $cgi_supp, $username, $allowbackup;
 	global $dns_supp;
 
-	$sql = EasySCP_Registry::get('Db');
 	$cfg = EasySCP_Registry::get('Config');
+	$sql = EasySCP_Registry::get('Db');
 
 	// Get domain data
 	$query = "
@@ -203,9 +209,9 @@ function load_additional_data($user_id, $domain_id) {
 	$res = exec_query($sql, $query, $domain_id);
 	$data = $res->fetchRow();
 
-	$domain_name = $data['domain_name'];
+	$domain_name		= $data['domain_name'];
 
-	$domain_expires = $data['domain_expires'];
+	$domain_expires		= $data['domain_expires'];
 	$_SESSION['domain_expires'] = $domain_expires;
 
 	if ($domain_expires == 0) {
@@ -216,11 +222,12 @@ function load_additional_data($user_id, $domain_id) {
 	}
 
 	$domain_ip_id		= $data['domain_ip_id'];
-	$php_sup		= $data['domain_php'];
-	$cgi_supp		= $data['domain_cgi'];
+	$php_sup			= $data['domain_php'];
+	$cgi_supp			= $data['domain_cgi'];
 	$allowbackup		= $data['allowbackup'];
 	$domain_admin_id	= $data['domain_admin_id'];
-	$dns_supp		= $data['domain_dns'];
+	$dns_supp			= $data['domain_dns'];
+
 	// Get IP of domain
 	$query = "
 		SELECT
@@ -261,6 +268,7 @@ function load_additional_data($user_id, $domain_id) {
  * @param EasySCP_TemplateEngine $tpl
  */
 function gen_editdomain_page($tpl) {
+
 	global $domain_name, $domain_expires, $domain_new_expire, $domain_ip, $php_sup;
 	global $cgi_supp , $sub, $als;
 	global $mail, $ftp, $sql_db;
@@ -281,36 +289,36 @@ function gen_editdomain_page($tpl) {
 		$tpl->assign(
 			array(
 				'BACKUP_DOMAIN' => $cfg->HTML_SELECTED,
-				'BACKUP_SQL' 	=> '',
-				'BACKUP_FULL' 	=> '',
-				'BACKUP_NO' 	=> '',
+				'BACKUP_SQL'	=> '',
+				'BACKUP_FULL'	=> '',
+				'BACKUP_NO'		=> ''
 			)
 		);
 	} else if ($allowbackup === 'sql')  {
 		$tpl->assign(
 			array(
 				'BACKUP_DOMAIN' => '',
-				'BACKUP_SQL' 	=> $cfg->HTML_SELECTED,
-				'BACKUP_FULL' 	=> '',
-				'BACKUP_NO' 	=> '',
+				'BACKUP_SQL'	=> $cfg->HTML_SELECTED,
+				'BACKUP_FULL'	=> '',
+				'BACKUP_NO'		=> ''
 			)
 		);
 	} else if ($allowbackup === 'full')  {
 		$tpl->assign(
 			array(
 				'BACKUP_DOMAIN' => '',
-				'BACKUP_SQL' 	=> '',
-				'BACKUP_FULL' 	=> $cfg->HTML_SELECTED,
-				'BACKUP_NO' 	=> '',
+				'BACKUP_SQL'	=> '',
+				'BACKUP_FULL'	=> $cfg->HTML_SELECTED,
+				'BACKUP_NO'		=> ''
 			)
 		);
-	} else if ($allowbackup === 'no')  {
+	} else {
 		$tpl->assign(
 			array(
 				'BACKUP_DOMAIN' => '',
-				'BACKUP_SQL' 	=> '',
-				'BACKUP_FULL' 	=> '',
-				'BACKUP_NO' 	=> $cfg->HTML_SELECTED,
+				'BACKUP_SQL'	=> '',
+				'BACKUP_FULL'	=> '',
+				'BACKUP_NO'		=> $cfg->HTML_SELECTED
 			)
 		);
 	}
@@ -366,21 +374,24 @@ function gen_editdomain_page($tpl) {
  */
 function check_user_data($tpl, $sql, $reseller_id, $user_id) {
 
-	global $sub, $als, $mail, $ftp, $sql_db, $sql_user, $traff, $disk, $sql,
-		$domain_php, $domain_cgi, $allowbackup, $domain_dns, $domain_expires;
+	global $domain_expires, $sub, $als, $mail, $ftp;
+	global $sql_db, $sql_user, $traff;
+	global $disk, $sql, $domain_php;
+	global $domain_cgi, $allowbackup;
+	global $domain_dns;
 
 	$domain_expires_date  = (isset($_POST['dmn_expire_date'])) ? clean_input($_POST['dmn_expire_date']) : 0;
 	$domain_expires_never = (isset($_POST['dmn_expire_never'])) ? $_POST['dmn_expire_never'] : "off";
-	$sub 			= clean_input($_POST['dom_sub']);
-	$als 			= clean_input($_POST['dom_alias']);
-	$mail 			= clean_input($_POST['dom_mail_acCount']);
-	$ftp 			= clean_input($_POST['dom_ftp_acCounts']);
-	$sql_db 		= clean_input($_POST['dom_sqldb']);
-	$sql_user 		= clean_input($_POST['dom_sql_users']);
-	$traff 			= clean_input($_POST['dom_traffic']);
-	$disk 			= clean_input($_POST['dom_disk']);
+	$sub			= clean_input($_POST['dom_sub']);
+	$als			= clean_input($_POST['dom_alias']);
+	$mail			= clean_input($_POST['dom_mail_acCount']);
+	$ftp			= clean_input($_POST['dom_ftp_acCounts']);
+	$sql_db			= clean_input($_POST['dom_sqldb']);
+	$sql_user		= clean_input($_POST['dom_sql_users']);
+	$traff			= clean_input($_POST['dom_traffic']);
+	$disk			= clean_input($_POST['dom_disk']);
 
-	// $domain_ip = $_POST['domain_ip'];
+	// $domain_ip	= $_POST['domain_ip'];
 	$domain_php		= preg_replace("/\_/", "", $_POST['domain_php']);
 	$domain_cgi		= preg_replace("/\_/", "", $_POST['domain_cgi']);
 	$domain_dns		= preg_replace("/\_/", "", $_POST['domain_dns']);

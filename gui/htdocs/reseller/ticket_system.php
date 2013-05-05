@@ -43,8 +43,7 @@ if (isset($_GET['psi'])) {
 	$start = 0;
 }
 
-generateTicketList($tpl, $_SESSION['user_id'], $start,
-		$cfg->DOMAIN_ROWS_PER_PAGE, 'reseller', 'open');
+generateTicketList($tpl, $_SESSION['user_id'], $start, $cfg->DOMAIN_ROWS_PER_PAGE, 'reseller', 'open');
 
 // static page messages
 gen_logged_from($tpl);

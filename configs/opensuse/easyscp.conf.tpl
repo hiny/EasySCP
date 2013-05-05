@@ -22,9 +22,9 @@
 # Misc config variables
 #
 
-BuildDate = 20130223
+BuildDate = 20130404
 
-Version = 1.1.11
+Version = 1.1.13
 
 CodeName = Orpheus
 

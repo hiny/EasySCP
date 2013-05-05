@@ -1,0 +1,14 @@
+EasySCP 1.1.12 ChangeLog
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+2013-03-26 Markus Szywon
+	- GUI:
+		* Updated: jQuery UI to version 1.10.2
+
+2013-03-05 Markus Szywon
+	- GUI:
+		* Fix: Email not saved when edit Client
+
+2013-03-04 Tom Winterhalder
+	- GUI:
+		* Fix: Error when add subdomain to an alias

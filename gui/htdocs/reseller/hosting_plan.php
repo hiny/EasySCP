@@ -65,6 +65,7 @@ unset_messages();
 
 // BEGIN FUNCTION DECLARE PATH
 function gen_hp_message($tpl) {
+
 	// global $externel_event, $hp_added, $hp_deleted, $hp_updated;
 	global $external_event;
 
@@ -155,19 +156,17 @@ function gen_hp_table($tpl, $reseller_id) {
 
 		$tpl->assign(
 			array(
-				'TR_HOSTING_PLANS' 	=> tr('Hosting plans'),
-				'TR_NOM' 			=> tr('No.'),
+				'TR_HOSTING_PLANS'	=> tr('Hosting plans'),
+				'TR_NOM'			=> tr('No.'),
 				'TR_EDIT' 			=> tr('Edit'),
 				'TR_DELETE'			=> tr('Delete'),
 				'PLAN_SHOW'			=> tr('Show hosting plan'),
-				'TR_PLAN_NAME' 		=> tr('Name'),
-				'TR_ACTION' 		=> tr('Actions')
+				'TR_PLAN_NAME'		=> tr('Name'),
+				'TR_ACTION'			=> tr('Action')
 			)
 		);
 
-		$coid = isset($cfg->CUSTOM_ORDERPANEL_ID)
-			? $cfg->CUSTOM_ORDERPANEL_ID
-			: '';
+		$coid = isset($cfg->CUSTOM_ORDERPANEL_ID) ? $cfg->CUSTOM_ORDERPANEL_ID : '';
 		$i = 1;
 
 		while ($data = $rs->fetchRow()) {

@@ -50,10 +50,10 @@ check_permissions($tpl);
 
 $tpl->assign(
 	array(
-		'TR_PAGE_TITLE' => tr('EasySCP - Reseller/Change Language'),
-		'TR_LANGUAGE' => tr('Language'),
-		'TR_CHOOSE_DEFAULT_LANGUAGE' => tr('Choose default language'),
-		'TR_SAVE' => tr('Save'),
+		'TR_PAGE_TITLE'				=> tr('EasySCP - Reseller/Change Language'),
+		'TR_LANGUAGE'				=> tr('Language'),
+		'TR_CHOOSE_DEFAULT_LANGUAGE'=> tr('Choose default language'),
+		'TR_SAVE'					=> tr('Save')
 	)
 );
 

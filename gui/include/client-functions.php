@@ -559,6 +559,8 @@ function gen_client_menu($tpl, $menu_file) {
 			'TR_MENU_ERROR_PAGES'			=> tr('Error pages'),
 			'TR_MENU_DAILY_BACKUP'			=> tr('Daily backup'),
 
+			'TR_AWSTATS'					=> tr('AwStats'),
+
 			'TR_OPEN_TICKETS'				=> tr('Open tickets'),
 			'TR_CLOSED_TICKETS'				=> tr('Closed tickets'),
 			'TR_MENU_NEW_TICKET'			=> tr('New ticket'),

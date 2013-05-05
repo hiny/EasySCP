@@ -39,17 +39,17 @@ $template = 'admin/hosting_plan.tpl';
 gen_hp_table($tpl, $_SESSION['user_id']);
 
 $tpl->assign(
-		array(
-			'TR_PAGE_TITLE'				=> tr('EasySCP - Administrator/Hosting Plan Management'),
-			'TR_HOSTING_PLANS'			=> tr('Hosting plans'),
-			'TR_PAGE_MENU'				=> tr('Manage hosting plans'),
-			'TR_PURCHASING'				=> tr('Purchasing'),
-			'TR_ADD_HOSTING_PLAN'		=> tr('Add hosting plan'),
-			'TR_TITLE_ADD_HOSTING_PLAN'	=> tr('Add new user hosting plan'),
-			'TR_BACK'					=> tr('Back'),
-			'TR_TITLE_BACK'				=> tr('Return to previous menu'),
-			'TR_MESSAGE_DELETE'			=> tr('Are you sure you want to delete %s?', true, '%s')
-		)
+	array(
+		'TR_PAGE_TITLE'				=> tr('EasySCP - Administrator/Hosting Plan Management'),
+		'TR_HOSTING_PLANS'			=> tr('Hosting plans'),
+		'TR_PAGE_MENU'				=> tr('Manage hosting plans'),
+		'TR_PURCHASING'				=> tr('Purchasing'),
+		'TR_ADD_HOSTING_PLAN'		=> tr('Add hosting plan'),
+		'TR_TITLE_ADD_HOSTING_PLAN'	=> tr('Add new user hosting plan'),
+		'TR_BACK'					=> tr('Back'),
+		'TR_TITLE_BACK'				=> tr('Return to previous menu'),
+		'TR_MESSAGE_DELETE'			=> tr('Are you sure you want to delete %s?', true, '%s')
+	)
 );
 
 gen_admin_mainmenu($tpl, 'admin/main_menu_hosting_plan.tpl');
@@ -67,7 +67,6 @@ $tpl->display($template);
 unset_messages();
 
 // BEGIN FUNCTION DECLARE PATH
-
 function gen_hp_message() {
 
 	// global $externel_event, $hp_added, $hp_deleted, $hp_updated;

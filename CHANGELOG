@@ -1,14 +1,10 @@
-EasySCP 1.1.12 ChangeLog
+EasySCP 1.1.13 ChangeLog
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-2013-03-26 Markus Szywon
+2013-05-04 Markus Szywon
 	- GUI:
-		* Updated: jQuery UI to version 1.10.2
+		* Fix: Password not send when edit user as reseller
 
-2013-03-05 Markus Szywon
-	- GUI:
-		* Fix: Email not saved when edit Client
-
-2013-03-04 Markus Szywon
-	- GUI:
-		* Fix: Error when add subdomain to an alias
+2013-04-04
+	- TOOLS:
+		* Updated: Roundcube to version 0.8.6

@@ -43,7 +43,7 @@ if (isset($_POST['uaction']) && $_POST['uaction'] === 'save_lang') {
 
 gen_def_language($cfg->USER_SELECTED_LANG);
 
-// static page messages.
+// static page messages
 $tpl->assign(
 	array(
 		'TR_PAGE_TITLE'				=> tr('EasySCP - Admin/Change Language'),

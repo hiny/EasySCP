@@ -35,6 +35,7 @@ if ($cfg->HOSTING_PLANS_LEVEL && $cfg->HOSTING_PLANS_LEVEL !== 'admin') {
 }
 
 if (isset($_POST['uaction']) && ('sub_data' === $_POST['uaction'])) {
+
 	// Process data
 	if (isset($_SESSION['edit_id'])) {
 		$editid = $_SESSION['edit_id'];
@@ -152,14 +153,9 @@ unset_messages();
  */
 function load_user_data($user_id, $domain_id) {
 
-	$sql = EasySCP_Registry::get('Db');
+	global $sub, $als, $mail, $ftp, $sql_db, $sql_user, $traff, $disk;
 
-	global $domain_name, $domain_expires, $domain_ip, $php_sup;
-	global $cgi_supp , $sub, $als;
-	global $mail, $ftp, $sql_db;
-	global $sql_user, $traff, $disk;
-	global $username;
-	global $dns_supp;
+	$sql = EasySCP_Registry::get('Db');
 
 	$query = "
 		SELECT
@@ -177,6 +173,7 @@ function load_user_data($user_id, $domain_id) {
 			tr('User does not exist or you do not have permission to access this interface!'),
 			'error'
 		);
+
 		user_goto('manage_users.php');
 	}
 
@@ -187,7 +184,7 @@ function load_user_data($user_id, $domain_id) {
 		, $sql_db,
 		, $sql_user,
 		$traff, $disk
-	) = generate_user_props($domain_id);;
+	) = generate_user_props($domain_id);
 
 	load_additional_data($user_id, $domain_id);
 } // End of load_user_data()
@@ -219,7 +216,7 @@ function load_additional_data($user_id, $domain_id) {
 			`domain`
 		WHERE
 			`domain_id` = ?
-	";
+	;";
 
 	$res = exec_query($sql, $query, $domain_id);
 	$data = $res->fetchRow();
@@ -230,11 +227,11 @@ function load_additional_data($user_id, $domain_id) {
 	$_SESSION['domain_expires'] = $domain_expires;
 
 	if ($domain_expires == 0) {
- 		$domain_expires = '';
- 	} else {
- 		$date_formt = $cfg->DATE_FORMAT;
- 		$domain_expires = date($date_formt, $domain_expires);
- 	}
+		$domain_expires = '';
+	} else {
+		$date_format = $cfg->DATE_FORMAT;
+		$domain_expires = date($date_format, $domain_expires);
+	}
 
 	$domain_ip_id		= $data['domain_ip_id'];
 	$php_sup			= $data['domain_php'];
@@ -302,36 +299,36 @@ function gen_editdomain_page($tpl) {
 		$tpl->assign(
 			array(
 				'BACKUP_DOMAIN' => $cfg->HTML_SELECTED,
-				'BACKUP_SQL' => '',
-				'BACKUP_FULL' => '',
-				'BACKUP_NO' => '',
+				'BACKUP_SQL'	=> '',
+				'BACKUP_FULL'	=> '',
+				'BACKUP_NO'		=> ''
 			)
 		);
-	} elseif ($allowbackup === 'sql')  {
+	} else if ($allowbackup === 'sql')  {
 		$tpl->assign(
 			array(
 				'BACKUP_DOMAIN' => '',
-				'BACKUP_SQL' => $cfg->HTML_SELECTED,
-				'BACKUP_FULL' => '',
-				'BACKUP_NO' => '',
+				'BACKUP_SQL'	=> $cfg->HTML_SELECTED,
+				'BACKUP_FULL'	=> '',
+				'BACKUP_NO'		=> ''
 			)
 		);
-	} elseif ($allowbackup === 'full')  {
+	} else if ($allowbackup === 'full')  {
 		$tpl->assign(
 			array(
 				'BACKUP_DOMAIN' => '',
-				'BACKUP_SQL' => '',
-				'BACKUP_FULL' => $cfg->HTML_SELECTED,
-				'BACKUP_NO' => '',
+				'BACKUP_SQL'	=> '',
+				'BACKUP_FULL'	=> $cfg->HTML_SELECTED,
+				'BACKUP_NO'		=> ''
 			)
 		);
 	} else {
 		$tpl->assign(
 			array(
 				'BACKUP_DOMAIN' => '',
-				'BACKUP_SQL' => '',
-				'BACKUP_FULL' => '',
-				'BACKUP_NO' => $cfg->HTML_SELECTED,
+				'BACKUP_SQL'	=> '',
+				'BACKUP_FULL'	=> '',
+				'BACKUP_NO'		=> $cfg->HTML_SELECTED
 			)
 		);
 	}
@@ -365,6 +362,9 @@ function gen_editdomain_page($tpl) {
 /**
  * Check input data
  * @param EasySCP_TemplateEngine $tpl
+ * @param EasySCP_Database $sql
+ * @param int $reseller_id
+ * @param int $user_id
  */
 function check_user_data($tpl, $sql, $reseller_id, $user_id) {
 
@@ -384,7 +384,8 @@ function check_user_data($tpl, $sql, $reseller_id, $user_id) {
 	$sql_user		= clean_input($_POST['dom_sql_users']);
 	$traff			= clean_input($_POST['dom_traffic']);
 	$disk			= clean_input($_POST['dom_disk']);
-	//$domain_ip		= $_POST['domain_ip'];
+
+	// $domain_ip	= $_POST['domain_ip'];
 	$domain_php		= preg_replace("/\_/", "", $_POST['domain_php']);
 	$domain_cgi		= preg_replace("/\_/", "", $_POST['domain_cgi']);
 	$domain_dns		= preg_replace("/\_/", "", $_POST['domain_dns']);
@@ -446,6 +447,7 @@ function check_user_data($tpl, $sql, $reseller_id, $user_id) {
 		$rtraff_current, $rtraff_max,
 		$rdisk_current, $rdisk_max
 	) = get_reseller_default_props($sql, $reseller_id); //generate_reseller_props($reseller_id);
+
 	list(, , , , , , $utraff_current, $udisk_current, , ) = generate_user_traffic($user_id);
 
 	if (empty($ed_error)) {
@@ -488,7 +490,7 @@ function check_user_data($tpl, $sql, $reseller_id, $user_id) {
 			send_request();
 		}
 
-		$user_props = "$usub_current;$usub_max;";
+		$user_props  = "$usub_current;$usub_max;";
 		$user_props .= "$uals_current;$uals_max;";
 		$user_props .= "$umail_current;$umail_max;";
 		$user_props .= "$uftp_current;$uftp_max;";
@@ -562,7 +564,10 @@ function check_user_data($tpl, $sql, $reseller_id, $user_id) {
 
 		return true;
 	} else {
-		$tpl->assign('MESSAGE', $ed_error);
+		set_page_message(
+			$ed_error,
+			'error'
+		);
 
 		return false;
 	}
@@ -584,7 +589,7 @@ function calculate_user_dvals($data, $u, &$umax, &$r, $rmax, &$err, $obj) {
 	} else if ($rmax == 0 && $umax == 0) {
 		if ($data == -1) {
 			if ($u > 0) {
-				$err .= tr('The <em>%s</em> service cannot be disabled! ', $obj) . tr('There are <em>%s</em> records on the system!', $obj);
+				$err .= tr('The <em>%s</em> service cannot be disabled!', $obj) . tr('There are <em>%s</em> records on the system!', $obj);
 			} else {
 				$umax = $data;
 			}
@@ -594,7 +599,7 @@ function calculate_user_dvals($data, $u, &$umax, &$r, $rmax, &$err, $obj) {
 			return;
 		} else if ($data > 0) {
 			if ($u > $data) {
-				$err .= tr('The <em>%s</em> service cannot be limited! ', $obj) . tr('Specified number is smaller than <em>%s</em> records, present on the system!', $obj);
+				$err .= tr('The <em>%s</em> service cannot be limited!', $obj) . tr('Specified number is smaller than <em>%s</em> records, present on the system!', $obj);
 			} else {
 				$umax = $data;
 				$r += $umax;
@@ -604,7 +609,7 @@ function calculate_user_dvals($data, $u, &$umax, &$r, $rmax, &$err, $obj) {
 	} else if ($rmax == 0 && $umax > 0) {
 		if ($data == -1) {
 			if ($u > 0) {
-				$err .= tr('The <em>%s</em> service cannot be disabled! ', $obj) . tr('There are <em>%s</em> records on the system!', $obj);
+				$err .= tr('The <em>%s</em> service cannot be disabled!', $obj) . tr('There are <em>%s</em> records on the system!', $obj);
 			} else {
 				$r -= $umax;
 				$umax = $data;
@@ -616,7 +621,7 @@ function calculate_user_dvals($data, $u, &$umax, &$r, $rmax, &$err, $obj) {
 			return;
 		} else if ($data > 0) {
 			if ($u > $data) {
-				$err .= tr('The <em>%s</em> service cannot be limited! ', $obj) . tr('Specified number is smaller than <em>%s</em> records, present on the system!', $obj);
+				$err .= tr('The <em>%s</em> service cannot be limited!', $obj) . tr('Specified number is smaller than <em>%s</em> records, present on the system!', $obj);
 			} else {
 				if ($umax > $data) {
 					$data_dec = $umax - $data;
@@ -633,11 +638,11 @@ function calculate_user_dvals($data, $u, &$umax, &$r, $rmax, &$err, $obj) {
 		if ($data == -1) {
 			return;
 		} else if ($data == 0) {
-			$err .= tr('The <em>%s</em> service cannot be unlimited! ', $obj) . tr('There are reseller limits for the <em>%s</em> service!', $obj);
+			$err .= tr('The <em>%s</em> service cannot be unlimited!', $obj) . tr('There are reseller limits for the <em>%s</em> service!', $obj);
 			return;
 		} else if ($data > 0) {
 			if ($r + $data > $rmax) {
-				$err .= tr('The <em>%s</em> service cannot be limited! ', $obj) . tr('You are exceeding reseller limits for the <em>%s</em> service!', $obj);
+				$err .= tr('The <em>%s</em> service cannot be limited!', $obj) . tr('You are exceeding reseller limits for the <em>%s</em> service!', $obj);
 			} else {
 				$r += $data;
 
@@ -654,7 +659,7 @@ function calculate_user_dvals($data, $u, &$umax, &$r, $rmax, &$err, $obj) {
 	} else if ($rmax > 0 && $umax > 0) {
 		if ($data == -1) {
 			if ($u > 0) {
-				$err .= tr('The <em>%s</em> service cannot be disabled! ', $obj) . tr('There are <em>%s</em> records on the system!', $obj);
+				$err .= tr('The <em>%s</em> service cannot be disabled!', $obj) . tr('There are <em>%s</em> records on the system!', $obj);
 			} else {
 				$r -= $umax;
 				$umax = $data;
@@ -662,12 +667,12 @@ function calculate_user_dvals($data, $u, &$umax, &$r, $rmax, &$err, $obj) {
 
 			return;
 		} else if ($data == 0) {
-			$err .= tr('The <em>%s</em> service cannot be unlimited! ', $obj) . tr('There are reseller limits for the <em>%s</em> service!', $obj);
+			$err .= tr('The <em>%s</em> service cannot be unlimited!', $obj) . tr('There are reseller limits for the <em>%s</em> service!', $obj);
 
 			return;
 		} else if ($data > 0) {
 			if ($u > $data) {
-				$err .= tr('The <em>%s</em> service cannot be limited! ', $obj) . tr('Specified number is smaller than <em>%s</em> records, present on the system!', $obj);
+				$err .= tr('The <em>%s</em> service cannot be limited!', $obj) . tr('Specified number is smaller than <em>%s</em> records, present on the system!', $obj);
 			} else {
 				if ($umax > $data) {
 					$data_dec = $umax - $data;
@@ -676,7 +681,7 @@ function calculate_user_dvals($data, $u, &$umax, &$r, $rmax, &$err, $obj) {
 					$data_inc = $data - $umax;
 
 					if ($r + $data_inc > $rmax) {
-						$err .= tr('The <em>%s</em> service cannot be limited! ', $obj) . tr('You are exceeding reseller limits for the <em>%s</em> service!', $obj);
+						$err .= tr('The <em>%s</em> service cannot be limited!', $obj) . tr('You are exceeding reseller limits for the <em>%s</em> service!', $obj);
 						return;
 					}
 

@@ -46,49 +46,46 @@ if (isset($_POST['uaction']) && ('add_plan' === $_POST['uaction'])) {
 
 // static page messages
 $tpl->assign(
-		array(
-				'TR_PAGE_TITLE'				=> tr('EasySCP - Administrator/Add hosting plan'),
-				'TR_ADD_HOSTING_PLAN'		=> tr('Add hosting plan'),
-				'TR_HOSTING PLAN PROPS'		=> tr('Hosting plan properties'),
-				'TR_TEMPLATE_NAME'			=> tr('Template name'),
-				'TR_MAX_SUBDOMAINS'			=> tr('Max subdomains<br /><em>(-1 disabled, 0 unlimited)</em>'),
-				'TR_MAX_ALIASES'			=> tr('Max aliases<br /><em>(-1 disabled, 0 unlimited)</em>'),
-				'TR_MAX_MAILACCOUNTS'		=> tr('Mail accounts limit<br /><em>(-1 disabled, 0 unlimited)</em>'),
-				'TR_MAX_FTP'				=> tr('FTP accounts limit<br /><em>(-1 disabled, 0 unlimited)</em>'),
-				'TR_MAX_SQL'				=> tr('SQL databases limit<br /><em>(-1 disabled, 0 unlimited)</em>'),
-				'TR_MAX_SQL_USERS'			=> tr('SQL users limit<br /><em>(-1 disabled, 0 unlimited)</em>'),
-				'TR_MAX_TRAFFIC'			=> tr('Traffic limit [MB]<br /><em>(0 unlimited)</em>'),
-				'TR_DISK_LIMIT'				=> tr('Disk limit [MB]<br /><em>(0 unlimited)</em>'),
-				'TR_PHP'					=> tr('PHP'),
-				'TR_CGI'					=> tr('CGI / Perl'),
-				'TR_DNS'					=> tr('Allow adding records to DNS zone'),
-				'TR_BACKUP'					=> tr('Backup'),
-				'TR_BACKUP_DOMAIN'			=> tr('Domain'),
-				'TR_BACKUP_SQL'				=> tr('SQL'),
-				'TR_BACKUP_FULL'			=> tr('Full'),
-				'TR_BACKUP_NO'				=> tr('No'),
-				'TR_APACHE_LOGS'			=> tr('Apache logfiles'),
-				'TR_AWSTATS'				=> tr('AwStats'),
-				'TR_YES'					=> tr('Yes'),
-				'TR_NO'						=> tr('No'),
-				'TR_BILLING_PROPS'			=> tr('Billing Settings'),
-				'TR_PRICE'					=> tr('Price'),
-				'TR_SETUP_FEE'				=> tr('Setup fee'),
-				'TR_VALUE'					=> tr('Currency'),
-				'TR_PAYMENT'				=> tr('Payment period'),
-				'TR_STATUS'					=> tr('Available for purchasing'),
-				'TR_TEMPLATE_DESCRIPTON'	=> tr('Description'),
-				'TR_EXAMPLE'				=> tr('(e.g. EUR)'),
-
-			// BEGIN TOS
-				'TR_TOS_PROPS'				=> tr('Term Of Service'),
-				'TR_TOS_NOTE'				=> tr('<strong>Optional:</strong> Leave this field empty if you do not want term of service for this hosting plan.'),
-				'TR_TOS_DESCRIPTION'		=> tr('Text Only'),
-
-			// END TOS
-
-				'TR_ADD_PLAN'				=> tr('Add plan')
-		)
+	array(
+		'TR_PAGE_TITLE'				=> tr('EasySCP - Administrator/Add hosting plan'),
+		'TR_ADD_HOSTING_PLAN'		=> tr('Add hosting plan'),
+		'TR_HOSTING PLAN PROPS'		=> tr('Hosting plan properties'),
+		'TR_TEMPLATE_NAME'			=> tr('Template name'),
+		'TR_MAX_SUBDOMAINS'			=> tr('Max subdomains<br /><em>(-1 disabled, 0 unlimited)</em>'),
+		'TR_MAX_ALIASES'			=> tr('Max aliases<br /><em>(-1 disabled, 0 unlimited)</em>'),
+		'TR_MAX_MAILACCOUNTS'		=> tr('Mail accounts limit<br /><em>(-1 disabled, 0 unlimited)</em>'),
+		'TR_MAX_FTP'				=> tr('FTP accounts limit<br /><em>(-1 disabled, 0 unlimited)</em>'),
+		'TR_MAX_SQL'				=> tr('SQL databases limit<br /><em>(-1 disabled, 0 unlimited)</em>'),
+		'TR_MAX_SQL_USERS'			=> tr('SQL users limit<br /><em>(-1 disabled, 0 unlimited)</em>'),
+		'TR_MAX_TRAFFIC'			=> tr('Traffic limit [MB]<br /><em>(0 unlimited)</em>'),
+		'TR_DISK_LIMIT'				=> tr('Disk limit [MB]<br /><em>(0 unlimited)</em>'),
+		'TR_PHP'					=> tr('PHP'),
+		'TR_CGI'					=> tr('CGI / Perl'),
+		'TR_DNS'					=> tr('Allow adding records to DNS zone'),
+		'TR_BACKUP'					=> tr('Backup'),
+		'TR_BACKUP_DOMAIN'			=> tr('Domain'),
+		'TR_BACKUP_SQL'				=> tr('SQL'),
+		'TR_BACKUP_FULL'			=> tr('Full'),
+		'TR_BACKUP_NO'				=> tr('No'),
+		'TR_APACHE_LOGS'			=> tr('Apache logfiles'),
+		'TR_AWSTATS'				=> tr('AwStats'),
+		'TR_YES'					=> tr('Yes'),
+		'TR_NO'						=> tr('No'),
+		'TR_BILLING_PROPS'			=> tr('Billing Settings'),
+		'TR_PRICE'					=> tr('Price'),
+		'TR_SETUP_FEE'				=> tr('Setup fee'),
+		'TR_VALUE'					=> tr('Currency'),
+		'TR_PAYMENT'				=> tr('Payment period'),
+		'TR_STATUS'					=> tr('Available for purchasing'),
+		'TR_TEMPLATE_DESCRIPTON'	=> tr('Description'),
+		'TR_EXAMPLE'				=> tr('(e.g. EUR)'),
+		// BEGIN TOS
+		'TR_TOS_PROPS'				=> tr('Term Of Service'),
+		'TR_TOS_NOTE'				=> tr('<strong>Optional:</strong> Leave this field empty if you do not want term of service for this hosting plan.'),
+		'TR_TOS_DESCRIPTION'		=> tr('Text Only'),
+		// END TOS
+		'TR_ADD_PLAN'				=> tr('Add plan')
+	)
 );
 
 gen_admin_mainmenu($tpl, 'admin/main_menu_hosting_plan.tpl');
@@ -113,39 +110,36 @@ function gen_empty_ahp_page($tpl) {
 	$cfg = EasySCP_Registry::get('Config');
 
 	$tpl->assign(
-			array(
-					'HP_NAME_VALUE'			=> '',
-					'TR_MAX_SUB_LIMITS'		=> '',
-					'TR_MAX_ALS_VALUES'		=> '',
-					'HP_MAIL_VALUE'			=> '',
-					'HP_FTP_VALUE'			=> '',
-					'HP_SQL_DB_VALUE'		=> '',
-					'HP_SQL_USER_VALUE'		=> '',
-					'HP_TRAFF_VALUE'		=> '',
-					'HP_PRICE'				=> '',
-					'HP_SETUPFEE'			=> '',
-					'HP_VALUE'				=> '',
-					'HP_PAYMENT'			=> '',
-					'HP_DESCRIPTION_VALUE'	=> '',
-					'HP_DISK_VALUE'			=> '',
-					'TR_PHP_YES'			=> '',
-					'TR_PHP_NO'				=> $cfg->HTML_CHECKED,
-					'TR_CGI_YES'			=> '',
-					'TR_CGI_NO'				=> $cfg->HTML_CHECKED,
-					'VL_BACKUPD'			=> '',
-					'VL_BACKUPS'			=> '',
-					'VL_BACKUPF'			=> '',
-					'VL_BACKUPN'			=> $cfg->HTML_CHECKED,
-					'TR_DNS_YES'			=> '',
-					'TR_DNS_NO'				=> $cfg->HTML_CHECKED,
-					'TR_STATUS_YES'			=> $cfg->HTML_CHECKED,
-					'TR_STATUS_NO'			=> '',
-					'HP_TOS_VALUE'			=> ''
-			)
+		array(
+			'HP_NAME_VALUE'			=> '',
+			'TR_MAX_SUB_LIMITS'		=> '',
+			'TR_MAX_ALS_VALUES'		=> '',
+			'HP_MAIL_VALUE'			=> '',
+			'HP_FTP_VALUE'			=> '',
+			'HP_SQL_DB_VALUE'		=> '',
+			'HP_SQL_USER_VALUE'		=> '',
+			'HP_TRAFF_VALUE'		=> '',
+			'HP_PRICE'				=> '',
+			'HP_SETUPFEE'			=> '',
+			'HP_VALUE'				=> '',
+			'HP_PAYMENT'			=> '',
+			'HP_DESCRIPTION_VALUE'	=> '',
+			'HP_DISK_VALUE'			=> '',
+			'TR_PHP_YES'			=> '',
+			'TR_PHP_NO'				=> $cfg->HTML_CHECKED,
+			'TR_CGI_YES'			=> '',
+			'TR_CGI_NO'				=> $cfg->HTML_CHECKED,
+			'VL_BACKUPD'			=> '',
+			'VL_BACKUPS'			=> '',
+			'VL_BACKUPF'			=> '',
+			'VL_BACKUPN'			=> $cfg->HTML_CHECKED,
+			'TR_DNS_YES'			=> '',
+			'TR_DNS_NO'				=> $cfg->HTML_CHECKED,
+			'TR_STATUS_YES'			=> $cfg->HTML_CHECKED,
+			'TR_STATUS_NO'			=> '',
+			'HP_TOS_VALUE'			=> ''
+		)
 	);
-
-	$tpl->assign('MESSAGE', '');
-
 } // end of gen_empty_hp_page()
 
 /**
@@ -165,40 +159,40 @@ function gen_data_ahp_page($tpl) {
 	$cfg = EasySCP_Registry::get('Config');
 
 	$tpl->assign(
-			array(
-					'HP_NAME_VALUE'			=> tohtml($hp_name),
-					'TR_MAX_SUB_LIMITS'		=> tohtml($hp_sub),
-					'TR_MAX_ALS_VALUES'		=> tohtml($hp_als),
-					'HP_MAIL_VALUE'			=> tohtml($hp_mail),
-					'HP_FTP_VALUE'			=> tohtml($hp_ftp),
-					'HP_SQL_DB_VALUE'		=> tohtml($hp_sql_db),
-					'HP_SQL_USER_VALUE'		=> tohtml($hp_sql_user),
-					'HP_TRAFF_VALUE'		=> tohtml($hp_traff),
-					'HP_DISK_VALUE'			=> tohtml($hp_disk),
-					'HP_DESCRIPTION_VALUE'	=> tohtml($description),
-					'HP_PRICE'				=> tohtml($price),
-					'HP_SETUPFEE'			=> tohtml($setup_fee),
-					'HP_VALUE'				=> tohtml($value),
-					'HP_PAYMENT'			=> tohtml($payment),
-					'HP_TOS_VALUE'			=> tohtml($tos)
-			)
+		array(
+			'HP_NAME_VALUE'			=> tohtml($hp_name),
+			'TR_MAX_SUB_LIMITS'		=> tohtml($hp_sub),
+			'TR_MAX_ALS_VALUES'		=> tohtml($hp_als),
+			'HP_MAIL_VALUE'			=> tohtml($hp_mail),
+			'HP_FTP_VALUE'			=> tohtml($hp_ftp),
+			'HP_SQL_DB_VALUE'		=> tohtml($hp_sql_db),
+			'HP_SQL_USER_VALUE'		=> tohtml($hp_sql_user),
+			'HP_TRAFF_VALUE'		=> tohtml($hp_traff),
+			'HP_DISK_VALUE'			=> tohtml($hp_disk),
+			'HP_DESCRIPTION_VALUE'	=> tohtml($description),
+			'HP_PRICE'				=> tohtml($price),
+			'HP_SETUPFEE'			=> tohtml($setup_fee),
+			'HP_VALUE'				=> tohtml($value),
+			'HP_PAYMENT'			=> tohtml($payment),
+			'HP_TOS_VALUE'			=> tohtml($tos)
+		)
 	);
 
 	$tpl->assign(
-			array(
-					'TR_PHP_YES'	=> ($hp_php == '_yes_') ? $cfg->HTML_CHECKED : '',
-					'TR_PHP_NO'		=> ($hp_php == '_no_') ? $cfg->HTML_CHECKED : '',
-					'TR_CGI_YES'	=> ($hp_cgi == '_yes_') ? $cfg->HTML_CHECKED : '',
-					'TR_CGI_NO'		=> ($hp_cgi == '_no_') ? $cfg->HTML_CHECKED : '',
-					'VL_BACKUPD'	=> ($hp_backup == '_dmn_') ? $cfg->HTML_CHECKED : '',
-					'VL_BACKUPS'	=> ($hp_backup == '_sql_') ? $cfg->HTML_CHECKED : '',
-					'VL_BACKUPF'	=> ($hp_backup == '_full_') ? $cfg->HTML_CHECKED : '',
-					'VL_BACKUPN'	=> ($hp_backup == '_no_') ? $cfg->HTML_CHECKED : '',
-					'TR_DNS_YES'	=> ($hp_dns == '_yes_') ? $cfg->HTML_CHECKED : '',
-					'TR_DNS_NO'		=> ($hp_dns == '_no_') ? $cfg->HTML_CHECKED : '',
-					'TR_STATUS_YES'	=> ($status) ? $cfg->HTML_CHECKED : '',
-					'TR_STATUS_NO'	=> (!$status) ? $cfg->HTML_CHECKED : ''
-			)
+		array(
+			'TR_PHP_YES'	=> ($hp_php == '_yes_') ? $cfg->HTML_CHECKED : '',
+			'TR_PHP_NO'		=> ($hp_php == '_no_') ? $cfg->HTML_CHECKED : '',
+			'TR_CGI_YES'	=> ($hp_cgi == '_yes_') ? $cfg->HTML_CHECKED : '',
+			'TR_CGI_NO'		=> ($hp_cgi == '_no_') ? $cfg->HTML_CHECKED : '',
+			'VL_BACKUPD'	=> ($hp_backup == '_dmn_') ? $cfg->HTML_CHECKED : '',
+			'VL_BACKUPS'	=> ($hp_backup == '_sql_') ? $cfg->HTML_CHECKED : '',
+			'VL_BACKUPF'	=> ($hp_backup == '_full_') ? $cfg->HTML_CHECKED : '',
+			'VL_BACKUPN'	=> ($hp_backup == '_no_') ? $cfg->HTML_CHECKED : '',
+			'TR_DNS_YES'	=> ($hp_dns == '_yes_') ? $cfg->HTML_CHECKED : '',
+			'TR_DNS_NO'		=> ($hp_dns == '_no_') ? $cfg->HTML_CHECKED : '',
+			'TR_STATUS_YES'	=> ($status) ? $cfg->HTML_CHECKED : '',
+			'TR_STATUS_NO'	=> (!$status) ? $cfg->HTML_CHECKED : ''
+		)
 	);
 
 } // End of gen_data_ahp_page()
@@ -228,10 +222,10 @@ function check_data_correction($tpl) {
 	$hp_sql_user	= clean_input($_POST['hp_sql_user']);
 	$hp_traff		= clean_input($_POST['hp_traff']);
 	$hp_disk		= clean_input($_POST['hp_disk']);
-	$description	= clean_input($_POST['hp_description']);
 	$value			= clean_input($_POST['hp_value']);
 	$payment		= clean_input($_POST['hp_payment']);
 	$status			= $_POST['status'];
+	$description	= clean_input($_POST['hp_description']);
 	$tos			= clean_input($_POST['hp_tos']);
 
 	if (empty($_POST['hp_price'])) {
@@ -245,8 +239,6 @@ function check_data_correction($tpl) {
 	} else {
 		$setup_fee = clean_input($_POST['hp_setupfee']);
 	}
-
-
 
 	if (isset($_POST['php'])) {
 		$hp_php = $_POST['php'];

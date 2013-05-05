@@ -61,7 +61,7 @@ $tpl->assign(
 		'TR_MALE'					=> tr('Male'),
 		'TR_FEMALE'					=> tr('Female'),
 		'TR_UNKNOWN'				=> tr('Unknown'),
-		'TR_UPDATE_DATA'			=> tr('Update data'),
+		'TR_UPDATE_DATA'			=> tr('Update data')
 	)
 );
 
