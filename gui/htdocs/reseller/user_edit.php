@@ -411,8 +411,8 @@ function update_data_in_db($hpid) {
 		send_add_user_auto_msg(
 			$reseller_id,
 			$dmn_user_name,
-			clean_input($_POST['pass']),
-			$user_email,
+			clean_input($_POST['userpassword']),
+			clean_input($_POST['useremail']),
 			$first_name,
 			$last_name,
 			tr('Domain account')
