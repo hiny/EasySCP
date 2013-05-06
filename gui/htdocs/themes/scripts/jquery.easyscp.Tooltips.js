@@ -120,7 +120,7 @@
 				 *  MSIE 6 Fixes
 				 */
 				var msieFix = function(tooltipObject, e) {
-					if($.browser.msie && parseFloat($.browser.version) == 6) {
+					if(navigator.userAgent.match(/msie [6]/i) && !window.XMLHttpRequest) {
 
 						// Fix for icon transparency
 						if(options.icon) {

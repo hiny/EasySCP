@@ -22,7 +22,7 @@
 # Misc config variables
 #
 
-BuildDate = 20130404
+BuildDate = 20130506
 
 Version = 1.1.13
 

@@ -3,8 +3,16 @@ EasySCP 1.1.13 ChangeLog
 
 2013-05-04 Markus Szywon
 	- GUI:
-		* Fix: Password not send when edit user as reseller
+		* Fix: Bug #7 (Reseller Password not send in E-Mail Template)
+		* Fix: Bug #3 (unlabeled menu item in domain statistics)
+	- TOOLS:
+		* Update: phpMyAdmin to version 3.5.8.1
+
+2013-04-11 Tom Winterhalder
+   	- GUI:
+   		* Fix: Bug #4 (Help icon has no text content)
 
 2013-04-04
 	- TOOLS:
-		* Updated: Roundcube to version 0.8.6
+		* Update: Roundcube to version 0.8.6
+
